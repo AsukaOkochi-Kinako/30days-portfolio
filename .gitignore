@@ -5,3 +5,4 @@ __pycache__/
 .env
 node_modules/
 build_deploy.sh
+.claude/
