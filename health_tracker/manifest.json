@@ -1,0 +1,13 @@
+{
+  "name": "ヘルスログ",
+  "short_name": "ヘルスログ",
+  "description": "食事記録・PFC管理・冷蔵庫在庫管理",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#F0FDF4",
+  "theme_color": "#16A34A",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

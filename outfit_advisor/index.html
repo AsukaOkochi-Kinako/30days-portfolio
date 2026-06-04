@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#1565C0" id="themeColor">
+<link rel="manifest" href="manifest.json">
+<title>コーデ提案</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans',sans-serif;
+  min-height:100dvh;max-width:430px;margin:0 auto;
+  background:linear-gradient(175deg,#0D47A1 0%,#1976D2 40%,#42A5F5 75%,#BBDEFB 100%);
+  transition:background 1.4s ease;
+  padding-bottom:52px;
+}
+
+/* ---- HERO ---- */
+.hero{
+  padding:54px 24px 28px;
+  text-align:center;color:#fff;position:relative;
+}
+.hero-refresh{
+  position:absolute;top:18px;right:20px;
+  background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.35);
+  color:#fff;border-radius:50%;width:38px;height:38px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:17px;cursor:pointer;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  transition:.15s;
+}
+.hero-refresh:active{opacity:.6;transform:scale(.9)}
+.hero-title{
+  position:absolute;top:22px;left:20px;
+  font-size:12px;font-weight:700;
+  color:rgba(255,255,255,0.7);letter-spacing:.8px;text-transform:uppercase;
+}
+.hero-loc{
+  font-size:15px;font-weight:600;
+  color:rgba(255,255,255,0.85);margin-bottom:12px;
+}
+.hero-icon{font-size:72px;line-height:1;margin-bottom:6px;
+  filter:drop-shadow(0 4px 16px rgba(0,0,0,0.25));
+}
+.hero-temp{
+  font-size:88px;font-weight:900;letter-spacing:-5px;line-height:1;
+  text-shadow:0 2px 16px rgba(0,0,0,0.18);margin-bottom:2px;
+}
+.hero-cond{font-size:19px;font-weight:600;color:rgba(255,255,255,0.92);margin-bottom:6px}
+.hero-feel{font-size:13px;color:rgba(255,255,255,0.65)}
+
+/* ---- GLASS CARD ---- */
+.glass{
+  margin:0 16px 14px;
+  background:rgba(255,255,255,0.16);
+  backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
+  border:1px solid rgba(255,255,255,0.3);
+  border-radius:22px;overflow:hidden;
+}
+
+/* ---- TABS ---- */
+.tabs{display:flex;border-bottom:1px solid rgba(255,255,255,0.18)}
+.tab{
+  flex:1;padding:12px 0;text-align:center;font-size:13px;font-weight:600;
+  background:none;border:none;cursor:pointer;
+  color:rgba(255,255,255,0.55);border-bottom:2px solid transparent;
+  transition:.2s;
+}
+.tab.active{color:#fff;border-bottom-color:rgba(255,255,255,0.85)}
+
+/* ---- MANUAL ---- */
+.manual{padding:16px 18px 20px;color:#fff}
+.m-label{font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);letter-spacing:.5px;margin-bottom:10px}
+.temp-row{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.temp-val{font-size:28px;font-weight:900;min-width:64px;text-align:right}
+input[type=range]{
+  flex:1;-webkit-appearance:none;height:4px;border-radius:2px;
+  background:rgba(255,255,255,0.25);outline:none;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:22px;height:22px;border-radius:50%;
+  background:#fff;box-shadow:0 2px 10px rgba(0,0,0,0.3);cursor:pointer;
+}
+.cond-btns{display:flex;flex-wrap:wrap;gap:8px}
+.cond-btn{
+  flex:1;min-width:calc(33% - 6px);padding:9px 4px;border-radius:13px;
+  border:1.5px solid rgba(255,255,255,0.28);
+  background:rgba(255,255,255,0.1);
+  color:rgba(255,255,255,0.75);font-size:13px;
+  cursor:pointer;text-align:center;transition:.15s;
+}
+.cond-btn.sel{
+  border-color:rgba(255,255,255,0.85);
+  background:rgba(255,255,255,0.28);
+  color:#fff;font-weight:700;
+}
+
+/* ---- SCENE ---- */
+.scene-wrap{margin:0 16px 16px}
+.scene-label{font-size:11px;font-weight:700;color:rgba(255,255,255,0.6);letter-spacing:.5px;margin-bottom:9px}
+.scene-scroll{
+  display:flex;gap:8px;overflow-x:auto;padding-bottom:2px;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;
+}
+.scene-scroll::-webkit-scrollbar{display:none}
+.scene-btn{
+  flex-shrink:0;padding:9px 18px;border-radius:50px;
+  border:1.5px solid rgba(255,255,255,0.3);
+  background:rgba(255,255,255,0.14);
+  font-size:13px;font-weight:600;cursor:pointer;
+  white-space:nowrap;color:rgba(255,255,255,0.88);
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  transition:.15s;
+}
+.scene-btn.sel{
+  background:rgba(255,255,255,0.96);
+  border-color:transparent;color:#1a1a1a;font-weight:800;
+}
+
+/* ---- OUTFIT CARD ---- */
+.result{padding:0 16px}
+.outfit-card{
+  background:rgba(255,255,255,0.96);
+  border-radius:22px;overflow:hidden;
+  box-shadow:0 10px 40px rgba(0,0,0,0.22);
+  color:#1C1917;
+}
+.outfit-header{padding:22px 22px 16px}
+.outfit-badge{
+  display:flex;align-items:center;gap:6px;
+  font-size:11px;font-weight:700;color:#6B7280;letter-spacing:.5px;margin-bottom:9px;
+}
+.outfit-name{font-size:22px;font-weight:900;letter-spacing:-.4px;margin-bottom:10px}
+.outfit-temp-chip{
+  display:inline-block;padding:4px 13px;border-radius:50px;
+  background:#F1F5F9;color:#475569;font-size:12px;font-weight:700;
+}
+/* palette */
+.color-palette{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 22px;border-top:1px solid #F1F5F9;
+}
+.palette-label{font-size:11px;color:#9CA3AF;font-weight:600;white-space:nowrap;margin-right:2px}
+.color-dot{width:20px;height:20px;border-radius:50%;border:2px solid rgba(0,0,0,0.07);flex-shrink:0}
+.color-names{font-size:10px;color:#9CA3AF;margin-left:4px;line-height:1.4}
+/* items */
+.outfit-items{padding:4px 22px 16px}
+.item-row{
+  display:flex;align-items:flex-start;gap:12px;
+  padding:12px 0;border-bottom:1px solid #F8FAFC;
+}
+.item-row:last-child{border-bottom:none}
+.item-emoji{font-size:22px;width:30px;text-align:center;flex-shrink:0;margin-top:2px}
+.item-name{font-size:14px;font-weight:700;color:#111827}
+.item-desc{font-size:12px;color:#6B7280;margin-top:2px;line-height:1.45}
+/* tips */
+.outfit-tips{padding:14px 22px;background:#F8FAFC;border-top:1px solid #F1F5F9}
+.tip-row{display:flex;gap:10px;align-items:flex-start;padding:4px 0}
+.tip-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+.tip-text{font-size:12px;color:#64748B;line-height:1.55}
+
+/* ---- STATUS ---- */
+.status-box{
+  background:rgba(255,255,255,0.96);border-radius:22px;
+  padding:36px 20px;text-align:center;
+  color:#6B7280;font-size:14px;
+  box-shadow:0 10px 40px rgba(0,0,0,0.18);
+}
+.status-icon{font-size:44px;display:block;margin-bottom:12px}
+.loading-dots{display:inline-flex;gap:5px;margin-top:10px}
+.loading-dots span{
+  width:7px;height:7px;border-radius:50%;background:#3B82F6;
+  animation:bounce .8s infinite ease-in-out;
+}
+.loading-dots span:nth-child(2){animation-delay:.15s}
+.loading-dots span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-7px)}}
+</style>
+</head>
+<body>
+
+<!-- Hero: 天気メイン表示 -->
+<div class="hero">
+  <div class="hero-title">👗 今日のコーデ</div>
+  <button class="hero-refresh" onclick="fetchWeather()" title="更新">↻</button>
+  <div class="hero-loc" id="wLoc">位置情報を取得中...</div>
+  <div class="hero-icon" id="wIcon">🌤</div>
+  <div class="hero-temp" id="wTemp">--°</div>
+  <div class="hero-cond" id="wCond">天気を取得中</div>
+  <div class="hero-feel" id="wFeel"></div>
+</div>
+
+<!-- タブ + 手動設定（ガラスカード） -->
+<div class="glass">
+  <div class="tabs">
+    <button class="tab active" id="tabAuto" onclick="switchTab('auto')">自動取得</button>
+    <button class="tab" id="tabManual" onclick="switchTab('manual')">手動設定</button>
+  </div>
+  <div id="manualPanel" class="manual" style="display:none">
+    <div class="m-label">気温</div>
+    <div class="temp-row">
+      <input type="range" id="tempSlider" min="-10" max="40" value="20" oninput="onSlider(this.value)">
+      <span class="temp-val" id="sliderVal">20°C</span>
+    </div>
+    <div class="m-label">天気</div>
+    <div class="cond-btns" id="condBtns">
+      <button class="cond-btn sel" data-cond="sunny" onclick="selectCond(this)">☀️ 晴れ</button>
+      <button class="cond-btn" data-cond="cloudy" onclick="selectCond(this)">☁️ 曇り</button>
+      <button class="cond-btn" data-cond="rainy" onclick="selectCond(this)">🌧 雨</button>
+      <button class="cond-btn" data-cond="snowy" onclick="selectCond(this)">❄️ 雪</button>
+      <button class="cond-btn" data-cond="stormy" onclick="selectCond(this)">⛈ 嵐</button>
+      <button class="cond-btn" data-cond="foggy" onclick="selectCond(this)">🌫 霧</button>
+    </div>
+  </div>
+</div>
+
+<!-- シーン選択 -->
+<div class="scene-wrap">
+  <div class="scene-label">シーンを選択</div>
+  <div class="scene-scroll">
+    <button class="scene-btn sel" data-scene="casual" onclick="selectScene(this)">😊 カジュアル</button>
+    <button class="scene-btn" data-scene="office" onclick="selectScene(this)">💼 オフィス</button>
+    <button class="scene-btn" data-scene="date" onclick="selectScene(this)">💕 デート</button>
+    <button class="scene-btn" data-scene="outdoor" onclick="selectScene(this)">🏔 アウトドア</button>
+    <button class="scene-btn" data-scene="sports" onclick="selectScene(this)">🏃 スポーツ</button>
+  </div>
+</div>
+
+<!-- コーデ結果 -->
+<div class="result" id="result">
+  <div class="status-box">
+    <span class="status-icon">🌤</span>
+    天気を取得中です
+    <div class="loading-dots"><span></span><span></span><span></span></div>
+  </div>
+</div>
+
+<script>
+/* ===== DATA ===== */
+const CONDITIONS = {
+  sunny:  {bg:'linear-gradient(175deg,#0D47A1 0%,#1976D2 40%,#42A5F5 75%,#90CAF9 100%)', theme:'#0D47A1', icon:'☀️', label:'晴れ'},
+  cloudy: {bg:'linear-gradient(175deg,#37474F 0%,#546E7A 45%,#78909C 80%,#B0BEC5 100%)', theme:'#37474F', icon:'☁️', label:'曇り'},
+  rainy:  {bg:'linear-gradient(175deg,#1A237E 0%,#283593 40%,#3949AB 75%,#7986CB 100%)', theme:'#1A237E', icon:'🌧', label:'雨'},
+  snowy:  {bg:'linear-gradient(175deg,#0277BD 0%,#0288D1 40%,#4FC3F7 75%,#B3E5FC 100%)', theme:'#0277BD', icon:'❄️', label:'雪'},
+  stormy: {bg:'linear-gradient(175deg,#0D0D0D 0%,#1C2333 40%,#2C3E50 80%,#34495E 100%)', theme:'#0D0D0D', icon:'⛈', label:'嵐'},
+  foggy:  {bg:'linear-gradient(175deg,#4A5568 0%,#718096 45%,#A0AEC0 80%,#CBD5E0 100%)', theme:'#4A5568', icon:'🌫', label:'霧'},
+};
+
+function tempRange(t){
+  if(t>=28) return 'hot';
+  if(t>=22) return 'warm';
+  if(t>=15) return 'mild';
+  if(t>=8)  return 'cool';
+  return 'cold';
+}
+function tempLabel(r){
+  return {hot:'🔥 暑い (28°C以上)',warm:'🌸 温かい (22-27°C)',mild:'🍃 過ごしやすい (15-21°C)',cool:'🍂 肌寒い (8-14°C)',cold:'❄️ 寒い (8°C未満)'}[r];
+}
+
+/* ===== OUTFIT DATABASE ===== */
+const OUTFITS = {
+  casual:{
+    hot:{
+      name:'リネンサマーセット',
+      items:[
+        {e:'👕',n:'リネン半袖シャツ',d:'薄手の麻素材。白・ライトブルーが定番。汗をかいても透けにくい厚みを選んで'},
+        {e:'👖',n:'コットンショーツ',d:'膝上5〜10cmのチノショーツ。クロップドパンツでもOK'},
+        {e:'👟',n:'キャンバススニーカー',d:'白や生成りのローカット。靴下はアンクル丈で素足感を演出'},
+        {e:'🕶',n:'UVサングラス',d:'偏光レンズ推奨。顔型に合ったフレームを'},
+      ],
+      colors:['#F5F0E8','#93C5FD','#D1FAE5'],
+      colorNames:['生成り','スカイブルー','ミントグリーン'],
+      tip:'暑い日は色で涼しさを。白・水色・ミントなど淡色でまとめるとスッキリ見えます。',
+      rain:'急な夕立に備えてコンパクトな折り畳み傘をバッグに。サンダルより足が濡れにくいスニーカーが◎',
+      uv:'UVカットのサングラス必携。帽子（キャップ・ハット）も積極的に。'
+    },
+    warm:{
+      name:'カジュアルストリート',
+      items:[
+        {e:'👕',n:'グラフィックTシャツ',d:'好きなプリントを主役に。オーバーサイズでこなれ感が出る'},
+        {e:'👖',n:'ストレートデニム',d:'くるぶし丈の9分丈がトレンド。薄めの色で軽快に'},
+        {e:'👟',n:'チャンキーソール スニーカー',d:'ボリューム底でスタイルアップ。黒・白どちらでも合わせやすい'},
+      ],
+      colors:['#FFFFFF','#374151','#2563EB'],
+      colorNames:['ホワイト','チャコール','ブルー'],
+      tip:'Tシャツを前だけインするだけでウエストが出てスタイリッシュな印象に。',
+      rain:'薄手のウィンドブレーカーをウエストや肩に巻くとおしゃれで機能的。',
+    },
+    mild:{
+      name:'レイヤードナチュラル',
+      items:[
+        {e:'👕',n:'コットンロンT',d:'白・オフホワイト・グレーなどベーシックカラーが使いやすい'},
+        {e:'🧥',n:'オーバーサイズシャツジャケット',d:'柄シャツをアウターとして羽織るのが今っぽい。チェックやストライプが◎'},
+        {e:'👖',n:'ワイドチノパン',d:'ベージュやカーキで自然体な雰囲気。裾はロールアップしても'},
+        {e:'🥿',n:'レザースリッポン',d:'キャンバス地でもOK。ローファータイプでこなれ感アップ'},
+      ],
+      colors:['#F5F0E8','#D6D3D1','#A8A29E'],
+      colorNames:['オフホワイト','ライトグレー','グレージュ'],
+      tip:'1色で揃えるトーンオントーンスタイルは外しにくく、おしゃれに見えます。',
+      rain:'シャツジャケットを閉じれば小雨なら対応可。折り畳み傘は必ず携帯を。',
+    },
+    cool:{
+      name:'秋色スウェットスタイル',
+      items:[
+        {e:'👕',n:'スウェットプルオーバー',d:'テラコッタ・バーガンディ・カーキなど秋色が旬。厚みはミドルウェイトで'},
+        {e:'👖',n:'ストレートデニム or コーデュロイパンツ',d:'デニムはやや太めシルエット。コーデュロイなら秋感アップ'},
+        {e:'🧣',n:'ニットキャップ or ビーニー',d:'頭を温めると体感温度がぐっと上がる。差し色に使って'},
+        {e:'👟',n:'ハイカットスニーカー',d:'足元の保温と防風を意識。厚手ソックスを見せて'},
+      ],
+      colors:['#B45309','#78350F','#4B5563'],
+      colorNames:['テラコッタ','バーガンディ','チャコール'],
+      tip:'秋の深みカラーはビビッドを1色だけ入れてアクセントに。',
+      rain:'スウェット素材は濡れると乾きにくいので、薄手のアウターを必ず。',
+    },
+    cold:{
+      name:'ウールコートスタイル',
+      items:[
+        {e:'🧥',n:'ウールチェスターコート',d:'ベージュ・ネイビー・ブラックが定番。丈はミモレ〜ロングで重厚感を'},
+        {e:'👕',n:'タートルネックニット',d:'インナーをタートルネックにするだけで一気に冬らしく。グレー・白が使いやすい'},
+        {e:'👖',n:'テーパードスラックス',d:'きれいめシルエット。コートとのバランスで裾幅は細めに'},
+        {e:'🧣',n:'マフラー or スカーフ',d:'ウール・カシミヤ素材がベスト。コートと同系色か差し色で'},
+        {e:'🥾',n:'レザーブーツ',d:'チェルシーブーツかサイドジップ。靴下は厚め'},
+      ],
+      colors:['#E7E5E4','#1C1917','#A16207'],
+      colorNames:['ライトグレー','ブラック','マスタード'],
+      tip:'重量のあるコートはインナーをタイトめにしてシルエットをすっきりと。',
+      rain:'ウールコートは雨に弱い！防水スプレーをかけておくか、雨の日はナイロンコートに変更を。',
+    }
+  },
+  office:{
+    hot:{
+      name:'クールビズ・上品夏スタイル',
+      items:[
+        {e:'👕',n:'ノーカラーシャツ',d:'白・サックスブルー・ペールグリーン。サマー素材（ニオビ・麻混）で涼しく'},
+        {e:'👖',n:'スラックス（薄手）',d:'コットンリネンのスラックス。アンクル丈で通気性アップ'},
+        {e:'🥿',n:'レザーローファー or パンプス',d:'クールビズでもフォーマルな足元を。靴下なしでも見苦しくない革靴を'},
+        {e:'🧴',n:'エチケットシート・制汗スプレー',d:'オフィスでの汗ケアに必須。無臭タイプを選んで'},
+      ],
+      colors:['#FFFFFF','#E0F2FE','#F0FDF4'],
+      colorNames:['ホワイト','スカイブルー','ペールグリーン'],
+      tip:'暑い日は素材で差をつけて。麻・ニオビ・機能性インナーで快適さキープ。',
+      rain:'ノースリーブや半袖は冷房で寒くなりがち。オフィスにはカーディガンを置いておいて。',
+      uv:'通勤時の日焼け対策に日傘や長袖インナーの活用を。'
+    },
+    warm:{
+      name:'ジャケットレス オフィスカジュアル',
+      items:[
+        {e:'👔',n:'薄手ニット or ドレスシャツ',d:'ニットポロシャツでも。フォーマルすぎずこなれた印象に'},
+        {e:'👖',n:'センタープレス パンツ',d:'きれいめのテーパード。ネイビー・グレー・ベージュが定番'},
+        {e:'🥿',n:'ドレッシーなスニーカー or ローファー',d:'白レザースニーカーでスマートカジュアルに'},
+        {e:'👜',n:'レザー or フェイクレザーバッグ',d:'A4サイズが入るトートかショルダー'},
+      ],
+      colors:['#E0E7FF','#374151','#F5F5F4'],
+      colorNames:['ラベンダー','チャコール','ライトグレー'],
+      tip:'ジャケットがなくてもパンツのプレス（折り目）でオフィス感が出ます。',
+      rain:'急な雨でシャツが透けないよう、下にキャミソール系インナーを。',
+    },
+    mild:{
+      name:'スマートビジネスカジュアル',
+      items:[
+        {e:'🧥',n:'テーラードジャケット',d:'カジュアルすぎないネイビー・グレー・ブラック。ストレッチ素材が動きやすい'},
+        {e:'👔',n:'無地シャツ or ニット',d:'インナーはきれいめのシャツかシンプルなニット。カラーは白・サックス・グレー'},
+        {e:'👖',n:'センタープレス スラックス',d:'ジャケットと同色か近い色でセットアップ風に'},
+        {e:'🥿',n:'革靴 or パンプス',d:'ヒールありなら5cm以内が一日楽。艶感のある素材で仕上げて'},
+      ],
+      colors:['#1E3A5F','#6B7280','#FFFFFF'],
+      colorNames:['ネイビー','グレー','ホワイト'],
+      tip:'セットアップスタイルは楽なのに決まって見える。1着持つと重宝します。',
+      rain:'スラックスの裾が濡れないよう、折り込んで行くか裾上げしておくと安心。',
+    },
+    cool:{
+      name:'秋オフィス コーデ',
+      items:[
+        {e:'🧥',n:'ウールブレンド ジャケット',d:'ヘリンボーンやチェック柄が季節感を演出。リッチな素材感を意識して'},
+        {e:'👕',n:'タートルネック or ハイネックニット',d:'ジャケットのインナーに最適。グレー・キャメル・バーガンディが旬'},
+        {e:'👖',n:'ウールフラノ スラックス',d:'暖かみのある素材で秋冬っぽく。ウエストはゴム入りが楽'},
+        {e:'🥾',n:'サイドゴアブーツ',d:'脱ぎ履きが楽で機能的。革素材は高見えする'},
+      ],
+      colors:['#92400E','#374151','#F3F4F6'],
+      colorNames:['バーガンディ','チャコール','ライトグレー'],
+      tip:'秋のオフィスは素材感で季節感を。スラックスとジャケットでセットアップ感を出して。',
+      rain:'ウールジャケットは防水でないので、折り畳み傘と防水スプレーを。',
+    },
+    cold:{
+      name:'冬のビジネスフォーマル',
+      items:[
+        {e:'🧥',n:'コート（チェスター or トレンチ）',d:'ネイビー・グレー・ブラック・キャメル。丈はミモレ以上でフォーマル感を'},
+        {e:'🧥',n:'スーツ or セットアップ',d:'ウール素材のダークカラー。冬はダブルブレストがトレンド'},
+        {e:'🧣',n:'ウール or シルクマフラー',d:'コートの外に巻いても中に仕込んでも。柄物で差し色に'},
+        {e:'🥾',n:'ビジネスブーツ or 革靴',d:'防水加工のものが雨・雪の日も安心。ソールが厚めなら防寒にも'},
+      ],
+      colors:['#1C1917','#374151','#A16207'],
+      colorNames:['ブラック','チャコール','キャメル'],
+      tip:'コートとスーツのカラーは同系か隣接色でまとめると失敗なし。',
+      rain:'ウールコートは雨でヘタる。ビジネスではトレンチコート（防水加工）が安心。',
+    }
+  },
+  date:{
+    hot:{
+      name:'夏デートの清涼感スタイル',
+      items:[
+        {e:'👗',n:'リネン or コットンワンピース',d:'ノースリーブ or 袖ありフレアシルエット。白・ベージュ・ペールブルーが清潔感◎'},
+        {e:'👡',n:'レザーサンダル or ミュール',d:'ヒールありでスタイルアップ。ストラップで歩きやすさも確保'},
+        {e:'👜',n:'ミニクロスボディバッグ',d:'両手フリーで機動性高め。ラタン素材で夏らしさを'},
+        {e:'🕶',n:'おしゃれサングラス',d:'レンズよりフレームで顔の印象が変わる。細フレームが今風'},
+      ],
+      colors:['#FEF3C7','#E0F2FE','#FCE7F3'],
+      colorNames:['クリーム','スカイブルー','ライトピンク'],
+      tip:'夏デートはワントーンコーデが鉄板。清涼感のある色で統一すると爽やかな印象に。',
+      rain:'白系は雨で透ける可能性があるので、下に肌色インナーを忘れずに。傘はクリア傘でコーデを邪魔しない。',
+      uv:'日焼け止めは必須。ハットとサングラスも積極的に使って。'
+    },
+    warm:{
+      name:'春秋デートの定番スタイル',
+      items:[
+        {e:'👗',n:'フレアスカート or ワンピース',d:'柔らかく揺れるシルエットが女性らしい。花柄・ドット・無地とお好みで'},
+        {e:'🧥',n:'シアーカーディガン or デニムジャケット',d:'羽織りで温度調節。シアー素材は透け感がエレガント'},
+        {e:'👡',n:'スクエアトゥ フラットシューズ',d:'歩きやすくてトレンド感あり。レザー調が上品'},
+        {e:'👜',n:'トラペゼ or バケットバッグ',d:'こなれたシルエットのバッグでおしゃれ度アップ'},
+      ],
+      colors:['#FDF2F8','#FCE7F3','#F3E8FF'],
+      colorNames:['スモーキーピンク','ペールラベンダー','ライラック'],
+      tip:'デートの色選びはブラッシュ系（くすみピンク・ラベンダー）が上品で外れにくい。',
+      rain:'フレアスカートは濡れると重くなるので、雨予報なら裾丈が短いタイプか撥水素材を選んで。',
+    },
+    mild:{
+      name:'こなれデート スタイル',
+      items:[
+        {e:'👕',n:'ニットトップス',d:'リブニット or テクスチャーニット。袖を少し折ってこなれ感を'},
+        {e:'👖',n:'ハイウエストパンツ or スカート',d:'ウエストを強調してスタイルアップ。フレア or ストレートで気分に合わせて'},
+        {e:'🧥',n:'トレンチコート',d:'ベージュの定番トレンチが一枚あると頼れる。ベルトは細めに結んで'},
+        {e:'🥿',n:'ポインテッドトゥ パンプス or ローファー',d:'足元のきれいめで全体が引き締まる'},
+      ],
+      colors:['#F5F0E8','#D6D3D1','#FEF3C7'],
+      colorNames:['オフホワイト','グレージュ','クリーム'],
+      tip:'トレンチ×ハイウエストパンツは定番の最強セット。小物でさりげなく個性を出して。',
+      rain:'トレンチコートは本来レインコートなので雨に強い。ただし革靴は雨に注意。',
+    },
+    cool:{
+      name:'秋デートの美人スタイル',
+      items:[
+        {e:'🧥',n:'ロングウールコート',d:'キャメル・バーガンディ・マスタード。存在感のある一枚が主役に'},
+        {e:'👗',n:'ニットワンピース or ニットスカート',d:'タートルネックのニットワンピースは防寒もクリア。タイトめシルエットで女性らしく'},
+        {e:'🧣',n:'ロングマフラー',d:'コートと色を合わせてワントーンに。ざっくりまきでこなれ感を'},
+        {e:'🥾',n:'ロングブーツ or アンクルブーツ',d:'チェルシーブーツなら歩きやすさも確保'},
+      ],
+      colors:['#92400E','#78350F','#F5F0E8'],
+      colorNames:['テラコッタ','バーガンディ','クリーム'],
+      tip:'秋は深みのある色でまとめると大人っぽい雰囲気に。コートを主役にするなら内側はシンプルに。',
+      rain:'ロングブーツは雨でも足元をカバーできて便利。傘はベーシックカラーを選んでコーデに合わせて。',
+    },
+    cold:{
+      name:'冬デートの洗練スタイル',
+      items:[
+        {e:'🧥',n:'ファー or ダウン混ジャケット',d:'上品なデートでもファー素材を選べばゴージャスに。ショート丈でスタイリッシュに'},
+        {e:'👗',n:'ニットワンピース or スカート＋ニット',d:'防寒しながら女性らしいシルエットを キープ。タイツで足元も暖かく'},
+        {e:'🧤',n:'グローブ（手袋）',d:'レザーや上品なウール素材のグローブがあると◎。大人の冬小物'},
+        {e:'🥾',n:'ヒール or ヒールブーツ',d:'厚底 or 低ヒールで防寒と歩きやすさを両立'},
+        {e:'🧣',n:'カシミヤ or ウールストール',d:'大判ストールは防寒と顔周りのアクセント両方に使える'},
+      ],
+      colors:['#1C1917','#F5F0E8','#B45309'],
+      colorNames:['ブラック','クリーム','ブラウン'],
+      tip:'冬デートは小物でゴージャス感を。グローブ・ストール・バッグに質感のあるものを選んで。',
+      rain:'雪・雨の場合はスエードやベルベット素材を避けて。防水スプレーを事前にかけておくと安心。',
+    }
+  },
+  outdoor:{
+    hot:{
+      name:'真夏アウトドアスタイル',
+      items:[
+        {e:'🎽',n:'ドライ UVカット Tシャツ',d:'機能系スポーツウェアをアウトドアに流用。速乾・UVカットが必須'},
+        {e:'🩳',n:'ハイキングショーツ',d:'ストレッチが効いて動きやすい。ポケットが多いと便利'},
+        {e:'🧢',n:'ブリムハット or バケットハット',d:'つばの広いハットで顔と首をUVから守る'},
+        {e:'🥾',n:'トレッキングシューズ',d:'ミドルカットで足首をサポート。防水機能があれば尚よし'},
+        {e:'🧴',n:'日焼け止め（SPF50+）',d:'2〜3時間おきに塗り直し。顔だけでなく首・腕・脚も忘れずに'},
+      ],
+      colors:['#D1FAE5','#FEF3C7','#E0F2FE'],
+      colorNames:['セージグリーン','サンドイエロー','スカイブルー'],
+      tip:'熱中症対策に冷感タオルと経口補水液は必携。帽子と日焼け止めは妥協しないで。',
+      rain:'急な雨でも軽量レインポンチョがあれば安心。ザックカバーも忘れずに。',
+      uv:'紫外線指数が高い日は長袖の UVカットシャツの方が肌への負担が少ない。'
+    },
+    warm:{
+      name:'アウトドア アクティブスタイル',
+      items:[
+        {e:'👕',n:'長袖ドライシャツ（UVカット）',d:'コンプレッションでも通常丈でも。紫外線・虫刺されから肌を守る'},
+        {e:'🩳',n:'カーゴパンツ or ショーツ',d:'ポケット多め。ジップオフタイプなら気温に応じて調節できる'},
+        {e:'🧥',n:'薄手フリース or ウィンドブレーカー',d:'朝夕の気温差に備えてザックに1枚。'},
+        {e:'🥾',n:'ハイキングシューズ',d:'ローカットで軽量なモデルが歩きやすい。インソールは替えると疲労軽減'},
+      ],
+      colors:['#ECFDF5','#FEF3C7','#374151'],
+      colorNames:['フォレストグリーン','サンドイエロー','チャコール'],
+      tip:'ハイキングは綿を避けて。乾きにくい綿素材はひとたび汗をかくと体を冷やす。化繊かウールを選んで。',
+      rain:'レインウェア（上下セパレート）が最も快適。ポンチョでも可だが風が強いと不便。',
+    },
+    mild:{
+      name:'デイキャンプ & ハイキングスタイル',
+      items:[
+        {e:'🧥',n:'フリースジャケット',d:'厚手か薄手かは天気次第。ポーラテック素材が温かくて軽い'},
+        {e:'👕',n:'ベースレイヤー（メリノウール）',d:'体温調節が得意で臭いにくい。オールシーズン使える優れもの'},
+        {e:'👖',n:'ソフトシェルパンツ',d:'ストレッチ性と耐風性を両立。デニムより格段に動きやすい'},
+        {e:'🥾',n:'トレッキングシューズ（ミドルカット）',d:'足首のサポートと防水性でどんな地形でも対応'},
+        {e:'🧢',n:'ビーニー or キャップ',d:'気温によって使い分け。耳まで覆えるニット帽がこの時期活躍'},
+      ],
+      colors:['#78350F','#064E3B','#374151'],
+      colorNames:['アーシーブラウン','フォレストグリーン','チャコール'],
+      tip:'レイヤリングが鍵。ベース・ミッド・アウターの3層構造で温度調節を自在に。',
+      rain:'ゴアテックスのレインジャケットは長期投資としておすすめ。蒸れにくく動きやすい。',
+    },
+    cool:{
+      name:'秋山スタイル',
+      items:[
+        {e:'🧥',n:'フリース or インサレーションジャケット',d:'ダウンかシンサレートで保温。山では体感温度が急に下がる'},
+        {e:'🧥',n:'ハードシェル（防水）',d:'アウターは必ず防水透湿素材を。レイヤーの上から羽織れるゆとりサイズ'},
+        {e:'👖',n:'ハイキングパンツ（防風）',d:'ストレッチがあって防風性のある素材。厚みが増すとより暖か'},
+        {e:'🥾',n:'防水トレッキングブーツ',d:'ゴアテックスライニング入りを選ぶと雨露・渡渉に対応'},
+        {e:'🧤',n:'薄手グローブ',d:'フリース素材の薄手グローブ。スマホ操作できるタイプが便利'},
+      ],
+      colors:['#064E3B','#92400E','#1C1917'],
+      colorNames:['ダークグリーン','テラコッタ','ブラック'],
+      tip:'山の天気は変わりやすい。天気予報より1枚多く持つのが山の常識。',
+      rain:'山では雨+風のダブルパンチになることも。レインウェア上下は必携。',
+    },
+    cold:{
+      name:'冬アウトドア・雪山スタイル',
+      items:[
+        {e:'🧥',n:'ダウンジャケット（800FP以上）',d:'フィルパワーが高いほど軽くて暖かい。お腹まで覆うミッドレイヤーダウンが便利'},
+        {e:'🧥',n:'ハードシェル',d:'防水・防風・透湿性能のある最外層。色は視認性の高い明るい色推奨'},
+        {e:'🩱',n:'メリノウール ベースレイヤー',d:'汗をかいても体を冷やさない。上下セットで揃えると万全'},
+        {e:'🥾',n:'雪山対応ブーツ',d:'防水断熱ブーツ。気温対応下限を必ず確認して'},
+        {e:'🧤',n:'防水グローブ',d:'インナーグローブ＋アウターグローブの二重構造が最強'},
+        {e:'🎿',n:'ゲイター（スパッツ）',d:'雪が靴の中に入るのを防ぐ。パウダースノーの季節は必須'},
+      ],
+      colors:['#1C1917','#1E3A5F','#F5F0E8'],
+      colorNames:['ブラック','ネイビー','ホワイト'],
+      tip:'コットンキル（綿は汗冷えの原因）。全レイヤー化繊かウールにすること。',
+      rain:'雪山では雨＝即危険。悪天候時は山に入らない判断も大切。',
+    }
+  },
+  sports:{
+    hot:{
+      name:'夏スポーツ パフォーマンスウェア',
+      items:[
+        {e:'🎽',n:'ノースリーブ or 半袖ドライシャツ',d:'吸汗速乾＋UVカット機能つき。体にフィットするコンプレッション型が高機能'},
+        {e:'🩳',n:'ショートパンツ（インナーつき）',d:'5インチ丈が動きやすい。インナーつきで下着が見えない安心感'},
+        {e:'👟',n:'ランニング or スポーツシューズ',d:'クッション性重視で膝・足腰への負担を減らして。ソールの消耗もこまめにチェック'},
+        {e:'🧢',n:'ランニングキャップ',d:'通気性のよいメッシュ素材で熱を逃がす。つばはやや広めが顔の日焼けを防ぐ'},
+      ],
+      colors:['#ECFDF5','#FEF9C3','#F0F9FF'],
+      colorNames:['クールミント','ネオンイエロー','スカイ'],
+      tip:'夏のスポーツは熱中症に注意。早朝か夕方の涼しい時間帯に動かして。アイスパックも有効。',
+      rain:'急な雨でも速乾素材はすぐ乾く。屋外スポーツなら濡れを気にしすぎなくてOK。',
+      uv:'ランニングは紫外線を長時間浴びる。日焼け止め（汗対応）は必ず塗って。'
+    },
+    warm:{
+      name:'快適スポーツスタイル',
+      items:[
+        {e:'👕',n:'半袖スポーツシャツ',d:'ポリエステル主体の速乾素材。ゆとりのあるフィットで動きやすさ優先'},
+        {e:'🩳',n:'スポーツショーツ or レギンス',d:'動きに合わせて選んで。レギンスは筋肉サポート効果も'},
+        {e:'👟',n:'スポーツシューズ（用途特化）',d:'ランニング・テニス・バスケなど種目に合わせたシューズが重要'},
+        {e:'🧴',n:'スポーツドリンク・水分補給',d:'運動前後中に小まめに補給。1時間以上の運動なら電解質入り飲料を'},
+      ],
+      colors:['#ECFDF5','#EFF6FF','#FFFFFF'],
+      colorNames:['スポーツグリーン','スカイブルー','ホワイト'],
+      tip:'スポーツ中の補水は「喉が渇く前に」が基本。水はこまめに少量ずつが体に優しい。',
+      rain:'小雨程度ならスポーツウェアは速乾なので問題なし。雷雨の場合は屋内に退避。',
+    },
+    mild:{
+      name:'スポーツ × ちょいおしゃれ',
+      items:[
+        {e:'🧥',n:'スポーツウィンドブレーカー',d:'おしゃれなデザインが増えた。ウォームアップにも普段着にも使えるタイプを'},
+        {e:'👕',n:'長袖コンプレッション インナー',d:'関節や筋肉をサポート。薄手のインナーで体温調節もしやすく'},
+        {e:'🩳',n:'スポーツパンツ or タイツ',d:'ロングタイツ1枚で過ごせる気温。ハーフパンツ＋タイツも体温調節しやすい'},
+        {e:'👟',n:'トレーニングシューズ',d:'ジムトレーニングならフラットソールのリフティングシューズが安定感◎'},
+      ],
+      colors:['#374151','#F59E0B','#FFFFFF'],
+      colorNames:['チャコール','アクセントイエロー','ホワイト'],
+      tip:'スポーツウェアはワントーンにアクセントカラー1色で統一すると今っぽいスタイルに。',
+      rain:'ウィンドブレーカーは撥水加工のものが多く小雨なら対応できる。本降りは室内での運動に切り替えて。',
+    },
+    cool:{
+      name:'秋スポーツ・ランニングスタイル',
+      items:[
+        {e:'🧥',n:'ランニングジャケット',d:'防風・撥水・反射素材付き。秋のランには必須。コンパクトに収納できるものが便利'},
+        {e:'👕',n:'長袖スポーツシャツ',d:'ウール混またはフリース素材で体温キープ。首元が高いタートルネック型も◎'},
+        {e:'🩳',n:'ランニングタイツ（ミドル〜ヘビーウェイト）',d:'筋肉サポートと保温を同時に。反射素材入りが夕方・早朝ランに安全'},
+        {e:'🧤',n:'ランニンググローブ',d:'指先の冷えが集中力を奪う。薄手の速乾グローブがベスト'},
+        {e:'🧢',n:'ランニングビーニー',d:'耳まで覆える薄手ニット帽。耳が寒いとペースが落ちる'},
+      ],
+      colors:['#1C1917','#F59E0B','#374151'],
+      colorNames:['ブラック','イエロー（反射）','チャコール'],
+      tip:'朝晩のランニングは反射素材が安全。ドライバーから視認されやすい明るいカラーを使って。',
+      rain:'防水ランニングジャケットがあれば小雨のランも問題なし。シューズは防水タイプかドライ用靴下で対応。',
+    },
+    cold:{
+      name:'冬スポーツ ウォームアップスタイル',
+      items:[
+        {e:'🧥',n:'インサレーションジャケット（運動対応）',d:'アクティブインサレーションは動いても暑くなりにくい。ダウンより化繊がラン向き'},
+        {e:'👕',n:'ミドルレイヤー（フリース or ウール）',d:'ベースとアウターの間に挟む保温層。薄くても暖かい素材を選んで'},
+        {e:'🩱',n:'メリノウール ベースレイヤー',d:'汗冷えを防ぎながら保温。臭いにくいのも長時間運動に嬉しい'},
+        {e:'🩳',n:'防風ランニングタイツ',d:'防風素材が外の冷気をシャットアウト。裏起毛なら更に暖か'},
+        {e:'🧤',n:'防水グローブ＋ネックウォーマー',d:'末端の冷えと首元の防風が運動効率を左右する'},
+      ],
+      colors:['#1E3A5F','#1C1917','#F59E0B'],
+      colorNames:['ダークネイビー','ブラック','ネオンイエロー'],
+      tip:'冬のランはウォームアップに時間をかけて。急激な温度変化は心臓への負担になる。',
+      rain:'雪や雨は安全面から室内トレーニングへ切り替えを検討。ジムや室内競技場を活用して。',
+    }
+  }
+};
+
+/* ===== STATE ===== */
+let state = {
+  tab: 'auto',
+  temp: null,
+  cond: null,
+  scene: 'casual',
+  manualTemp: 20,
+  manualCond: 'sunny',
+  loading: false,
+};
+
+/* ===== WEATHER API ===== */
+function wmoCond(code){
+  if(code===0||code===1) return 'sunny';
+  if(code<=3) return 'cloudy';
+  if(code<=49) return 'foggy';
+  if(code<=67) return 'rainy';
+  if(code<=77) return 'snowy';
+  if(code<=82) return 'rainy';
+  return 'stormy';
+}
+
+async function fetchWeather(){
+  if(state.loading) return;
+  state.loading=true;
+  document.getElementById('wLoc').textContent='位置情報を取得中...';
+  document.getElementById('wTemp').textContent='--°';
+  document.getElementById('wCond').textContent='取得中';
+  document.getElementById('wFeel').textContent='';
+  try{
+    const pos = await new Promise((res,rej)=>
+      navigator.geolocation.getCurrentPosition(res,rej,{timeout:10000})
+    );
+    const {latitude:lat,longitude:lon} = pos.coords;
+
+    const [wRes,locRes] = await Promise.allSettled([
+      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,weathercode&timezone=auto`).then(r=>r.json()),
+      fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10&accept-language=ja`).then(r=>r.json()),
+    ]);
+
+    if(wRes.status==='fulfilled'){
+      const c = wRes.value.current;
+      state.temp = Math.round(c.temperature_2m);
+      state.cond = wmoCond(c.weathercode);
+      const feel = Math.round(c.apparent_temperature);
+      document.getElementById('wTemp').textContent = state.temp+'°';
+      document.getElementById('wCond').textContent = CONDITIONS[state.cond].label;
+      document.getElementById('wFeel').textContent = `体感 ${feel}°C`;
+      document.getElementById('wIcon').textContent = CONDITIONS[state.cond].icon;
+      updateBodyBg(state.cond);
+    }
+    if(locRes.status==='fulfilled'){
+      const a = locRes.value.address;
+      const loc = a.city||a.town||a.village||a.county||a.state||'';
+      document.getElementById('wLoc').textContent = '📍 '+(loc||'現在地');
+    }
+    renderOutfit();
+  }catch(e){
+    document.getElementById('wLoc').textContent='位置情報を取得できませんでした';
+    document.getElementById('wCond').textContent='手動設定してください';
+    showManualFallback();
+  }finally{
+    state.loading=false;
+  }
+}
+
+function showManualFallback(){
+  document.getElementById('tabManual').click();
+}
+
+/* ===== TAB SWITCH ===== */
+function switchTab(t){
+  state.tab=t;
+  document.getElementById('tabAuto').classList.toggle('active',t==='auto');
+  document.getElementById('tabManual').classList.toggle('active',t==='manual');
+  document.getElementById('manualPanel').style.display = t==='manual'?'block':'none';
+  if(t==='manual') applyManual();
+  else if(state.temp!==null) renderOutfit();
+}
+
+/* ===== MANUAL ===== */
+function onSlider(v){
+  state.manualTemp = parseInt(v);
+  document.getElementById('sliderVal').textContent = v+'°C';
+  updateSliderBg(v);
+  applyManual();
+}
+function updateBodyBg(cond){
+  const c = CONDITIONS[cond]||CONDITIONS.sunny;
+  document.body.style.background = c.bg;
+  document.getElementById('themeColor').content = c.theme;
+}
+function updateSliderBg(v){
+  const pct = ((v-(-10))/(40-(-10)))*100;
+  document.getElementById('tempSlider').style.background =
+    `linear-gradient(to right,rgba(255,255,255,0.85) 0%,rgba(255,255,255,0.85) ${pct}%,rgba(255,255,255,0.22) ${pct}%,rgba(255,255,255,0.22) 100%)`;
+}
+function selectCond(el){
+  document.querySelectorAll('.cond-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  state.manualCond = el.dataset.cond;
+  applyManual();
+}
+function applyManual(){
+  state.temp = state.manualTemp;
+  state.cond = state.manualCond;
+  document.getElementById('wTemp').textContent = state.temp+'°';
+  document.getElementById('wCond').textContent = CONDITIONS[state.cond].label;
+  document.getElementById('wIcon').textContent = CONDITIONS[state.cond].icon;
+  document.getElementById('wFeel').textContent = '';
+  document.getElementById('wLoc').textContent = '手動設定';
+  updateBodyBg(state.cond);
+  renderOutfit();
+}
+
+/* ===== SCENE ===== */
+function selectScene(el){
+  document.querySelectorAll('.scene-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+  state.scene = el.dataset.scene;
+  renderOutfit();
+}
+
+/* ===== RENDER ===== */
+function renderOutfit(){
+  const el = document.getElementById('result');
+  if(state.temp===null){
+    el.innerHTML=`<div class="status-box"><span class="s-icon">🌤</span>天気を取得中です<div class="loading-dots"><span></span><span></span><span></span></div></div>`;
+    return;
+  }
+  const range = tempRange(state.temp);
+  const data = OUTFITS[state.scene][range];
+  const cond = CONDITIONS[state.cond]||CONDITIONS.sunny;
+  const tips = [];
+  if(data.tip) tips.push({icon:'💡',text:data.tip});
+  if(data.rain && (state.cond==='rainy'||state.cond==='stormy')) tips.push({icon:'☔',text:data.rain});
+  if(data.uv && state.cond==='sunny' && state.temp>=22) tips.push({icon:'🌞',text:data.uv});
+  if(state.cond==='snowy') tips.push({icon:'❄️',text:'雪の日は防水・防滑のシューズ必須。ゆっくり歩いて転倒注意。'});
+
+  const paletteHtml = data.colors.map((c,i)=>
+    `<div class="color-dot" style="background:${c}" title="${data.colorNames[i]}"></div>`
+  ).join('') + data.colorNames.map(n=>`<span class="color-name" style="margin-left:2px;font-size:10px">${n}</span>`).join(' ');
+
+  const itemsHtml = data.items.map(item=>`
+    <div class="item-row">
+      <div class="item-emoji">${item.e}</div>
+      <div class="item-body">
+        <div class="item-name">${item.n}</div>
+        <div class="item-desc">${item.d}</div>
+      </div>
+    </div>`).join('');
+
+  const tipsHtml = tips.length?tips.map(t=>`
+    <div class="tip-row">
+      <span class="tip-icon">${t.icon}</span>
+      <span class="tip-text">${t.text}</span>
+    </div>`).join(''):'';
+
+  el.innerHTML=`
+    <div class="outfit-card">
+      <div class="outfit-header" style="background:${cond.gradient}">
+        <div class="outfit-label">${cond.icon} ${cond.label} · ${['casual','office','date','outdoor','sports'].includes(state.scene)?{casual:'カジュアル',office:'オフィス',date:'デート',outdoor:'アウトドア',sports:'スポーツ'}[state.scene]:state.scene}</div>
+        <div class="outfit-name">${data.name}</div>
+        <span class="outfit-temp-badge">${tempLabel(range)}</span>
+      </div>
+      <div class="color-palette">
+        <span class="palette-label">カラーパレット</span>
+        ${paletteHtml}
+      </div>
+      <div class="outfit-items">${itemsHtml}</div>
+      ${tipsHtml?`<div class="outfit-tips">${tipsHtml}</div>`:''}
+    </div>`;
+}
+
+/* ===== INIT ===== */
+(function init(){
+  updateSliderBg(20);
+  if(navigator.geolocation){
+    fetchWeather();
+  } else {
+    switchTab('manual');
+  }
+})();
+</script>
+</body>
+</html>

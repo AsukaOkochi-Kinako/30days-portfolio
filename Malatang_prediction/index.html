@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>麻辣担 予算ナビ</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌶️</text></svg>">
+<link rel="stylesheet" href="Malatang_budget_navi.css">
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-S8TKV8Q426"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-S8TKV8Q426');
+</script>
+</head>
+<body>
+
+<!-- ========== HEADER ========== -->
+<header class="header">
+  <div class="header-inner">
+    <img src="malatang-v5-banner.png" class="main-banner" alt="麻辣担予算ナビ">
+  </div>
+  <!-- Cloud wave -->
+  <svg class="cloud-wave" viewBox="0 0 400 36" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+    <path d="M0,36 L0,18 Q20,4 40,18 Q60,32 80,18 Q100,4 120,18 Q140,32 160,18 Q180,4 200,18 Q220,32 240,18 Q260,4 280,18 Q300,32 320,18 Q340,4 360,18 Q380,32 400,18 L400,36 Z" fill="#3ABFB8"/>
+  </svg>
+</header>
+
+<!-- ========== MAIN ========== -->
+<main class="main">
+
+  <!-- BUDGET CARD -->
+  <div class="budget-card">
+    <div class="budget-label">💰 いくら分食べたい？</div>
+    <div class="budget-display">
+      <span class="budget-number" id="budgetNum">1,000</span><span class="budget-yen">円</span>
+    </div>
+    <input type="range" id="budgetSlider" min="1000" max="3000" step="50" value="1000">
+    <div class="range-labels">
+      <span>1,000円</span>
+      <span>1,500円</span>
+      <span>2,000円</span>
+      <span>3,000円</span>
+    </div>
+    <!-- 嗜好選択 -->
+    <div class="pref-section">
+      <div class="pref-label">🎯 どんな気分で食べる？</div>
+      <div class="pref-grid" id="prefGrid">
+        <button class="pref-btn" data-pref="healthy" onclick="selectPref(this)">
+          <span class="pref-icon">🥬</span>
+          <span class="pref-text">ヘルシー</span>
+          <span class="pref-sub">野菜たっぷり</span>
+        </button>
+        <button class="pref-btn" data-pref="protein" onclick="selectPref(this)">
+          <span class="pref-icon">🥩</span>
+          <span class="pref-text">タンパク質多め</span>
+          <span class="pref-sub">肉・海鮮重視</span>
+        </button>
+        <button class="pref-btn" data-pref="hearty" onclick="selectPref(this)">
+          <span class="pref-icon">🌶️</span>
+          <span class="pref-text">がっつり</span>
+          <span class="pref-sub">ボリューム満点</span>
+        </button>
+        <button class="pref-btn active" data-pref="any" onclick="selectPref(this)">
+          <span class="pref-icon">✨</span>
+          <span class="pref-text">なんでもOK</span>
+          <span class="pref-sub">バランス重視</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="noodle-hint" id="noodleHint">🍜 麺80g 無料サービス対象！</div>
+    <button class="submit-btn" onclick="showRecommendation()">✦ おすすめを見る！🌶️ ✦</button>
+    <p class="disclaimer">※ 表示される重量・金額はあくまで目安です。実際のお会計は店舗での計量でご確認ください🙏</p>
+  </div>
+
+  <!-- RESULTS -->
+  <div class="results" id="results"></div>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  楊國福麻辣湯を参考に作成｜価格の目安は約400円/100g<br>
+  実際の価格・メニューは各店舗にてご確認ください ✦
+</footer>
+
+<script src="Malatang_budget_navi.js"></script>
+</body>
+</html>

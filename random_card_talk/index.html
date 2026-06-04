@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>トークネタカード</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;text y='.9em' font-size='90'&gt;🙌&lt;/text&gt;&lt;/svg&gt;"/>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NQJ8PR5ZHZ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-NQJ8PR5ZHZ');
+</script>
+</head>
+<body>
+
+  <!-- 手書き風装飾 SVG -->
+  <svg class="deco deco-lt" width="60" height="60" viewBox="0 0 60 60" fill="none">
+    <path d="M30 5 L34 22 L52 22 L38 33 L43 50 L30 40 L17 50 L22 33 L8 22 L26 22 Z" stroke="#1A1A2E" stroke-width="2.5" fill="#FFE566" stroke-linejoin="round"/>
+  </svg>
+  <svg class="deco deco-rt" width="36" height="60" viewBox="0 0 36 60" fill="none">
+    <path d="M22 2 L10 30 L18 30 L4 58 L28 24 L18 24 Z" stroke="#1A1A2E" stroke-width="2.5" fill="#FFB3D1" stroke-linejoin="round" stroke-linecap="round"/>
+  </svg>
+  <svg class="deco deco-rb" width="50" height="50" viewBox="0 0 50 50" fill="none">
+    <circle cx="25" cy="25" r="20" stroke="#1A1A2E" stroke-width="2.5" fill="#7DECA1"/>
+    <circle cx="25" cy="25" r="12" stroke="#1A1A2E" stroke-width="2" fill="none"/>
+    <circle cx="25" cy="25" r="4" fill="#1A1A2E"/>
+  </svg>
+  <svg class="deco deco-lb" width="44" height="44" viewBox="0 0 44 44" fill="none">
+    <rect x="4" y="4" width="36" height="36" rx="6" stroke="#1A1A2E" stroke-width="2.5" fill="#EEF3FF" transform="rotate(15 22 22)"/>
+    <rect x="10" y="10" width="24" height="24" rx="4" stroke="#1A1A2E" stroke-width="2" fill="#FFE566" transform="rotate(15 22 22)"/>
+  </svg>
+
+  <!-- ヘッダー -->
+  <div class="header">
+    <div class="title-wrap">
+      <div class="title">トーク<span>ネタ</span>カード</div>
+    </div>
+    <div class="subtitle">会話がはずむ話題を、ランダムにお届け</div>
+  </div>
+
+  <!-- モード選択 -->
+  <div class="mode-selector">
+    <button class="mode-btn ml active" onclick="setMode('l','ml','bl')">🌟 わいわい</button>
+    <button class="mode-btn mv"        onclick="setMode('v','mv','bv')">💕 ときめき</button>
+    <button class="mode-btn mf"        onclick="setMode('f','mf','bf')">🤝 ガチ友</button>
+  </div>
+
+  <!-- カード -->
+  <div class="card-wrapper">
+    <div class="card init" id="card">
+      <div class="card-dot tl"></div>
+      <div class="card-dot tr"></div>
+      <div class="card-dot bl"></div>
+      <div class="card-dot br"></div>
+      <div class="card-num" id="cnum">QUESTION</div>
+      <div class="card-icon" id="cicon">🎴</div>
+      <div class="card-q" id="cq">シャッフルして<br>話題をゲット！</div>
+    </div>
+  </div>
+
+  <!-- プログレス -->
+  <div class="progress-wrap">
+    <div class="prog-track">
+      <div class="prog-bar bl" id="pbar"></div>
+    </div>
+    <div class="prog-txt" id="ptxt">&nbsp;</div>
+  </div>
+
+  <!-- ボタン -->
+  <button class="next-btn bl" id="nbtn" onclick="next()">シャッフル ✨</button>
+  <button class="reset-btn" onclick="reset()">最初からやり直す</button>
+
+  <script src="script.js"></script>
+</body>
+</html>

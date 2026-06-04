@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>唐揚げ vs トイプードル</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="confetti"></div>
+<div id="wrong-overlay"></div>
+
+<!-- ══ START SCREEN ══ -->
+<div class="screen" id="start-screen">
+  <div class="deco"></div>
+  <div class="start-icons">🍗<span class="start-vs">vs</span>🐩</div>
+  <h1 class="start-title">唐揚げ <em>&</em><br>トイプードル</h1>
+  <p class="start-sub">そっくりすぎる2つを正しく仕分けよ！<br>スワイプか矢印ボタンで答えて。</p>
+
+  <p class="time-label">TIME MODE</p>
+  <div class="time-group" id="time-group">
+    <button class="time-btn" data-sec="15">15 sec</button>
+    <button class="time-btn active" data-sec="30">30 sec</button>
+    <button class="time-btn" data-sec="60">60 sec</button>
+  </div>
+
+  <button class="start-btn" id="startBtn">START</button>
+
+  <div class="start-howto">
+    <span>← 唐揚げ</span>
+    <span class="howto-sep">|</span>
+    <span>トイプードル →</span>
+  </div>
+  <div class="deco" style="margin-top:1.1rem;"></div>
+</div>
+
+<!-- ══ GAME SCREEN ══ -->
+<div class="screen hidden" id="game-screen">
+  <div class="hud">
+    <div class="hud-pill">
+      <span class="hud-lbl">Score</span>
+      <span class="hud-val" id="score-val">0</span>
+    </div>
+    <div id="timer-display">30</div>
+    <div class="hud-pill">
+      <span class="hud-lbl">Round</span>
+      <span class="hud-val" id="round-val">1</span>
+    </div>
+  </div>
+
+  <div class="card-area">
+    <div class="swipe-lbl L" id="lbl-L">🍗<br>唐揚げ</div>
+    <div class="card" id="the-card">
+      <img id="card-img" src="" alt="">
+      <div class="card-tint tint-L" id="tint-L"></div>
+      <div class="card-tint tint-R" id="tint-R"></div>
+      <div class="card-flash" id="flash"></div>
+    </div>
+    <div class="swipe-lbl R" id="lbl-R">🐩<br>プードル</div>
+  </div>
+
+  <div class="choices">
+    <button class="choice L" id="btn-k"><span class="ico">🍗</span>← 唐揚げ</button>
+    <button class="choice R" id="btn-p"><span class="ico">🐩</span>トイプードル →</button>
+  </div>
+</div>
+
+<!-- ══ RESULT SCREEN ══ -->
+<div class="screen hidden" id="result-screen">
+  <div class="deco"></div>
+  <div class="res-emoji" id="res-emoji">🎉</div>
+  <h2 class="res-title" id="res-title">結果発表</h2>
+  <div class="res-card">
+    <div class="res-score" id="res-score">0</div>
+    <div class="res-sub">正解 / <span id="res-total">0</span> 問中</div>
+    <div class="res-acc" id="res-acc">正答率 —%</div>
+  </div>
+  <p class="res-comment" id="res-comment"></p>
+  <button class="retry-btn" id="retryBtn">もう一度</button>
+  <div class="deco" style="margin-top:1.1rem;"></div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

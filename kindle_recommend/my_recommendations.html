@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>あすかの読書レコメンド</title>
+<style>
+  :root {
+    --bg: #0f0f13;
+    --surface: #1a1a22;
+    --surface2: #22222e;
+    --border: #2e2e3e;
+    --accent: #7c6af7;
+    --accent2: #e06bbd;
+    --accent3: #4fc3a1;
+    --accent4: #f0a04b;
+    --text: #e8e8f0;
+    --muted: #888899;
+    --card-bg: #1e1e28;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, 'Hiragino Sans', 'Yu Gothic', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(135deg, #0f0f13 0%, #1a0f2e 50%, #0f1a1e 100%);
+    padding: 60px 24px 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(124,106,247,.18) 0%, transparent 70%);
+  }
+  .hero-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(124,106,247,.12);
+    border: 1px solid rgba(124,106,247,.3);
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-bottom: 18px;
+  }
+  .hero h1 {
+    font-size: clamp(26px, 5vw, 44px);
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, #fff 30%, #b8a8ff);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero-sub {
+    color: var(--muted);
+    font-size: 15px;
+    margin-bottom: 36px;
+  }
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-size: 36px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+    letter-spacing: .05em;
+  }
+
+  /* ── PROFILE INSIGHT ── */
+  .insight-section {
+    max-width: 860px;
+    margin: 36px auto 0;
+    padding: 0 24px;
+  }
+  .insight-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 28px;
+  }
+  .insight-box h2 {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+  .genre-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .gtag {
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    border: 1px solid;
+  }
+  .gtag-purple { color: #b09eff; background: rgba(176,158,255,.1); border-color: rgba(176,158,255,.25); }
+  .gtag-pink   { color: #f590d0; background: rgba(245,144,208,.1); border-color: rgba(245,144,208,.25); }
+  .gtag-teal   { color: #5ee0bc; background: rgba(94,224,188,.1);  border-color: rgba(94,224,188,.25); }
+  .gtag-orange { color: #ffb86c; background: rgba(255,184,108,.1); border-color: rgba(255,184,108,.25); }
+  .gtag-red    { color: #ff7b72; background: rgba(255,123,114,.1); border-color: rgba(255,123,114,.25); }
+  .gtag-blue   { color: #79c0ff; background: rgba(121,192,255,.1); border-color: rgba(121,192,255,.25); }
+  .insight-text {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .insight-text strong { color: var(--text); }
+
+  /* ── FILTER BAR ── */
+  .filter-bar {
+    max-width: 960px;
+    margin: 32px auto 0;
+    padding: 0 24px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .filter-btn {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .filter-btn:hover { border-color: var(--accent); color: var(--text); }
+  .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  /* ── BOOKS GRID ── */
+  .books-section {
+    max-width: 960px;
+    margin: 24px auto 60px;
+    padding: 0 24px;
+  }
+  .section-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  .books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .book-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    transition: all .2s;
+  }
+  .book-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(124,106,247,.12);
+  }
+  .book-card.hidden { display: none; }
+  .book-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    gap: 10px;
+  }
+  .book-genre-badge {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .badge-purple { background: rgba(176,158,255,.15); color: #b09eff; }
+  .badge-pink   { background: rgba(245,144,208,.15); color: #f590d0; }
+  .badge-teal   { background: rgba(94,224,188,.15);  color: #5ee0bc; }
+  .badge-orange { background: rgba(255,184,108,.15); color: #ffb86c; }
+  .badge-red    { background: rgba(255,123,114,.15); color: #ff7b72; }
+  .badge-blue   { background: rgba(121,192,255,.15); color: #79c0ff; }
+  .badge-yellow { background: rgba(255,215,90,.15);  color: #ffd75a; }
+  .badge-green  { background: rgba(100,220,120,.15); color: #64dc78; }
+  .match-score {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .book-title {
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.35;
+    margin-bottom: 4px;
+    color: var(--text);
+  }
+  .book-author {
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .book-reason {
+    font-size: 13px;
+    color: #aaa8c0;
+    line-height: 1.6;
+    margin-bottom: 14px;
+  }
+  .match-bar-wrap { margin-bottom: 12px; }
+  .match-bar-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 5px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .match-bar-bg {
+    height: 4px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .match-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width 1s ease;
+  }
+  .book-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 14px;
+  }
+  .book-tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 8px;
+    background: var(--surface2);
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+  .amazon-link {
+    display: block;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 8px;
+    border-radius: 8px;
+    background: rgba(255,153,0,.1);
+    border: 1px solid rgba(255,153,0,.3);
+    color: #ffaa44;
+    text-decoration: none;
+    transition: all .2s;
+  }
+  .amazon-link:hover { background: rgba(255,153,0,.2); color: #ffcc77; }
+  #no-results {
+    display: none;
+    text-align: center;
+    padding: 60px 24px;
+    color: var(--muted);
+    font-size: 15px;
+    grid-column: 1/-1;
+  }
+  footer {
+    text-align: center;
+    padding: 24px;
+    color: var(--muted);
+    font-size: 12px;
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-tag">📚 Kindle Library Analysis — 全16ページ完全スキャン</div>
+  <h1>あすかの<br>パーソナライズ読書レコメンド</h1>
+  <p class="hero-sub">PDFフルスキャンで判明した350冊超の蔵書をAIが徹底分析</p>
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num">350<span style="font-size:22px">冊+</span></div>
+      <div class="stat-label">蔵書数（推定）</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">12</div>
+      <div class="stat-label">検出ジャンル</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">22</div>
+      <div class="stat-label">おすすめ作品</div>
+    </div>
+  </div>
+</section>
+
+<!-- PROFILE INSIGHT -->
+<div class="insight-section">
+  <div class="insight-box">
+    <h2>🔍 あすかの読書プロフィール</h2>
+    <div class="genre-tags">
+      <span class="gtag gtag-red">ダーク・アクション漫画</span>
+      <span class="gtag gtag-pink">BL・女性向けロマンス</span>
+      <span class="gtag gtag-purple">サスペンス・法廷ドラマ</span>
+      <span class="gtag gtag-orange">ビジネス・自己啓発</span>
+      <span class="gtag gtag-blue">テクノロジー・デザイン</span>
+      <span class="gtag gtag-teal">社会問題・フェミニズム</span>
+      <span class="gtag gtag-orange">料理・ライフスタイル</span>
+      <span class="gtag gtag-blue">語学・教育</span>
+      <span class="gtag gtag-purple">SF・文学</span>
+      <span class="gtag gtag-pink">ラブコメ漫画</span>
+      <span class="gtag gtag-red">格闘・バトル漫画</span>
+      <span class="gtag gtag-teal">ラップ・音楽</span>
+    </div>
+    <p class="insight-text">
+      ハジメテノサツジン（31巻超！）・インベスターZ（21巻）・ジョジョSBR（24巻）・チェンソーマン（11巻）など<strong>大長編を複数制覇</strong>する強者コレクター。
+      一ノ瀬家の大罪・九条の大罪・しょせん他人事などの<strong>社会派サスペンス漫画</strong>も揃い、
+      BL系・溺愛もの・アマゾネス・キスなど<strong>女性向けロマンスも充実</strong>。
+      一方でINSPIRED・PMBOK・Claude Code本・ノンデザイナーズデザインブックといった<strong>テック×デザイン×プロダクトの実務書</strong>もしっかり揃えていて、
+      射精責任・ケーキの切れない非行少年・なぜリベラルは敗け続けるのかなど<strong>社会問題への鋭い眼差し</strong>も。フリースタイルラップ本まであって守備範囲が半端じゃない✨
+    </p>
+  </div>
+</div>
+
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <button class="filter-btn active" onclick="filterBooks('all', this)">すべて</button>
+  <button class="filter-btn" onclick="filterBooks('アクション', this)">⚔️ ダーク・アクション</button>
+  <button class="filter-btn" onclick="filterBooks('サスペンス', this)">🔍 サスペンス・法廷</button>
+  <button class="filter-btn" onclick="filterBooks('BL', this)">💜 BL・女性向け</button>
+  <button class="filter-btn" onclick="filterBooks('ラブコメ', this)">💕 ラブコメ</button>
+  <button class="filter-btn" onclick="filterBooks('ビジネス', this)">💼 ビジネス書</button>
+  <button class="filter-btn" onclick="filterBooks('社会', this)">🌏 社会・思考</button>
+  <button class="filter-btn" onclick="filterBooks('デザイン', this)">🎨 デザイン・テック</button>
+  <button class="filter-btn" onclick="filterBooks('文学', this)">📖 SF・文学</button>
+  <button class="filter-btn" onclick="filterBooks('料理', this)">🍳 料理・生活</button>
+</div>
+
+<!-- BOOKS GRID -->
+<section class="books-section">
+  <div class="section-title">おすすめ22選</div>
+  <div class="books-grid" id="books-grid">
+
+    <!-- 1 BEASTARS -->
+    <div class="book-card" data-genre="アクション">
+      <div class="book-header">
+        <span class="book-genre-badge badge-red">ダーク・アクション</span>
+        <span class="match-score">97%</span>
+      </div>
+      <div class="book-title">BEASTARS</div>
+      <div class="book-author">板垣巴留 / 小学館</div>
+      <div class="book-reason">チェンソーマン・ファイアパンチ好きに直撃する寓話的ダークファンタジー。草食獣と肉食獣が共存する社会を舞台に、欲望と倫理、暴力と愛を描く圧倒的エネルギーの傑作。</div>
+      <div class="match-bar-wrap">
+        <div class="match-bar-label"><span>マッチ度</span><span>97%</span></div>
+        <div class="match-bar-bg"><div class="match-bar-fill" style="width:97%"></div></div>
+      </div>
+      <div class="book-tags"><span class="book-tag">動物寓話</span><span class="book-tag">ダーク</span><span class="book-tag">社会批評</span><span class="book-tag">青春</span></div>
+      <a class="amazon-link" href="https://www.amazon.co.jp/s?k=BEASTARS+板垣巴留&i=digital-text" target="_blank">Amazonで探す →</a>
+    </div>
+
+    <!-- 2 進撃の巨人 -->
+    <div class="book-card" data-genre="アクション">
+      <div class="book-header">
+        <span class="book-genre-badge badge-red">ダーク・アクション</span>
+        <span class="match-score">95%</span>
+      </div>
+      <div class="book-title">進撃の巨人</div>
+      <div class="book-author">諫山創 / 講談社</div>
+      <div class="book-reason">ジョジョSBR全24巻・チェンソーマン全11巻を制覇したダーク長編コレクターに。圧倒的な世界観と社会テーマ、怒濤の伏線回収で評価される全34巻の金字塔。</div>
+      <div class="match-bar-wrap">
+        <div class="match-bar-label"><span>マッチ度</span><span>95%</span></div>
+        <div class="match-bar-bg"><div class="match-bar-fill" style="width:95%"></div></div>
+      </div>
+      <div class="book-tags"><span class="book-tag">ダーク</span><span class="book-tag">社会テーマ</span><span class="book-tag">伏線</span><span class="book-tag">全34巻</span></div>
+      <a class="amazon-link" href="https://www.amazon.co.jp/s?k=進撃の巨人+諫山創&i=digital-text" target="_blank">Amazonで探す →</a>
+    </div>
+
+    <!-- 3 呪術廻戦 -->
+    <div class="book-card" data-genre="アクション">
+      <div class="book-header">
+        <span class="book-genre-badge badge-red">ダーク・アクション</span>
+        <span class="match-score">92%</span>
+      </div>
+      <div class="book-title">呪術廻戦</div>
+      <div class="book-author">芥見下々 / 集英社</div>
+      <div class="book-reason">チェンソーマンと同世代の感覚を持つダーク少年漫画の双璧。緻密なバトルとキャラクターの死に対する容赦ない描き方が、ファイアパンチ・バキ系好きにも刺さる。</div>
+      <div class="match-bar-wrap">
+        <div class="match-bar-label"><span>マッチ度</span><span>92%</span></div>
+        <div class="match-bar-bg"><div class="match-bar-fill" style="width:92%"></div></div>
+      </div>
+      <div class="book-tags"><span class="book-tag">ホラー</span><span class="book-tag">バトル</span><span class="book-tag">ダーク</span><span class="book-tag">現代舞台</span></div>
+      <a class="amazon-link" href="https://www.amazon.co.jp/s?k=呪術廻戦+芥見下々&i=digital-text" target="_blank">Amazonで探す →</a>
+    </div>
+
+    <!-- 4 ミステリと言う勿れ -->
+    <div class="book-card" data-genre="サスペンス">
+      <div class="book-header">
+        <span class="book-genre-badge badge-purple">サスペンス・法廷</span>
+        <span class="match-score">97%</span>
+      </div>
+      <div class="book-title">ミステリと言う勿れ</div>
+      <div class="book-author">田村由美 / 小学館</div>
+      <div class="book-reason">一ノ瀬家の大罪・九条の大罪・しょせん他人事などサスペンス・法廷ドラマ読者に完璧にハマる。鋭いセリフで社会を斬る主人公が独特で、読後に価値観が揺さぶられる稀有な作品。</div>
+      <div class="match-bar-wrap">
+        <div class="match-bar-label"><span>マッチ度</span><span>97%</span></div>
+        <div class="match-bar-bg"><div class="match-bar-fill" style="width:97%"></div></div>
+      </div>
+      <div class="book-tags"><span class="book-tag">ミステリ</span><span class="book-tag">社会派</span><span class="book-tag">会話劇</span><span class="book-tag">女性向け</span></div>
+      <a class="amazon-link" href="https://www.amazon.co.jp/s?k=ミステリと言う勿れ+田村由美&i=digital-text" target="_blank">Amazonで探す →</a>
+    </div>
+
+    <!-- 5 正直不動産 -->
+    <div class="book-card" data-genre="サスペンス">
+      <div class="book-header">
+        <span class="book-genre-badge badge-purple">サスペンス・法廷</span>
+        <span class="match-score">93%</span>
+      </div>
+      <div class="book-title">正直不動産</div>
+      <div class="book-author">夏原武・大谷アキラ / 小学館</div>
+      <div class="book-reason">インベスターZ（21巻！）と同じ「業界の裏側をドラマで学ぶ」系ビジネスコミックの傑作。嘘をつけなくなった不動産営業マンが業界の闇をぶった斬る、痛快でためになる作品。</div>
+      <div class="match-bar-wrap">
+        <div class="match-bar-label"><span>マッチ度</span><span>93%</span></div>
+        <div class="match-bar-bg"><div class="match-bar-fill" style="width:93%"></div></div>
+      </div>
+      <div class="book-tags"><span class="book-tag">ビジネス漫画</span><span class="book-tag">業界暴露</span><span class="book-tag">痛快</span><span class="book-tag">不動産</span></div>
+      <a class="amazon-link" href="https://www.amazon.co.jp/s?k=正直不動産&i=digital-text" target="_blank">Amazonで探す →</a>
+    </div>
+
+    <!-- 6 ブルーロック -->
+    <div class="book-card" data-genre="サスペンス">
+      <div class="book-header">
+        <span class="book-genre-badge badge-purple">サスペンス・法廷</span>
+        <span class="match-score">89%</span>
+      </div>
+      <div class="book-title">ブルーロック</div>
+      <div class="book-author">金城宗幸・ノ村優介 / 講談社</div>
+      <div class="book-reason">ダンプ・ザ・ヒール（スポーツ×ドラマ）好きに。極限の競争と心理戦を描くサッカー漫画の革命作。ダーク漫画読者にも刺さる「生き残りゲーム」的緊張感が最高。</div>
+      <div class="match-bar-wrap">
+        <div class="match-bar-label"><span>マッチ度</span><span>89%</span></div>
+        <div class="match-bar-bg"><div class="match-bar-fill" style="width:89%"></div></div>
+      </div>
+      <div class="book-tags"><span class="book-tag">スポーツ</span><span class="book-tag">心理戦</span><span class="book-tag">競争</span><span class="book-tag">サッカー</span></div>
+      <a class="amazon-link" href="https://www.amazon.co.jp/s?k=ブルーロック+金城宗幸&i=digital-text" target="_blank">Amazonで探す →</a>
+    </div>
+
+    <!-- 7 きのう何食べた？ -->
+    <div class="book-card" data-genre="BL">
+      <div class="book-header">
+        <span class="book-genre-badge badge-pink">BL・女性向け</span>
+        <span class="match-score">96%</span>
+      </div>
+      <div class="book-title">きのう何食べた？</div>
+      <div class="book-author">よしながふみ / 講談社</div>
+      <div class="book-reason">BL・料理・日常の三要素が奇跡的に融合した傑作。蒸しレシピ・一流シェフのレシピ大全など料理本も揃えるあすかに完璧にハマる。シロさんとケンジの丁寧な日常が長く読み続けられる。</div>
+      <div class="match-bar-wrap">
+        <div class="match-bar-label"><span>マッチ度</span><span>96%</span></div>
+        <div class="match-bar-bg"><div class="match-bar-fill" style="width:96%"></div></div>
+      </div>
+      <div class="book-tags"><span class="book-tag">BL</span><span class="book-tag">料理</span><span class="book-tag">日常</span><span class="book-tag">中年男性</span></div>
+      <a class="amazon-link" href="https://www.amazon.co.jp/s?k=きのう何食べた+よしながふみ&i=digital-text" target="_blank">Amazonで探す →</a>
+    </div>
+
+    <!-- 8 違国日記 -->
+    <div class="book-card" data-genre="BL">
+      <div class="book-header">
+        <span class="book-genre-badge badge-pink">BL・女性向け</span>
+        <span class="match-score">94%</span>
+      </div>
+      <div class="book-title">違国日記</div>
+      <div class="book-author">ヤマシタトモコ / 祥伝社</div>
+      <div class="book-reason">来世は他人がいい・そろそろいい歳だいけれど好きに。孤独な少女漫画家と姪の同居を描く女性向けドラマの最高峰。人間関係の解像度が異様に高く、会話のひとつひとつが刺さる。</div>
+      <div class="match-bar-wrap">
+        <div class="match-bar-label"><span>マッチ度</span><span>94%</span></div>
+        <div class="match-bar-bg"><div class="match-bar-fill" style="width:94%"></div></div>
+      </div>
+      <div class="book-tags"><span class="book-tag">女性向け</span><span class="book-tag">日常ドラマ</span><span class="book-tag">家族</span><span class="book-tag">繊細</span></div>
+      <a class="amazon-link" href="https://www.amazon.co.jp/s?k=違国日記+ヤマシタトモコ&i=digital-text" target="_blank">Amazonで探す →</a>
+    </div>
+
+    <!-- 9 凪のお暇 -->
+    <div class="book-card" data-genre="BL">
+      <div class="book-header">
+        <span class="book-genre-badge badge-pink">BL・女性向け</span>
+        <span class="match-score">91%</span>
+      </div>
+      <div class="book-title">凪のお暇</div>
+      <div class="book-author">コナリミサト / 秋田書店</div>
+      <div class="book-reason">訳アリ必塞マンション・いっしょにいてって言い好きの日常ロマンス読者に。会社も彼氏も捨てて新しい人生を歩む女性の物語。思わず自分を見直したくなる、じんわり刺さる作品。</div>
+      <div class="match-bar-wrap">
+        <div class="match-bar-label"><span>マッチ度</span><span>91%</span></div>
+        <div class="match-bar-bg"><div class="match-bar-fill" style="width:91%"></div></div>
+      </div>
+      <div class="book-tags"><span class="book-tag">女性向け</span><span class="book-tag">日常</span><span class="book-tag">ロマンス</span><span class="book-tag">自分探し</span></div>
+      <a class="amazon-link" href="https://www.amazon.co.jp/s?k=凪のお暇+コナリミサト&i=digital-text" target="_blank">Amazonで探す →</a>
+    </div>
+
+    <!-- 10 僕の心のヤバイやつ -->
+    <div class="book-card" data-genre="ラブコメ">
+      <div class="book-header">
+        <span class="book-genre-badge badge-yellow">ラブコメ</span>
+        <span class="match-score">93%</span>
+      </div>
+      <div class="book-title">僕の心のヤバイやつ</div>
+      <div class="book-author">桜井のりお / 秋田書店</div>
+      <div class="book-reason">隣の芝くんは見せてくれない・かわいいけどかわいくない系のラブコメ読者に完璧にハマる。陰キャ男子×人気モデル女子の純粋なラブストーリーで、キャラの感情表現が群を抜いてうまい。</div>
+      <div class="match-bar-wrap">
+        <div class="match-bar-label"><span>マッチ度</span><span>93%</span></div>
+        <div class="match-bar-bg"><div class="match-bar-fill" style="width:93%"></div></div>
+      </div>
+      <div class="book-tags"><span class="book-tag">ラブコメ</span><span class="book-tag">学園</span><span class="book-tag">純愛</span><span class="book-tag">ほっこり</span></div>
+      <a class="amazon-link" href="https://www.amazon.co.jp/s?k=僕の心のヤバイやつ+桜井のりお&i=digital-text" target="_blank">Amazonで探す →</a>
+    </div>
+
+    <!-- 11 ブルーピリオド -->
+    <div class="book-card" data-genre="ラブコメ">
+      <div class="book-header">
+        <span class="book-genre-badge badge-yellow">ラブコメ</span>
+        <span class="match-score">88%</span>
+      </div>
+      <div class="book-title">ブルーピリオド</div>
+      <div class="book-author">山口つばさ / 講談社</div>
+      <div class="book-reason">なるほどデザイン・ノンデザイナーズデザインブックを持つデザイン好きに。「表現すること」の核心を描く異色の青春漫画。アートとは何かを問い直させてくれる。勉強の哲学好きにも。</div>
+      <div class="match-bar-wrap">
+        <div class="match-bar-label"><span>マッチ度</span><span>88%</span></div>
+        <div class="match-bar-bg"><div class="match-bar-fill" style="width:88%"></div></div>
+      </div>
+      <div class="book-tags"><span class="book-tag">アート</span><span class="book-tag">青春</span><span class="book-tag">自己表現</span><span class="book-tag">受験</span></div>
+      <a class="amazon-link" href="https://www.amazon.co.jp/s?k=ブルーピリオド+山口つばさ&i=digital-text" target="_blank">Amazonで探す →</a>
+    </div>
+
+    <!-- 12 SPRINT -->
+    <div class="book-card" data-genre="ビジネス">
+      <div class="book-header">
+        <span class="book-genre-badge badge-orange">ビジネス書</span>
+        <span class="match-score">96%</span>
+      </div>
+      <div class="book-title">SPRINT — 最速仕事術</div>
+      <div class="book-author">Jake Knapp / ダイヤモンド社</div>
+      <div class="book-reason">INSPIRED・SCRUM BOOT CAMP・PMBOKを揃えるプロダクト系読者に完璧にハマる。Googleが開発した5日間で課題を解決するデザインスプリント手法の原著。即実務で使える。</div>
+      <div class="match-bar-wrap">
+        <div class="match-bar-label"><span>マッチ度</span><span>96%</span></div>
+        <div class="match-bar-bg"><div class="match-bar-fill" style="width:96%"></div></div>
+      </div>
+      <div class="book-tags"><span class="book-tag">UX</span><span class="book-tag">プロダクト</span><span class="book-tag">デザイン思考</span><span class="book-tag">Google</span></div>
+      <a class="amazon-link" href="https://www.amazon.co.jp/s?k=SPRINT+最速仕事術+Jake+Knapp&i=digital-text" target="_blank">Amazonで探す →</a>
+    </div>
+
+    <!-- 13 ユーザーストーリーマッピング -->
+    <div class="book-card" data-genre="ビジネス">
+      <div class="book-header">
+        <span class="book-genre-badge badge-orange">ビジネス書</span>
+        <span class="match-score">93%</span>
+      </div>
+      <div class="book-title">ユーザーストーリーマッピング</div>
+      <div class="book-author">Jeff Patton / オライリー</div>
+      <div class="book-reason">INSPIRED・ユーザーインタビュー教科書・PMBOKと完璧に連動。プロダクト開発のバックログ整理とユーザー体験の可視化を実践的に学べる。プロダクトチームの必読書。</div>
+      <div class="match-bar-wrap">
+        <div class="match-bar-label"><span>マッチ度</span><span>93%</span></div>
+        <div class="match-bar-bg"><div class="match-bar-fill" style="width:93%"></div></div>
+      </div>
+      <div class="book-tags"><span class="book-tag">プロダクト管理</span><span class="book-tag">UX</span><span class="book-tag">アジャイル</span><span class="book-tag">実務書</span></div>
+      <a class="amazon-link" href="https://www.amazon.co.jp/s?k=ユーザーストーリーマッピング+Patton&i=digital-text" target="_blank">Amazonで探す →</a>
+    </div>
+
+    <!-- 14 HARD THINGS -->
+    <div class="book-card" data-genre="ビジネス">
+      <div class="book-header">
+        <span class="book-genre-badge badge-orange">ビジネス書</span>
+        <span class="match-score">91%</span>
+      </div>
+      <div class="book-title">HARD THINGS — 答えがない難問と困難にきみはどう立ち向かうか</div>
+      <div class="book-author">Ben Horowitz / 日経BP</div>
+      <div class="book-reason">コンサル一年目・イシューからはじめよ・エッセンシャル思考好きの次の一冊。スタートアップCEOの生々しい経験から語るリーダーシップ論。随所にラップの引用もあって絶対に楽しめる。</div>
+      <div class="match-bar-wrap">
+        <div class="match-bar-label"><span>マッチ度</span><span>91%</span></div>
+        <div class="match-bar-bg"><div class="match-bar-fill" style="width:91%"></div></div>
+      </div>
+      <div class="book-tags"><span class="book-tag">リーダーシップ</span><span class="book-tag">スタートアップ</span><span class="book-tag">経営</span><span class="book-tag">ラップ好きも必見</span></div>
+      <a class="amazon-link" href="https://www.amazon.co.jp/s?k=HARD+THINGS+ホロウィッツ&i=digital-text" target="_blank">Amazonで探す →</a>
+    </div>
+
+    <!-- 15 LEAN IN -->
+    <div class="book-card" data-genre="ビジネス">
+      <div class="book-header">
+        <span class="book-genre-badge badge-orange">ビジネス書</span>
+        <span class="match-score">89%</span>
+      </div>
+      <div class="book-title">LEAN IN — 女性、仕事、リーダーへの意欲</div>
+      <div class="book-author">シェリル・サンドバーグ / 日本経済新聞出版社</div>
+      <div class="book-reason">射精責任・なぜ女は男のように自信をもてないのか好きのフェミ系ビジネス読者に。Facebookの元COOが語る女性とキャリアの現実。フェミニズム×ビジネスの名著。</div>
+      <div class="match-bar-wrap">
+        <div class="match-bar-label"><span>マッチ度</span><span>89%</span></div>
+        <div class="match-bar-bg"><div class="match-bar-fill" style="width:89%"></div></div>
+      </div>
+      <div class="book-tags"><span class="book-tag">フェミニズム</span><span class="book-tag">キャリア</span><span class="book-tag">リーダーシップ</span><span class="book-tag">女性</span></div>
+      <a class="amazon-link" href="https://www.amazon.co.jp/s?k=LEAN+IN+サンドバーグ&i=digital-text" target="_blank">Amazonで探す →</a>
+    </div>
+
+    <!-- 16 スマホ脳 -->
+    <div class="book-card" data-genre="社会">
+      <div class="book-header">
+        <span class="book-genre-badge badge-teal">社会・思考</span>
+        <span class="match-score">95%</span>
+      </div>
+      <div class="book-title">スマホ脳</div>
+      <div class="book-author">アンデシュ・ハンセン / 新潮新書</div>
+      <div class="book-reason">ストレスフリー超大全・ケーキの切れない非行少年・基礎から学ぶ認知心理学など心理・社会問題系が刺さる読者に。スウェーデンの精神科医が語るスマホが人間の脳に与える影響。現代人必読。</div>
+      <div class="match-bar-wrap">
+        <div class="match-bar-label"><span>マッチ度</span><span>95%</span></div>
+        <div class="match-bar-bg"><div class="match-bar-fill" style="width:95%"></div></div>
+      </div>
+      <div class="book-tags"><span class="book-tag">心理学</span><span class="book-tag">テクノロジー</span><span class="book-tag">脳科学</span><span class="book-tag">現代社会</span></div>
+      <a class="amazon-link" href="https://www.amazon.co.jp/s?k=スマホ脳+アンデシュ・ハンセン&i=digital-text" target="_blank">Amazonで探す →</a>
+    </div>
+
+    <!-- 17 FACTFULNESS -->
+    <div class="book-card" data-genre="社会">
+      <div class="book-header">
+        <span class="book-genre-badge badge-teal">社会・思考</span>
+        <span class="match-score">93%</span>
+      </div>
+      <div class="book-title">FACTFULNESS</div>
+      <div class="book-author">ハンス・ロスリング / 日経BP</div>
+      <div class="book-reason">予想どおりに不合理・情報を正しく選択するための認知バイアス事典好きに完璧にハマる。データで世界の現実を正しく見る方法を学べる一冊。「思い込み」の解体が爽快で世界観が変わる。</div>
+      <div class="match-bar-wrap">
+        <div class="match-bar-label"><span>マッチ度</span><span>93%</span></div>
+        <div class="match-bar-bg"><div class="match-bar-fill" style="width:93%"></div></div>
+      </div>
+      <div class="book-tags"><span class="book-tag">統計</span><span class="book-tag">バイアス</span><span class="book-tag">社会問題</span><span class="book-tag">データ</span></div>
+      <a class="amazon-link" href="https://www.amazon.co.jp/s?k=FACTFULNESS+ハンス・ロスリング&i=digital-text" target="_blank">Amazonで探す →</a>
+    </div>
+
+    <!-- 18 女ぎらい -->
+    <div class="book-card" data-genre="社会">
+      <div class="book-header">
+        <span class="book-genre-badge badge-teal">社会・思考</span>
+        <span class="match-score">90%</span>
+      </div>
+      <div class="book-title">女ぎらい — ニッポンのミソジニー</div>
+      <div class="book-author">上野千鶴子 / 朝日新聞出版</div>
+      <div class="book-reason">射精責任・なぜ女は男のように自信をもてないのか・なぜリベラルは敗け続けるのか好きのフェミニズム読者に。日本社会の女性嫌悪の構造を鋭く解剖する上野千鶴子の代表作。</div>
+      <div class="match-bar-wrap">
+        <div class="match-bar-label"><span>マッチ度</span><span>90%</span></div>
+        <div class="match-bar-bg"><div class="match-bar-fill" style="width:90%"></div></div>
+      </div>
+      <div class="book-tags"><span class="book-tag">フェミニズム</span><span class="book-tag">社会批評</span><span class="book-tag">ジェンダー</span><span class="book-tag">日本社会</span></div>
+      <a class="amazon-link" href="https://www.amazon.co.jp/s?k=女ぎらい+上野千鶴子&i=digital-text" target="_blank">Amazonで探す →</a>
+    </div>
+
+    <!-- 19 JUST ENOUGH RESEARCH -->
+    <div class="book-card" data-genre="デザイン">
+      <div class="book-header">
+        <span class="book-genre-badge badge-blue">デザイン・テック</span>
+        <span class="match-score">94%</span>
+      </div>
+      <div class="book-title">JUST ENOUGH RESEARCH</div>
+      <div class="book-author">Erika Hall / A Book Apart</div>
+      <div class="book-reason">ユーザーインタビュー教科書・ノンデザイナーズデザインブック・なるほどデザインを揃えるUX系読者に。デザインリサーチの入口として最も実践的でコンパクトな一冊。英語だが読みやすい。</div>
+      <div class="match-bar-wrap">
+        <div class="match-bar-label"><span>マッチ度</span><span>94%</span></div>
+        <div class="match-bar-bg"><div class="match-bar-fill" style="width:94%"></div></div>
+      </div>
+      <div class="book-tags"><span class="book-tag">UXリサーチ</span><span class="book-tag">デザイン</span><span class="book-tag">英語</span><span class="book-tag">実践的</span></div>
+      <a class="amazon-link" href="https://www.amazon.co.jp/s?k=Just+Enough+Research+Erika+Hall&i=digital-text" target="_blank">Amazonで探す →</a>
+    </div>
+
+    <!-- 20 エンジニアリング組織論 -->
+    <div class="book-card" data-genre="デザイン">
+      <div class="book-header">
+        <span class="book-genre-badge badge-blue">デザイン・テック</span>
+        <span class="match-score">89%</span>
+      </div>
+      <div class="book-title">エンジニアリング組織論への招待</div>
+      <div class="book-author">広木大地 / 技術評論社</div>
+      <div class="book-reason">Claude Code本・Webを支える技術・SCRUM BOOT CAMP好きのテック系読者に。不確実性と戦うための組織論と思考法。エンジニアからPMまで幅広く刺さる現代の必読書。</div>
+      <div class="match-bar-wrap">
+        <div class="match-bar-label"><span>マッチ度</span><span>89%</span></div>
+        <div class="match-bar-bg"><div class="match-bar-fill" style="width:89%"></div></div>
+      </div>
+      <div class="book-tags"><span class="book-tag">エンジニアリング</span><span class="book-tag">組織</span><span class="book-tag">マネジメント</span><span class="book-tag">思考法</span></div>
+      <a class="amazon-link" href="https://www.amazon.co.jp/s?k=エンジニアリング組織論への招待+広木大地&i=digital-text" target="_blank">Amazonで探す →</a>
+    </div>
+
+    <!-- 21 コンビニ人間 -->
+    <div class="book-card" data-genre="文学">
+      <div class="book-header">
+        <span class="book-genre-badge badge-green">SF・文学</span>
+        <span class="match-score">93%</span>
+      </div>
+      <div class="book-title">コンビニ人間</div>
+      <div class="book-author">村田沙耶香 / 文藝春秋</div>
+      <div class="book-reason">N/A・夜に星を放つ・人間たちの話など文学系を揃えるあすかに。「普通」に馴染めない女性の物語で芥川賞受賞。読んだ後に社会と自分の関係を見つめ直させられる現代文学の傑作。</div>
+      <div class="match-bar-wrap">
+        <div class="match-bar-label"><span>マッチ度</span><span>93%</span></div>
+        <div class="match-bar-bg"><div class="match-bar-fill" style="width:93%"></div></div>
+      </div>
+      <div class="book-tags"><span class="book-tag">芥川賞</span><span class="book-tag">現代文学</span><span class="book-tag">社会</span><span class="book-tag">女性主人公</span></div>
+      <a class="amazon-link" href="https://www.amazon.co.jp/s?k=コンビニ人間+村田沙耶香&i=digital-text" target="_blank">Amazonで探す →</a>
+    </div>
+
+    <!-- 22 料理本 -->
+    <div class="book-card" data-genre="料理">
+      <div class="book-header">
+        <span class="book-genre-badge badge-teal">料理・生活</span>
+        <span class="match-score">88%</span>
+      </div>
+      <div class="book-title">最高においしい料理が作れるようになる基本</div>
+      <div class="book-author">水島弘史 / 小学館</div>
+      <div class="book-reason">蒸しレシピ・一流シェフのレシピ大全・おもくない！スパイスとカレー入門など料理本コレクターに。「なぜそうするか」の科学的根拠から料理を教える画期的アプローチ。料理の解像度が上がる。</div>
+      <div class="match-bar-wrap">
+        <div class="match-bar-label"><span>マッチ度</span><span>88%</span></div>
+        <div class="match-bar-bg"><div class="match-bar-fill" style="width:88%"></div></div>
+      </div>
+      <div class="book-tags"><span class="book-tag">料理</span><span class="book-tag">科学的アプローチ</span><span class="book-tag">基本技術</span><span class="book-tag">実践</span></div>
+      <a class="amazon-link" href="https://www.amazon.co.jp/s?k=最高においしい料理が作れるようになる基本+水島弘史&i=digital-text" target="_blank">Amazonで探す →</a>
+    </div>
+
+    <div id="no-results">該当するジャンルの本がありません 📚</div>
+  </div>
+</section>
+
+<footer>
+  Generated by Claude · Kindle蔵書 PDFフルスキャン（16ページ）分析 · 2026
+</footer>
+
+<script>
+  function filterBooks(genre, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const cards = document.querySelectorAll('.book-card');
+    let visible = 0;
+    cards.forEach(card => {
+      if (genre === 'all' || card.dataset.genre === genre) {
+        card.classList.remove('hidden');
+        visible++;
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+    document.getElementById('no-results').style.display = visible === 0 ? 'block' : 'none';
+  }
+
+  // Animate match bars on load
+  window.addEventListener('load', () => {
+    document.querySelectorAll('.match-bar-fill').forEach(bar => {
+      const w = bar.style.width;
+      bar.style.width = '0';
+      setTimeout(() => { bar.style.width = w; }, 300);
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🤼 プロレス団体診断！</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --red: #E60026;
+      --dark-red: #9B0000;
+      --black: #111;
+      --yellow: #FFD700;
+      --white: #fff;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Noto Sans JP', 'ヒラギノ角ゴ', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* 斜めストライプ背景 */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        -55deg,
+        transparent,
+        transparent 18px,
+        rgba(230,0,38,0.04) 18px,
+        rgba(230,0,38,0.04) 36px
+      );
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 16px 16px 60px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ━━━━━━ HEADER ━━━━━━ */
+    header {
+      text-align: center;
+      padding: 36px 0 20px;
+      border-bottom: 5px solid var(--red);
+      margin-bottom: 28px;
+      position: relative;
+    }
+    header::after {
+      content: '';
+      position: absolute;
+      bottom: -9px;
+      left: 0; right: 0;
+      height: 3px;
+      background: var(--yellow);
+    }
+    .header-icon {
+      font-size: 3.2em;
+      display: block;
+      margin-bottom: 6px;
+      filter: drop-shadow(0 0 12px rgba(230,0,38,0.6));
+    }
+    header h1 {
+      font-size: clamp(1.8em, 5vw, 2.6em);
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: 0.03em;
+      text-shadow: 3px 3px 0 var(--red), 5px 5px 0 rgba(0,0,0,0.5);
+    }
+    header h1 span { color: var(--yellow); }
+    header p {
+      color: #bbb;
+      margin-top: 10px;
+      font-size: 0.92em;
+    }
+
+    /* ━━━━━━ PROGRESS ━━━━━━ */
+    .progress-wrap { margin-bottom: 20px; }
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.82em;
+      color: #999;
+      margin-bottom: 7px;
+    }
+    .progress-bar {
+      width: 100%; height: 10px;
+      background: #2a2a2a;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--red), var(--yellow));
+      border-radius: 99px;
+      transition: width 0.4s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ━━━━━━ QUESTION CARD ━━━━━━ */
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .q-card {
+      background: rgba(255,255,255,0.04);
+      border: 2px solid var(--red);
+      border-radius: 14px;
+      padding: 36px 28px 32px;
+      text-align: center;
+      margin-bottom: 18px;
+      animation: slideUp 0.32s ease both;
+      position: relative;
+      overflow: hidden;
+    }
+    .q-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 4px;
+      background: linear-gradient(90deg, var(--red), var(--yellow), var(--red));
+    }
+    .q-num {
+      font-size: 0.78em;
+      color: var(--red);
+      font-weight: 900;
+      letter-spacing: 0.25em;
+      margin-bottom: 14px;
+    }
+    .q-text {
+      font-size: clamp(1.15em, 3.5vw, 1.42em);
+      font-weight: 700;
+      line-height: 1.55;
+    }
+
+    /* ━━━━━━ BUTTONS ━━━━━━ */
+    .btn-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 12px;
+    }
+    .btn {
+      padding: 18px 10px;
+      border: none;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 1.25em;
+      font-weight: 900;
+      cursor: pointer;
+      letter-spacing: 0.06em;
+      transition: transform .12s, box-shadow .12s;
+      position: relative;
+    }
+    .btn:active { transform: translateY(4px) !important; }
+    .btn-yes {
+      background: var(--red);
+      color: #fff;
+      box-shadow: 0 7px 0 var(--dark-red);
+    }
+    .btn-yes:hover { transform: translateY(-3px); box-shadow: 0 10px 0 var(--dark-red); }
+    .btn-no {
+      background: #3a3a3a;
+      color: #fff;
+      box-shadow: 0 7px 0 #111;
+    }
+    .btn-no:hover { transform: translateY(-3px); box-shadow: 0 10px 0 #111; }
+
+    /* ━━━━━━ RESULT ━━━━━━ */
+    #result { display: none; }
+
+    .res-hero {
+      border-radius: 14px;
+      padding: 34px 24px 28px;
+      text-align: center;
+      margin-bottom: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+    .res-hero::before {
+      content: '🏆';
+      position: absolute;
+      top: -8px; right: 12px;
+      font-size: 80px;
+      opacity: 0.13;
+      line-height: 1;
+    }
+    .res-label {
+      font-size: 0.78em;
+      color: rgba(255,255,255,0.65);
+      letter-spacing: 0.35em;
+      margin-bottom: 10px;
+    }
+    .res-name {
+      font-size: clamp(1.8em, 5.5vw, 2.5em);
+      font-weight: 900;
+      text-shadow: 2px 2px 0 rgba(0,0,0,0.55);
+      line-height: 1.2;
+    }
+    .res-sub {
+      color: rgba(255,255,255,0.7);
+      font-size: 0.88em;
+      margin-top: 6px;
+    }
+
+    .res-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .res-card {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid #3a3a3a;
+      border-radius: 11px;
+      padding: 16px 14px;
+    }
+    .res-card h3 {
+      font-size: 0.7em;
+      color: var(--red);
+      letter-spacing: 0.2em;
+      margin-bottom: 7px;
+    }
+    .res-card p { font-size: 1em; font-weight: 700; }
+
+    .res-desc {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid #3a3a3a;
+      border-radius: 11px;
+      padding: 18px 16px;
+      margin-bottom: 14px;
+    }
+    .res-desc h3 {
+      font-size: 0.7em;
+      color: var(--red);
+      letter-spacing: 0.2em;
+      margin-bottom: 10px;
+    }
+    .res-desc p { line-height: 1.75; color: #d8d8d8; font-size: 0.93em; }
+
+    .diagram-wrap {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid #3a3a3a;
+      border-radius: 11px;
+      padding: 16px 14px;
+      margin-bottom: 14px;
+    }
+    .diagram-wrap h3 {
+      font-size: 0.7em;
+      color: var(--red);
+      letter-spacing: 0.2em;
+      margin-bottom: 12px;
+    }
+    .diagram-svg {
+      width: 100%;
+      display: block;
+    }
+
+    .official-btn {
+      display: block;
+      width: 100%;
+      padding: 18px;
+      background: linear-gradient(90deg, var(--red) 0%, #ff4040 100%);
+      color: #fff;
+      text-decoration: none;
+      text-align: center;
+      border-radius: 10px;
+      font-size: 1.05em;
+      font-weight: 900;
+      margin-bottom: 14px;
+      box-shadow: 0 5px 0 var(--dark-red);
+      transition: transform .12s, box-shadow .12s;
+      letter-spacing: 0.05em;
+    }
+    .official-btn:hover { transform: translateY(-2px); box-shadow: 0 7px 0 var(--dark-red); }
+
+    .score-section {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid #3a3a3a;
+      border-radius: 11px;
+      padding: 16px 14px;
+      margin-bottom: 14px;
+    }
+    .score-section h3 {
+      font-size: 0.7em;
+      color: var(--red);
+      letter-spacing: 0.2em;
+      margin-bottom: 12px;
+    }
+    .score-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 7px;
+    }
+    .score-label {
+      width: 120px;
+      font-size: 0.72em;
+      color: #aaa;
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .score-bar-bg {
+      flex: 1;
+      height: 13px;
+      background: #222;
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .score-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 1.2s cubic-bezier(.4,0,.2,1);
+    }
+    .score-val {
+      width: 28px;
+      font-size: 0.75em;
+      color: #888;
+      flex-shrink: 0;
+    }
+
+    .retry-btn {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: transparent;
+      border: 2px solid #555;
+      color: #999;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.92em;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .15s;
+      letter-spacing: 0.05em;
+    }
+    .retry-btn:hover { border-color: var(--red); color: #fff; }
+
+    /* ━━━━━━ START SPLASH ━━━━━━ */
+    #start-screen {
+      text-align: center;
+      padding: 30px 0;
+    }
+    .start-illust {
+      font-size: 5em;
+      margin-bottom: 20px;
+      display: block;
+      animation: pulse 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { transform: scale(1); filter: drop-shadow(0 0 8px rgba(230,0,38,.3)); }
+      50%      { transform: scale(1.08); filter: drop-shadow(0 0 20px rgba(230,0,38,.7)); }
+    }
+    .start-lead {
+      font-size: 1.08em;
+      color: #ccc;
+      line-height: 1.7;
+      margin-bottom: 28px;
+    }
+    .start-btn {
+      display: inline-block;
+      padding: 20px 56px;
+      background: var(--red);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 1.3em;
+      font-weight: 900;
+      cursor: pointer;
+      box-shadow: 0 8px 0 var(--dark-red);
+      letter-spacing: 0.08em;
+      transition: transform .12s, box-shadow .12s;
+    }
+    .start-btn:hover { transform: translateY(-3px); box-shadow: 0 11px 0 var(--dark-red); }
+    .start-btn:active { transform: translateY(5px); box-shadow: 0 3px 0 var(--dark-red); }
+    .promo-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 26px;
+    }
+    .chip {
+      padding: 5px 12px;
+      border-radius: 99px;
+      font-size: 0.78em;
+      font-weight: 700;
+      border: 1px solid #555;
+      color: #ccc;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <span class="header-icon">🤼</span>
+    <h1>プロレス団体<br><span>診断！</span></h1>
+    <p>YES / NO で答えるだけ！あなたにぴったりの団体が見つかる！</p>
+  </header>
+
+  <!-- START SCREEN -->
+  <div id="start-screen">
+    <span class="start-illust">💥</span>
+    <div class="promo-chips">
+      <span class="chip">新日本プロレス</span>
+      <span class="chip">NOAH</span>
+      <span class="chip">全日本プロレス</span>
+      <span class="chip">DDT</span>
+      <span class="chip">東京女子</span>
+      <span class="chip">スターダム</span>
+      <span class="chip">大日本プロレス</span>
+      <span class="chip">AEW</span>
+      <span class="chip">WWE</span>
+      <span class="chip">ドラゴンゲート</span>
+      <span class="chip">マリーゴールド</span>
+    </div>
+    <p class="start-lead">
+      全18問のYES/NOに答えるだけで<br>
+      あなたにぴったりのプロレス団体、<br>
+      エース選手＆ヒール選手がわかる！
+    </p>
+    <button class="start-btn" onclick="startQuiz()">🔥 診断スタート！</button>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="quiz" style="display:none;">
+    <div class="progress-wrap">
+      <div class="progress-meta">
+        <span id="p-label">第1問</span>
+        <span id="p-count">0 / 18</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="p-fill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div class="q-card" id="q-card">
+      <div class="q-num" id="q-num">Q.1</div>
+      <div class="q-text" id="q-text"></div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-yes" onclick="answer(true)">✅ YES</button>
+      <button class="btn btn-no"  onclick="answer(false)">❌ NO</button>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div id="result"></div>
+
+</div>
+
+<script>
+/* ──────────────────────────────────────────
+   DATA
+────────────────────────────────────────── */
+const PROMOS = {
+  njpw: {
+    name: "新日本プロレス",
+    short: "NJPW",
+    ace: "カラム・ニューマン",
+    heel: "EVIL",
+    desc: "1972年創立、世界最大規模のプロレス団体のひとつ。2026年1月にBULLET CLUBが解散し、辻陽太が新ユニット「Unbound Co.」を結成するなど新時代へ突入。4月には23歳7ヶ月のカラム・ニューマンが史上最年少IWGPヘビー級王者に輝いた。G1クライマックスやWRESTLE KINGDOMなど大型興行が世界的に人気を誇る。",
+    url: "https://www.njpw1972.com/",
+    color: "#E60026",
+    nodes: [
+      { name: "カラム",     role: "IWGP王者",     x: 50, y: 12 },
+      { name: "辻陽太",     role: "Unbound Co.", x: 18, y: 45 },
+      { name: "ZSJ",        role: "テクニカル",   x: 82, y: 45 },
+      { name: "EVIL",       role: "ヒール",        x: 50, y: 80 },
+    ],
+    edges: [
+      { a:0, b:1, type:"rival", label:"DOMINION対決" },
+      { a:0, b:2, type:"rival", label:"王座挑戦" },
+      { a:2, b:3, type:"ally",  label:"タッグ" },
+      { a:3, b:1, type:"enemy", label:"対立" },
+    ]
+  },
+  noah: {
+    name: "プロレスリング・ノア",
+    short: "NOAH",
+    ace: "清宮海斗",
+    heel: "拳王",
+    desc: "2000年に三沢光晴が設立した本格派団体。GHCヘビー級王座を頂点に、重厚で感動的な試合が持ち味。清宮海斗を中心とした若手の台頭と、ベテランの経験が融合した正統派プロレスを展開。人間ドラマ性の高いストーリーが続き、試合後に涙するファンも多い。",
+    url: "https://www.noah.co.jp/",
+    color: "#00AA44",
+    nodes: [
+      { name: "清宮海斗",   role: "エース",           x: 28, y: 22 },
+      { name: "拳王",       role: "ヒール/煽り担当",  x: 72, y: 22 },
+      { name: "稲葉大樹",   role: "若手スター",       x: 28, y: 72 },
+      { name: "マサ北宮",   role: "パワーファイター", x: 72, y: 72 },
+    ],
+    edges: [
+      { a:0, b:1, type:"rival", label:"メイン抗争" },
+      { a:0, b:2, type:"ally",  label:"同志" },
+      { a:1, b:3, type:"ally",  label:"ユニット" },
+      { a:2, b:3, type:"rival", label:"ライバル" },
+    ]
+  },
+  ajpw: {
+    name: "全日本プロレス",
+    short: "AJPW",
+    ace: "宮原健斗",
+    heel: "青柳優馬",
+    desc: "ジャイアント馬場が1972年に創立した日本プロレス界の名門。四天王プロレスの魂を継ぐ重厚なファイトスタイルが誇り。三冠ヘビー級チャンピオンシップの重みと、宮原健斗が引っ張る骨太なプロレスは今なお輝く。伝統と革新が交差する老舗の矜持が全日本の魅力。",
+    url: "https://www.ajpw.jp/",
+    color: "#B8000A",
+    nodes: [
+      { name: "宮原健斗",   role: "三冠エース",     x: 50, y: 14 },
+      { name: "青柳優馬",   role: "ヒール",          x: 16, y: 60 },
+      { name: "芦野祥太郎", role: "テクニシャン",    x: 50, y: 68 },
+      { name: "野村卓矢",   role: "若手エース",      x: 84, y: 60 },
+    ],
+    edges: [
+      { a:0, b:1, type:"rival", label:"三冠争い" },
+      { a:0, b:3, type:"ally",  label:"信頼" },
+      { a:1, b:2, type:"rival", label:"抗争" },
+      { a:2, b:3, type:"ally",  label:"タッグ" },
+    ]
+  },
+  ddt: {
+    name: "DDTプロレスリング",
+    short: "DDT",
+    ace: "上野勇希",
+    heel: "青木真也",
+    desc: "1997年設立、エンタメ性と本格プロレスを融合させた個性派団体。2026年KING OF DDTでは青木真也が13年ぶり優勝を果たしKO-D無差別級王者・上野勇希へ挑戦。コミカルなギミックマッチや斬新な演出がある一方、試合クオリティは本格派。アイドルとのコラボや大きなストーリー演出など、プロレスの枠を超えたエンタメを提供。",
+    url: "https://ddtpro.com/",
+    color: "#FF6600",
+    nodes: [
+      { name: "上野勇希",   role: "KO-D王者",         x: 25, y: 28 },
+      { name: "青木真也",   role: "KING OF DDT覇者",  x: 75, y: 28 },
+      { name: "HARASHIMA",  role: "ベテラン",          x: 25, y: 72 },
+      { name: "遠藤哲哉",   role: "コミカル系王者",   x: 75, y: 72 },
+    ],
+    edges: [
+      { a:0, b:1, type:"rival", label:"王座挑戦" },
+      { a:0, b:2, type:"ally",  label:"友情" },
+      { a:1, b:3, type:"rival", label:"因縁" },
+      { a:2, b:3, type:"ally",  label:"ユニット" },
+    ]
+  },
+  tjpw: {
+    name: "東京女子プロレス",
+    short: "TJPW",
+    ace: "山下実優",
+    heel: "渡辺未詩",
+    desc: "2013年設立のアイドル的要素も持つ女子プロレス団体。ポップでカラフルなキャラクターたちが特典会や握手会も行うアイドル文化と、本格プロレスの激しい攻防を両立。山下実優を中心とした若いレスラーたちの熱い闘いは、ライブ感満点の会場で生観戦するのがおすすめ。",
+    url: "https://www.tjpw.co.jp/",
+    color: "#D81B7A",
+    nodes: [
+      { name: "山下実優",  role: "エース",     x: 26, y: 26 },
+      { name: "渡辺未詩",  role: "ヒール",      x: 74, y: 26 },
+      { name: "中島翔子",  role: "ベテラン",    x: 26, y: 74 },
+      { name: "猪狩なむ",  role: "人気選手",    x: 74, y: 74 },
+    ],
+    edges: [
+      { a:0, b:1, type:"rival", label:"王座争い" },
+      { a:0, b:2, type:"ally",  label:"先輩後輩" },
+      { a:1, b:3, type:"rival", label:"抗争中" },
+      { a:2, b:3, type:"ally",  label:"チーム" },
+    ]
+  },
+  stardom: {
+    name: "スターダム",
+    short: "STARDOM",
+    ace: "AZM",
+    heel: "上谷沙弥",
+    desc: "2011年設立、日本最大の女子プロレス団体。ジュリアのWWE移籍、林下詩美のマリーゴールド参加など激しい選手の新陳代謝を経て新時代へ突入。クイーンズクエスト所属のヒール王者・上谷沙弥が君臨するワールド・オブ・スターダムへ、NEO GENESISのAZMや玖麗さやかが挑む構図が激化。各ユニットの個性がぶつかり合うユニット抗争が最大の魅力。",
+    url: "https://wwr-stardom.com/",
+    color: "#CC0080",
+    nodes: [
+      { name: "上谷沙弥",    role: "ヒール/W王者",  x: 50, y: 14 },
+      { name: "AZM",         role: "エース",        x: 16, y: 55 },
+      { name: "玖麗さやか",  role: "COSMIC ANGELS", x: 84, y: 55 },
+      { name: "刀羅ナツコ",  role: "OEDO TAI",      x: 50, y: 80 },
+    ],
+    edges: [
+      { a:0, b:1, type:"rival", label:"王座挑戦" },
+      { a:0, b:2, type:"rival", label:"王座挑戦" },
+      { a:1, b:2, type:"rival", label:"ユニット対立" },
+      { a:0, b:3, type:"ally",  label:"Queen's Quest" },
+    ]
+  },
+  bjw: {
+    name: "大日本プロレス",
+    short: "BJW",
+    ace: "岡林裕二",
+    heel: "橋本大地",
+    desc: "1995年設立のデスマッチ専門団体。有刺鉄線電流爆破など過激な試合形式が世界的にも有名。命がけの格闘美学と漢気あふれるファイトは唯一無二の体験。ストロングスタイル部門も存在し、本格格闘技ファンにも支持される。一度見たら忘れられない衝撃と感動がある、玄人好みの団体。",
+    url: "https://www.bjw.co.jp/",
+    color: "#CC3300",
+    nodes: [
+      { name: "岡林裕二",   role: "エース",           x: 26, y: 26 },
+      { name: "橋本大地",   role: "ヒール",            x: 74, y: 26 },
+      { name: "宮本裕向",   role: "デスマッチ王者",   x: 26, y: 74 },
+      { name: "中之上靖文", role: "若手スター",        x: 74, y: 74 },
+    ],
+    edges: [
+      { a:0, b:1, type:"rival", label:"対立" },
+      { a:0, b:2, type:"rival", label:"デスマッチ抗争" },
+      { a:1, b:3, type:"ally",  label:"タッグ" },
+      { a:2, b:3, type:"rival", label:"世代交代" },
+    ]
+  },
+  aew: {
+    name: "AEW（オール・エリート・レスリング）",
+    short: "AEW",
+    ace: "竹下幸之介",
+    heel: "MJF",
+    desc: "2019年設立のアメリカ新興プロレス団体。竹下幸之介（コノスケ・タケシタ）など日本人スターも大活躍。2026年5月のDouble or Nothingでは「ベスト・イン・ザ・ワールド」を自称するMJFがAEWワールド王座を奪回。デビッド・フィンレーもNJPWから移籍するなど話題性も抜群。スポーツライクな高品質な試合と個性豊かなキャラのドラマが魅力のWWEに次ぐ世界第2位の団体。",
+    url: "https://www.allelitewrestling.com/",
+    color: "#C8A200",
+    nodes: [
+      { name: "竹下幸之介", role: "日本人エース",    x: 26, y: 26 },
+      { name: "MJF",        role: "AEW王者/ヒール", x: 74, y: 26 },
+      { name: "ダービー",   role: "前AEW王者",       x: 26, y: 74 },
+      { name: "フィンレー", role: "元BULLET CLUB",   x: 74, y: 74 },
+    ],
+    edges: [
+      { a:0, b:1, type:"rival", label:"因縁の対決" },
+      { a:1, b:2, type:"rival", label:"Title vs Hair" },
+      { a:0, b:3, type:"ally",  label:"NJPWコネクション" },
+      { a:2, b:3, type:"rival", label:"抗争中" },
+    ]
+  },
+  wwe: {
+    name: "WWE",
+    short: "WWE",
+    ace: "ローマン・レインズ",
+    heel: "CMパンク",
+    desc: "1953年創設、世界最大のプロレス・エンタメ団体。2026年WrestleMania 42でローマン・レインズがRAWワールドヘビー級王座を奪取し話題を呼んだ。中邑真輔・イヨ・スカイなど日本人スターも世界最大の舞台で活躍中。超大型PPVの圧倒的な演出と世界規模のブランド力は他の追随を許さない。プロレスをショービジネスとして楽しみたい人に最適。",
+    url: "https://www.wwe.com/",
+    color: "#0055A5",
+    nodes: [
+      { name: "ローマン",     role: "RAW王者",         x: 50, y: 14 },
+      { name: "CMパンク",    role: "ヒール挑戦者",    x: 16, y: 60 },
+      { name: "イヨ・スカイ", role: "日本人スター",    x: 84, y: 60 },
+      { name: "中邑真輔",    role: "KINGオブ日本",    x: 50, y: 80 },
+    ],
+    edges: [
+      { a:0, b:1, type:"rival", label:"WM42決戦" },
+      { a:0, b:2, type:"rival", label:"次期対決？" },
+      { a:1, b:2, type:"rival", label:"抗争中" },
+      { a:2, b:3, type:"ally",  label:"日本人連合" },
+    ]
+  },
+  dragongate: {
+    name: "ドラゴンゲート",
+    short: "DG",
+    ace: "菊田円",
+    heel: "YAMATO",
+    desc: "2004年設立、スピーディーなルチャリブレ系スタイルと複数ユニットによるチーム対抗戦が特徴の団体。2026年オープン・ザ・ドリームゲート王者は菊田円。複数のユニットが入り乱れる6人タッグ中心の試合形式と、ユニット間の裏切り・合流劇が最大の見どころ。徳島・大阪を中心に全国でファンを持つ個性的な団体。",
+    url: "https://dragongate.live/",
+    color: "#8B00FF",
+    nodes: [
+      { name: "菊田円",       role: "ドリームゲート王者", x: 50, y: 14 },
+      { name: "田中良弥",     role: "ブレイブゲート王者", x: 16, y: 58 },
+      { name: "JACKY KAMEI",  role: "ツインゲート王者",   x: 84, y: 58 },
+      { name: "横須賀ススム", role: "双琉王",             x: 50, y: 80 },
+    ],
+    edges: [
+      { a:0, b:1, type:"rival", label:"ユニット対立" },
+      { a:0, b:2, type:"rival", label:"チーム対抗" },
+      { a:1, b:3, type:"ally",  label:"同ユニット" },
+      { a:2, b:3, type:"rival", label:"タッグ争い" },
+    ]
+  },
+  marigold: {
+    name: "マリーゴールド",
+    short: "MARIGOLD",
+    ace: "山岡聖怜",
+    heel: "天麗皇希",
+    desc: "2024年設立の女子プロレス新興団体。スターダムの創設者ロッシー小川が旗揚げし、ジュリアや林下詩美らが参加して大きな話題を呼んだ。両者のWWEへの挑戦など激しい入退団を経て、2026年4月に山岡聖怜がBEW女子王座を初奪取しエース格に台頭。若く勢いのある選手が集う急成長中の注目女子団体。",
+    url: "https://dsf-marigold.com/",
+    color: "#FF8C42",
+    nodes: [
+      { name: "山岡聖怜",  role: "BEW女子王者",  x: 50, y: 14 },
+      { name: "天麗皇希",  role: "ヒール",        x: 16, y: 58 },
+      { name: "桜井麻衣",  role: "人気選手",      x: 84, y: 58 },
+      { name: "MIRAI",     role: "ベテラン",      x: 50, y: 80 },
+    ],
+    edges: [
+      { a:0, b:1, type:"rival", label:"王座抗争" },
+      { a:0, b:2, type:"rival", label:"ライバル" },
+      { a:1, b:3, type:"rival", label:"抗争中" },
+      { a:2, b:3, type:"ally",  label:"友情" },
+    ]
+  },
+};
+
+const QUESTIONS = [
+  { text:"女子プロレスに興味がある？",
+    s:{ njpw:-2, noah:-1, ajpw:-1, ddt:-1, tjpw:4, stardom:4, bjw:-2, aew:-1, wwe:0, dragongate:-1, marigold:5 } },
+  { text:"コミカルな演出や笑いのある試合が好き？",
+    s:{ njpw:-1, noah:-1, ajpw:-1, ddt:5, tjpw:1, stardom:0, bjw:-2, aew:0, wwe:1, dragongate:-1, marigold:-1 } },
+  { text:"デスマッチや過激な流血試合が見たい！",
+    s:{ njpw:-2, noah:-1, ajpw:-1, ddt:-2, tjpw:-3, stardom:-3, bjw:6, aew:-2, wwe:-2, dragongate:-2, marigold:-3 } },
+  { text:"世界的に有名な大きな団体がいい？",
+    s:{ njpw:4, noah:1, ajpw:0, ddt:0, tjpw:0, stardom:2, bjw:-1, aew:3, wwe:6, dragongate:-1, marigold:-2 } },
+  { text:"派閥・ユニット同士の抗争ドラマが好き？",
+    s:{ njpw:3, noah:2, ajpw:1, ddt:1, tjpw:1, stardom:4, bjw:0, aew:2, wwe:2, dragongate:5, marigold:1 } },
+  { text:"派手なコスチュームや個性的なキャラが好き？",
+    s:{ njpw:0, noah:-1, ajpw:-2, ddt:2, tjpw:3, stardom:4, bjw:-1, aew:2, wwe:4, dragongate:2, marigold:2 } },
+  { text:"正統派・テクニカルな試合スタイルが好き？",
+    s:{ njpw:3, noah:4, ajpw:4, ddt:-1, tjpw:0, stardom:1, bjw:0, aew:3, wwe:0, dragongate:2, marigold:1 } },
+  { text:"アイドル的な人気選手の応援も楽しみたい？",
+    s:{ njpw:0, noah:-1, ajpw:-1, ddt:1, tjpw:5, stardom:4, bjw:-3, aew:-1, wwe:1, dragongate:0, marigold:3 } },
+  { text:"チャンピオンベルトや王座戦の重みを感じたい？",
+    s:{ njpw:2, noah:4, ajpw:4, ddt:1, tjpw:1, stardom:2, bjw:1, aew:2, wwe:4, dragongate:2, marigold:1 } },
+  { text:"海外選手・外国人レスラーとの対戦が見たい？",
+    s:{ njpw:5, noah:1, ajpw:0, ddt:0, tjpw:-1, stardom:1, bjw:-1, aew:5, wwe:6, dragongate:-1, marigold:0 } },
+  { text:"若手レスラーが成長する姿を応援したい？",
+    s:{ njpw:1, noah:3, ajpw:2, ddt:3, tjpw:3, stardom:2, bjw:1, aew:1, wwe:0, dragongate:3, marigold:4 } },
+  { text:"感動的なストーリーや人間ドラマを楽しみたい？",
+    s:{ njpw:1, noah:5, ajpw:3, ddt:1, tjpw:2, stardom:2, bjw:0, aew:2, wwe:3, dragongate:1, marigold:2 } },
+  { text:"コンパクトな会場での密な生観戦体験がしたい？",
+    s:{ njpw:-1, noah:0, ajpw:0, ddt:2, tjpw:3, stardom:1, bjw:1, aew:-3, wwe:-4, dragongate:2, marigold:1 } },
+  { text:"格闘技系のハードな雰囲気が好き？",
+    s:{ njpw:2, noah:3, ajpw:3, ddt:-2, tjpw:-2, stardom:0, bjw:4, aew:2, wwe:1, dragongate:0, marigold:0 } },
+  { text:"プロレスをとことんディープに楽しみたい？",
+    s:{ njpw:2, noah:3, ajpw:3, ddt:1, tjpw:1, stardom:2, bjw:3, aew:2, wwe:1, dragongate:3, marigold:2 } },
+  { text:"英語の実況・テロップでも海外プロレスを楽しめる？",
+    s:{ njpw:0, noah:-1, ajpw:-1, ddt:-1, tjpw:-1, stardom:0, bjw:-1, aew:5, wwe:5, dragongate:-1, marigold:-1 } },
+  { text:"6人タッグや多人数の複雑なユニット対抗戦が好き？",
+    s:{ njpw:1, noah:0, ajpw:0, ddt:1, tjpw:1, stardom:1, bjw:0, aew:1, wwe:1, dragongate:6, marigold:0 } },
+  { text:"新興・旗揚げまもない団体を最初から応援したい？",
+    s:{ njpw:-2, noah:-2, ajpw:-2, ddt:-1, tjpw:-1, stardom:-1, bjw:-1, aew:1, wwe:-2, dragongate:-1, marigold:6 } },
+];
+
+/* ──────────────────────────────────────────
+   STATE
+────────────────────────────────────────── */
+let qIdx = 0;
+let scores = {};
+
+function resetScores() {
+  scores = {};
+  Object.keys(PROMOS).forEach(k => scores[k] = 0);
+}
+
+/* ──────────────────────────────────────────
+   QUIZ
+────────────────────────────────────────── */
+function startQuiz() {
+  resetScores();
+  qIdx = 0;
+  document.getElementById('start-screen').style.display = 'none';
+  document.getElementById('quiz').style.display = 'block';
+  renderQ();
+}
+
+function renderQ() {
+  const q = QUESTIONS[qIdx];
+  document.getElementById('q-num').textContent  = `Q.${qIdx + 1}`;
+  document.getElementById('q-text').textContent = q.text;
+  document.getElementById('p-label').textContent = `第${qIdx + 1}問`;
+  document.getElementById('p-count').textContent = `${qIdx} / ${QUESTIONS.length}`;
+  document.getElementById('p-fill').style.width  = `${(qIdx / QUESTIONS.length) * 100}%`;
+
+  const card = document.getElementById('q-card');
+  card.style.animation = 'none';
+  void card.offsetHeight;
+  card.style.animation = '';
+}
+
+function answer(yes) {
+  if (yes) {
+    const s = QUESTIONS[qIdx].s;
+    Object.keys(s).forEach(k => scores[k] += s[k]);
+  }
+  qIdx++;
+  if (qIdx >= QUESTIONS.length) {
+    showResult();
+  } else {
+    renderQ();
+  }
+}
+
+/* ──────────────────────────────────────────
+   RESULT
+────────────────────────────────────────── */
+function showResult() {
+  document.getElementById('p-fill').style.width = '100%';
+  document.getElementById('p-count').textContent = `${QUESTIONS.length} / ${QUESTIONS.length}`;
+
+  const winner = Object.keys(scores).reduce((a, b) => scores[a] >= scores[b] ? a : b);
+  const p = PROMOS[winner];
+
+  document.getElementById('quiz').style.display = 'none';
+
+  const resultEl = document.getElementById('result');
+  resultEl.style.display = 'block';
+  resultEl.innerHTML = buildResult(p, winner);
+
+  requestAnimationFrame(() => {
+    const maxScore = Math.max(...Object.values(scores));
+    Object.keys(PROMOS).forEach(k => {
+      const el = document.getElementById(`sbar-${k}`);
+      if (el) {
+        const pct = maxScore > 0 ? Math.max(0, (scores[k] / maxScore) * 100) : 0;
+        el.style.width = pct + '%';
+      }
+    });
+  });
+}
+
+function buildResult(p, key) {
+  const sorted = Object.keys(scores).sort((a,b) => scores[b] - scores[a]);
+  const maxScore = Math.max(...Object.values(scores));
+
+  const scoreRows = sorted.map(k => {
+    const pct = maxScore > 0 ? Math.max(0, (scores[k] / maxScore) * 100) : 0;
+    return `
+      <div class="score-row">
+        <div class="score-label">${PROMOS[k].name}</div>
+        <div class="score-bar-bg">
+          <div class="score-bar-fill" id="sbar-${k}"
+               style="width:0%; background:${PROMOS[k].color};"></div>
+        </div>
+        <div class="score-val">${scores[k]}</div>
+      </div>`;
+  }).join('');
+
+  return `
+    <div class="res-hero" style="background:linear-gradient(135deg, ${p.color} 0%, #111 100%);">
+      <div class="res-label">あなたにおすすめの団体は…</div>
+      <div class="res-name">${p.name}</div>
+      <div class="res-sub">${p.short}</div>
+    </div>
+
+    <div class="res-grid">
+      <div class="res-card">
+        <h3>⭐ エース選手</h3>
+        <p>${p.ace}</p>
+      </div>
+      <div class="res-card">
+        <h3>😈 ヒール選手</h3>
+        <p>${p.heel}</p>
+      </div>
+    </div>
+
+    <div class="res-desc">
+      <h3>📋 団体について</h3>
+      <p>${p.desc}</p>
+    </div>
+
+    <div class="diagram-wrap">
+      <h3>🗺️ 主要選手 相関図</h3>
+      ${buildDiagram(p)}
+    </div>
+
+    <a href="${p.url}" target="_blank" rel="noopener" class="official-btn">
+      🌐 公式サイトをチェック！
+    </a>
+
+    <div class="score-section">
+      <h3>📊 スコア内訳</h3>
+      ${scoreRows}
+    </div>
+
+    <button class="retry-btn" onclick="restart()">🔄 もう一度診断する</button>
+  `;
+}
+
+function buildDiagram(p) {
+  const W = 500, H = 270;
+  const R = 34;
+
+  const pos = p.nodes.map(n => ({
+    ...n,
+    px: (n.x / 100) * (W - R*2) + R,
+    py: (n.y / 100) * (H - R*2 - 20) + R,
+  }));
+
+  const lines = p.edges.map(e => {
+    const a = pos[e.a], b = pos[e.b];
+    const mx = (a.px + b.px) / 2;
+    const my = (a.py + b.py) / 2;
+    const isRival = e.type !== 'ally';
+    return `
+      <line x1="${a.px}" y1="${a.py}" x2="${b.px}" y2="${b.py}"
+            stroke="${isRival ? '#FF5555' : '#44CC66'}"
+            stroke-width="2"
+            stroke-dasharray="${isRival ? '7 3' : 'none'}"
+            opacity="0.75"/>
+      <rect x="${mx - e.label.length * 3.3}" y="${my - 9}"
+            width="${e.label.length * 6.6}" height="14"
+            fill="rgba(0,0,0,0.65)" rx="3"/>
+      <text x="${mx}" y="${my + 2}"
+            fill="${isRival ? '#FF9999' : '#99EE99'}"
+            font-size="9" text-anchor="middle"
+            font-family="'Noto Sans JP', sans-serif">${e.label}</text>`;
+  }).join('');
+
+  const circles = pos.map((n, i) => {
+    const isHeel = n.role.includes('ヒール');
+    const isAce  = n.role.includes('エース') || n.role.includes('王者');
+    const fill   = isHeel ? '#CC2222' : isAce ? p.color : '#555';
+    const name1  = n.name.slice(0, 5);
+    const name2  = n.name.slice(5);
+    return `
+      <circle cx="${n.px}" cy="${n.py}" r="${R}" fill="${fill}" opacity="0.92"/>
+      <circle cx="${n.px}" cy="${n.py}" r="${R}" fill="none"
+              stroke="#fff" stroke-width="1.5" opacity="0.35"/>
+      <text x="${n.px}" y="${n.py - (name2 ? 6 : 2)}"
+            fill="#fff" font-size="11" text-anchor="middle" font-weight="bold"
+            font-family="'Noto Sans JP', sans-serif">${name1}</text>
+      ${name2 ? `<text x="${n.px}" y="${n.py + 8}"
+                       fill="#fff" font-size="11" text-anchor="middle" font-weight="bold"
+                       font-family="'Noto Sans JP', sans-serif">${name2}</text>` : ''}
+      <text x="${n.px}" y="${n.py + (name2 ? 22 : 16)}"
+            fill="rgba(255,255,255,0.65)" font-size="8" text-anchor="middle"
+            font-family="'Noto Sans JP', sans-serif">${n.role}</text>`;
+  }).join('');
+
+  const legend = `
+    <line x1="10" y1="${H+10}" x2="28" y2="${H+10}" stroke="#44CC66" stroke-width="2"/>
+    <text x="32" y="${H+14}" fill="#99EE99" font-size="9" font-family="sans-serif">同士・味方</text>
+    <line x1="96" y1="${H+10}" x2="114" y2="${H+10}" stroke="#FF5555" stroke-width="2" stroke-dasharray="7 3"/>
+    <text x="118" y="${H+14}" fill="#FF9999" font-size="9" font-family="sans-serif">ライバル・対立</text>`;
+
+  return `<svg class="diagram-svg" viewBox="0 0 ${W} ${H+26}"
+              xmlns="http://www.w3.org/2000/svg" style="border-radius:8px; background:rgba(0,0,0,0.3);">
+    ${lines}${circles}${legend}
+  </svg>`;
+}
+
+function restart() {
+  resetScores();
+  qIdx = 0;
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('result').innerHTML = '';
+  document.getElementById('start-screen').style.display = 'block';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>

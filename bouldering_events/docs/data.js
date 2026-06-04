@@ -1,0 +1,262 @@
+const GYMS_DATA = {
+  "last_updated": "2026-05-29T00:37:05.337008+00:00",
+  "gyms": [
+    {
+      "id": "knot",
+      "name": "KNOT",
+      "url": "https://www.bouldering-knot.com/",
+      "instagram_handle": null,
+      "instagram_primary": false,
+      "note": null,
+      "station": "名古屋駅",
+      "status": "found",
+      "snippets": [
+        {
+          "title": "【6月7日開催】千葉啓史さん特別ワークショップ「体幹を使えるクライマーになろう」",
+          "keyword": "試し履き",
+          "date": "6月7日",
+          "summary": "つまり、 👉 霊仙山は初心者でも挑戦でき、登 4月26日 名古屋でevolv試し履き会｜ボルダリングシューズ試登・即売会【ボルダリングハウスノット】 ボルダリングシューズ試し履き会＆即売会、5月1日〜10日名古屋市ボルダリングハウスノットで開催　evolv試し履き会開催｜その一足が、登りを変える",
+          "source_url": "https://www.bouldering-knot.com/blog"
+        },
+        {
+          "title": "名古屋でevolv試し履き会｜ボルダリングシューズ試登・即売会【ボルダリングハウスノット】",
+          "keyword": "試し履き",
+          "date": "5月1日",
+          "summary": "名古屋でevolv試し履き会｜ボルダリングシューズ試登・即売会【ボルダリングハウスノット】 ボルダリングシューズ試し履き会＆即売会、5月1日〜10日名古屋市ボルダリングハウスノットで開催　evolv試し履き会開催｜その一足が、登りを変える",
+          "source_url": "https://www.bouldering-knot.com/blog"
+        },
+        {
+          "title": "【花水木課題】常設リニューアル｜全35本公開｜名古屋ボルダリング",
+          "keyword": "初めての",
+          "date": "2026年4月22日",
+          "summary": "」 📊 課題概要 ・総課題数：35本 ・グレード：6級〜初段 ・初心者OKです 👉 「初めての方でも挑戦しやすい課題をご用意しています　初めての方でも楽しみながらステップアップできます",
+          "source_url": "https://www.bouldering-knot.com/blog"
+        },
+        {
+          "title": "【予約ページをリニューアルしました】初回体験・パーソナルレッスンのご案内",
+          "keyword": "初めての",
+          "date": "4月10日",
+          "summary": "これまでよりも分かりやすく、 初めての方でも安心してご利用いただける内容になっています　スタッフが施設の使い方やルールをご案内しますので、 ボルダリングが初めての方でも安心して始められます",
+          "source_url": "https://www.bouldering-knot.com/blog"
+        }
+      ],
+      "last_checked": "2026-05-29T00:36:20.647336+00:00",
+      "error": null
+    },
+    {
+      "id": "pinna",
+      "name": "Pinna2",
+      "url": "https://pinna2.com/",
+      "instagram_handle": null,
+      "instagram_primary": true,
+      "note": "体験会情報はInstagramで発信",
+      "station": null,
+      "status": "found",
+      "snippets": [
+        {
+          "title": "Toggle navigation",
+          "keyword": "初めての",
+          "date": null,
+          "summary": "Toggle navigation 初めての方へ リソラ大府店 お子様について お問い合わせ English",
+          "source_url": "https://pinna2.com/"
+        },
+        {
+          "title": "ぴなくる２は、未経験者・初心者の方には無料で初回講習を行っております。必要な道具もレンタルできます。",
+          "keyword": "初めての",
+          "date": null,
+          "summary": "初めての方へ 愛知県内3店舗",
+          "source_url": "https://pinna2.com/"
+        }
+      ],
+      "last_checked": "2026-05-29T00:36:24.075291+00:00",
+      "error": null
+    },
+    {
+      "id": "dbc",
+      "name": "D-BC 浅間通",
+      "url": "https://www.d-b-c.jp/top/sengen-cho/",
+      "instagram_handle": null,
+      "instagram_primary": false,
+      "note": "試し履き実施状況は要確認",
+      "station": "浅間町駅",
+      "status": "found",
+      "snippets": [
+        {
+          "title": "D.Bouldering Plus Sengen-cho(ディー・ボルダリング浅間町）",
+          "keyword": "はじめての",
+          "date": null,
+          "summary": "close はじめての方へ お子さまのご利用 キッズスクール 施設のご紹介 ニュース＆キャンペーン",
+          "source_url": "https://www.d-b-c.jp/top/sengen-cho/"
+        },
+        {
+          "title": "悪かったりしませんか？",
+          "keyword": "初めての",
+          "date": null,
+          "summary": "初めての場所は緊張しますよね",
+          "source_url": "https://www.d-b-c.jp/top/sengen-cho/"
+        },
+        {
+          "title": "スタートダッシュパック",
+          "keyword": "はじめての",
+          "date": null,
+          "summary": "スタートダッシュパック クライミングがはじめての人限定の超お得なパック",
+          "source_url": "https://www.d-b-c.jp/top/sengen-cho/"
+        },
+        {
+          "title": "※開始15分前にご来店いただけますと、受付がスムーズに行えます。",
+          "keyword": "体験会",
+          "date": null,
+          "summary": "キッズスクール体験会 詳しくはこちら スタッフ常駐なので安心 お得な通い放題プランあり 3才からご利用可能のキッズ専用エリア完備",
+          "source_url": "https://www.d-b-c.jp/top/sengen-cho/"
+        },
+        {
+          "title": "3才からご利用可能のキッズ専用エリア完備",
+          "keyword": "体験会",
+          "date": null,
+          "summary": "3才からご利用可能のキッズ専用エリア完備 キッズスクール体験会開講 詳しくはこちら ディーボルダリングプラス 浅間町 D.Bouldering＋Sengen-cho 〒451-0031",
+          "source_url": "https://www.d-b-c.jp/top/sengen-cho/"
+        }
+      ],
+      "last_checked": "2026-05-29T00:36:26.412125+00:00",
+      "error": null
+    },
+    {
+      "id": "colorful",
+      "name": "Colorful Rock",
+      "url": "https://colorfulrock.com/",
+      "instagram_handle": null,
+      "instagram_primary": false,
+      "note": null,
+      "station": "東海通駅",
+      "status": "found",
+      "snippets": [
+        {
+          "title": "名古屋で初心者大歓迎のボルダリングジム｜初心者・子供・体験OK",
+          "keyword": "試し履き",
+          "date": "2026年5月18日",
+          "summary": "ボルダリング体験予約はこちら 📢 カラフルロックからのお知らせ｜名古屋のジム最新情報 名古屋市港区のカラフルロックでは、 ホールド替え や 試し履き会 などのイベント情報、 物販の入荷 などを随時発信中",
+          "source_url": "https://colorfulrock.com/"
+        },
+        {
+          "title": "店内の雰囲気",
+          "keyword": "初めての",
+          "date": "定期的に行っているホールド替えのタイミン",
+          "summary": "もくじ 1 店内の雰囲気 2 ボルダリングウォールの紹介 2.1 壁の種類と角度 2.2 ムーンボード（MoonBoard） 2.3 リードクライミング・トップロープ（※現在閉鎖中） 3 中上級者・遠征クライマーの方へ 4 施設設備一覧 5 初めての方も安心 6 関連情報・あわせて読みたい 店内の雰囲気 カラフルロック",
+          "source_url": "https://colorfulrock.com/facility-information"
+        },
+        {
+          "title": "トップページ",
+          "keyword": "はじめての",
+          "date": null,
+          "summary": "トップページ はじめての方へ GUEST PRICE ACCESS 壁の種類・設備一覧",
+          "source_url": "https://colorfulrock.com/category/colorfulrock"
+        },
+        {
+          "title": "🗓 2026年4月・ゴールデンウィークのイベント＆営業スケジュール",
+          "keyword": "体験会",
+          "date": "5月7日（木）",
+          "summary": "📅 4/8（水） 🧘‍♂️ 楽動整体 施術体験会 クライマー向け整体で、肩・腰・疲労回復をサポート　📅 4/22（水） 🧘‍♂️ 楽動整体 施術体験会 ホールド替え後の新課題とあわせて、体のケアやコンディショニングにもご活用いただけます",
+          "source_url": "https://colorfulrock.com/schedule"
+        }
+      ],
+      "last_checked": "2026-05-29T00:36:33.023318+00:00",
+      "error": null
+    },
+    {
+      "id": "cuore",
+      "name": "Climbing Cuore",
+      "url": "https://climbing-cuore.com/",
+      "instagram_handle": null,
+      "instagram_primary": false,
+      "note": null,
+      "station": null,
+      "status": "found",
+      "snippets": [
+        {
+          "title": "New Chal",
+          "keyword": "初めての",
+          "date": null,
+          "summary": "New Chal 初めての方へ お子様のご利用 FLEEK ご利用ガイド 個人情報保護方針",
+          "source_url": "https://climbing-cuore.com/"
+        },
+        {
+          "title": "初回利用登録はこちら",
+          "keyword": "初めての",
+          "date": null,
+          "summary": "初回利用登録はこちら 初めての方へ お子様のご利用 FLEEK ご利用ガイド 個人情報保護方針",
+          "source_url": "https://climbing-cuore.com/news"
+        }
+      ],
+      "last_checked": "2026-05-29T00:36:37.648385+00:00",
+      "error": null
+    },
+    {
+      "id": "bolsta",
+      "name": "Bolsta",
+      "url": "https://bolsta.storeinfo.jp/",
+      "instagram_handle": null,
+      "instagram_primary": false,
+      "note": null,
+      "station": null,
+      "status": "not_found",
+      "snippets": [],
+      "last_checked": "2026-05-29T00:36:46.885899+00:00",
+      "error": null
+    },
+    {
+      "id": "tenova",
+      "name": "TENova Climbing",
+      "url": "https://tenova-climbing.com/",
+      "instagram_handle": null,
+      "instagram_primary": false,
+      "note": null,
+      "station": "名古屋市地下鉄鶴舞線植田駅",
+      "status": "not_found",
+      "snippets": [],
+      "last_checked": "2026-05-29T00:36:50.315056+00:00",
+      "error": null
+    },
+    {
+      "id": "soleil",
+      "name": "Climbing Gym Soleil2",
+      "url": "https://climbing-gym-soleil2.com/",
+      "instagram_handle": null,
+      "instagram_primary": false,
+      "note": null,
+      "station": "地下鉄東山線の藤が丘駅",
+      "status": "found",
+      "snippets": [
+        {
+          "title": "愛知県長久手市熊田313 クライミングジムソレイユ",
+          "keyword": "はじめての",
+          "date": null,
+          "summary": "愛知県長久手市熊田313 クライミングジムソレイユ はじめての方へ スクール・サークル プライベートレッスン キッズスクール クライミングジムソレイユへ",
+          "source_url": "https://climbing-gym-soleil2.com/"
+        },
+        {
+          "title": "初心者も気軽に",
+          "keyword": "クライミング体験",
+          "date": null,
+          "summary": "初心者も気軽に クライミング体験 「多くの方にボルダリングに挑戦してほしい」という思いから2012年に名古屋でオープンいたしました",
+          "source_url": "https://climbing-gym-soleil2.com/"
+        },
+        {
+          "title": "予約なしで大丈夫ですので、お気軽にいつでもご来店ください。",
+          "keyword": "はじめての",
+          "date": null,
+          "summary": "はじめての方へ 子供もたくさん楽しめる 3歳以上のお子様であればどなたでも利用可能です",
+          "source_url": "https://climbing-gym-soleil2.com/"
+        },
+        {
+          "title": "お問い合わせはこちら",
+          "keyword": "はじめての",
+          "date": null,
+          "summary": "お問い合わせはこちら はじめての方へ スタッフ紹介 プライベートレッスン キッズスクール 当ジムの特徴",
+          "source_url": "https://climbing-gym-soleil2.com/"
+        }
+      ],
+      "last_checked": "2026-05-29T00:36:56.107451+00:00",
+      "error": null
+    }
+  ]
+};

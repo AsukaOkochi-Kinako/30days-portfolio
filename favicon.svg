@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Background -->
+  <rect width="32" height="32" rx="7" fill="#FFFDF5" stroke="#1A0533" stroke-width="2"/>
+  <!-- Pink top stripe -->
+  <rect x="0" y="0" width="32" height="8" rx="7" fill="#FF2D78"/>
+  <rect x="0" y="4" width="32" height="4" fill="#FF2D78"/>
+  <!-- "30" text -->
+  <text x="16" y="26" text-anchor="middle"
+        font-family="Fredoka One, Arial Black, sans-serif"
+        font-weight="900" font-size="15" fill="#1A0533" letter-spacing="-0.5">30</text>
+</svg>

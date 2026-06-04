@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BPM Finder</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- 背景レイヤー -->
+<div class="vw-bg">
+  <div class="vw-sky"></div>
+  <div class="vw-sun">
+    <div class="vw-sun-bars"></div>
+  </div>
+  <div class="vw-grid"></div>
+</div>
+<div class="scanlines"></div>
+
+<!-- デコ -->
+<div class="deco" aria-hidden="true">
+  <span class="spark k1">✦</span>
+  <span class="spark k2">★</span>
+  <span class="spark k3">✸</span>
+  <span class="spark k4">✦</span>
+  <span class="spark k5">✺</span>
+  <span class="spark k6">★</span>
+</div>
+
+<header>
+  <div class="logo">
+    <span class="logo-icon">📼</span>
+    <div class="logo-text">
+      <span class="logo-name">BPM FINDER</span>
+      <span class="logo-sub">ビートを探せ　A E S T H E T I C</span>
+    </div>
+  </div>
+</header>
+
+<main id="main-screen">
+
+  <!-- BPM 入力 -->
+  <section class="card bpm-card">
+    <div class="card-eyebrow">Ｂ Ｐ Ｍ</div>
+    <div class="bpm-control">
+      <button class="bpm-adj" id="btn-bpm-minus" aria-label="BPM を減らす">−</button>
+      <div class="bpm-number" id="bpm-number">140</div>
+      <button class="bpm-adj" id="btn-bpm-plus" aria-label="BPM を増やす">＋</button>
+    </div>
+    <div class="pace-label" id="pace-label">ジョギング 🏃</div>
+    <input type="range" id="bpm-slider" min="60" max="210" value="140" step="1">
+    <div class="slider-labels">
+      <span>60</span>
+      <span>ウォーク</span>
+      <span>ジョグ</span>
+      <span>ラン</span>
+      <span>210</span>
+    </div>
+  </section>
+
+  <!-- 許容範囲 -->
+  <section class="inline-section">
+    <span class="section-eyebrow">許容範囲</span>
+    <div class="btn-group" id="tolerance-group">
+      <button class="toggle-btn active" data-value="5">±5 BPM</button>
+      <button class="toggle-btn" data-value="10">±10 BPM</button>
+      <button class="toggle-btn" data-value="20">±20 BPM</button>
+    </div>
+  </section>
+
+  <!-- ジャンル -->
+  <section class="card genre-card">
+    <div class="card-eyebrow">ジャンル <span class="eyebrow-hint">タップで絞り込み</span></div>
+    <div class="chip-list" id="genre-chips">
+      <button class="chip active" data-genre="all">ALL</button>
+      <button class="chip" data-genre="pop">Pop</button>
+      <button class="chip" data-genre="hip-hop">Hip-Hop</button>
+      <button class="chip" data-genre="electronic">Electronic</button>
+      <button class="chip" data-genre="dance">Dance</button>
+      <button class="chip" data-genre="rock">Rock</button>
+      <button class="chip" data-genre="r&b">R&amp;B</button>
+      <button class="chip" data-genre="j-pop">J-Pop / Anime</button>
+    </div>
+  </section>
+
+  <!-- 検索ボタン -->
+  <button class="btn-search" id="btn-search">🔍　この BPM で検索</button>
+
+  <!-- エラー -->
+  <div id="error-banner" class="error-banner hidden"></div>
+
+  <!-- 結果 -->
+  <section id="results-section" class="hidden">
+    <div class="results-header">
+      <span class="results-tag" id="results-tag">140 BPM の曲</span>
+      <button class="btn-refresh" id="btn-refresh">↺ シャッフル</button>
+    </div>
+    <div id="track-list" class="track-list"></div>
+  </section>
+
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>

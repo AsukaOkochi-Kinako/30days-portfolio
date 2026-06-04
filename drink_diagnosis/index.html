@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>おすすめのお酒診断</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍷</text></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="bg-base"></div>
+
+<!-- ===== スタート画面 ===== -->
+<div id="start-screen" class="screen">
+  <div class="start-inner">
+    <div class="start-drinks" aria-hidden="true">
+      <span class="sd sd1">🍷</span>
+      <span class="sd sd2">🍺</span>
+      <span class="sd sd3">🥃</span>
+      <span class="sd sd4">🍸</span>
+      <span class="sd sd5">🍾</span>
+    </div>
+    <div class="start-label">BAR QUIZ</div>
+    <h1 class="start-title">今夜の<br>一杯を<br>見つけよう</h1>
+    <p class="start-sub">6つの質問に答えるだけ。<br>あなたにぴったりのお酒を診断します。</p>
+    <button class="btn-start" id="btn-start">診断スタート</button>
+    <p class="start-note">🍽️ お食事のお供にもどうぞ</p>
+  </div>
+</div>
+
+<!-- ===== クイズ画面 ===== -->
+<div id="quiz-screen" class="screen hidden">
+  <div class="quiz-header">
+    <div class="progress-dots" id="progress-dots"></div>
+    <div class="q-counter" id="q-counter">Q 1 / 6</div>
+  </div>
+  <div class="quiz-body">
+    <p class="q-text" id="q-text"></p>
+    <div class="options" id="options"></div>
+  </div>
+</div>
+
+<!-- ===== ローディング ===== -->
+<div id="loading-screen" class="screen hidden">
+  <div class="loading-inner">
+    <div class="loading-emoji" id="loading-emoji">🍷</div>
+    <p class="loading-text">あなたの一杯を<br>探しています...</p>
+  </div>
+</div>
+
+<!-- ===== 結果画面 ===== -->
+<div id="result-screen" class="screen hidden">
+  <div class="result-inner">
+
+    <div class="result-announce">✦ あなたへのおすすめ ✦</div>
+
+    <div class="result-hero">
+      <div class="result-emoji" id="result-emoji">🍷</div>
+      <div class="result-name" id="result-name">赤ワイン</div>
+      <div class="result-name-en" id="result-name-en">RED WINE</div>
+      <div class="result-tagline" id="result-tagline">大人のひととき</div>
+    </div>
+
+    <div class="result-card">
+      <div class="card-section-label">おすすめの理由</div>
+      <p class="result-reason" id="result-reason"></p>
+    </div>
+
+    <div class="result-card">
+      <div class="card-section-label">このお酒の特徴</div>
+      <ul class="result-features" id="result-features"></ul>
+    </div>
+
+    <div class="result-card">
+      <div class="card-section-label">度数 ＆ カロリー</div>
+      <div class="stats-row">
+        <div class="stat-block">
+          <span class="stat-label">アルコール度数</span>
+          <span class="stat-value" id="result-abv"></span>
+        </div>
+        <div class="stat-block">
+          <span class="stat-label">カロリーの目安</span>
+          <span class="stat-value" id="result-calories"></span>
+        </div>
+      </div>
+      <div class="fat-section">
+        <div class="fat-label-row">
+          <span class="fat-label">太りやすさ</span>
+          <span class="fat-stars" id="result-fat-stars"></span>
+        </div>
+        <p class="fat-note" id="result-fat-note"></p>
+      </div>
+    </div>
+
+    <a id="maps-btn" class="maps-btn" href="#" target="_blank" rel="noopener">
+      <span class="maps-pin">📍</span>
+      <span class="maps-body">
+        <span class="maps-service">GOOGLE MAPS</span>
+        <span id="maps-label" class="maps-label">近くのお店を探す</span>
+      </span>
+      <span class="maps-arrow">→</span>
+    </a>
+
+    <button class="btn-retry" id="btn-retry">↺ もう一度診断する</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

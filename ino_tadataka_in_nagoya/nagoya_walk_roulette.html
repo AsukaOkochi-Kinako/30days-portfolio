@@ -1,0 +1,1692 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>名古屋 徒歩探索ルーレット 〜伊能式散歩術〜</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="icon" href="data:image/svg+xml,&lt;svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'&gt;&lt;text y='.9em' font-size='90'&gt;🚶&lt;/text&gt;&lt;/svg&gt;">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cream:    #f4e8c1;
+      --parchment:#ece0b4;
+      --indigo:   #1a3a5c;
+      --light-indigo: #2d5f8a;
+      --vermillion: #b5332a;
+      --dk-vermillion: #8c2520;
+      --gold:     #c8a84b;
+      --dk-gold:  #9e7b2a;
+      --green:    #2d6a4f;
+      --lt-green: #4a8a6f;
+      --brown:    #3c2010;
+      --lt-brown: #6b4226;
+    }
+
+    * { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family: 'Noto Serif JP','Yu Mincho','Hiragino Mincho ProN',serif;
+      color: var(--brown);
+      min-height: 100vh;
+      background-color: var(--cream);
+      background-image:
+        radial-gradient(ellipse at 50% 100%, rgba(200,168,75,.09) 0%, transparent 70%),
+        repeating-linear-gradient(
+          45deg,
+          transparent 0px,transparent 18px,
+          rgba(200,168,75,.045) 18px,rgba(200,168,75,.045) 19px
+        );
+    }
+
+    /* ── LAYOUT ─────────────────────────────── */
+    .wrap { max-width:920px; margin:0 auto; padding:0 16px; }
+
+    /* ── HEADER ─────────────────────────────── */
+    header {
+      text-align:center;
+      padding:28px 20px 22px;
+      position:relative;
+    }
+
+    .hdr-inner-border {
+      border:2px solid var(--gold);
+      padding:20px 30px 18px;
+      position:relative;
+    }
+    .hdr-inner-border::before,
+    .hdr-inner-border::after {
+      content:'';
+      position:absolute;
+      width:14px;height:14px;
+      border:2px solid var(--dk-gold);
+    }
+    .hdr-inner-border::before {top:-2px;left:-2px; border-right:none;border-bottom:none;}
+    .hdr-inner-border::after  {bottom:-2px;right:-2px;border-left:none;border-top:none;}
+
+    .shachihoko-row {
+      display:flex; justify-content:center; align-items:flex-end;
+      gap:28px; margin-bottom:12px;
+    }
+    .shachihoko-row svg { width:52px; height:72px; }
+    .shachihoko-row .flip { transform:scaleX(-1); }
+
+    h1 {
+      font-size:clamp(1.5em,5vw,2.3em);
+      font-weight:700;
+      color:var(--indigo);
+      letter-spacing:.12em;
+      line-height:1.3;
+    }
+    h1 .red { color:var(--vermillion); }
+
+    .subtitle {
+      margin-top:8px;
+      font-size:.82em;
+      color:var(--dk-gold);
+      letter-spacing:.22em;
+    }
+
+    .ebi-row {
+      margin-top:10px;
+      font-size:.78em;
+      color:var(--lt-brown);
+      letter-spacing:.1em;
+    }
+
+    /* ── WAVE DIVIDER ───────────────────────── */
+    .wave {
+      width:100%; overflow:hidden; line-height:0;
+      margin:16px 0;
+    }
+    .wave svg { display:block; width:100%; height:28px; }
+
+    /* ── CATEGORY SECTION ───────────────────── */
+    .cat-section {
+      background:var(--parchment);
+      border:2px solid var(--gold);
+      padding:18px 20px;
+      margin-bottom:24px;
+      text-align:center;
+      position:relative;
+    }
+    .cat-section::before,.cat-section::after {
+      content:'✦';
+      position:absolute;
+      top:-12px;
+      background:var(--cream);
+      padding:0 6px;
+      font-size:1.1em;
+      color:var(--gold);
+    }
+    .cat-section::before {left:20px;}
+    .cat-section::after  {right:20px;}
+
+    .sec-heading {
+      font-size:.92em;
+      color:var(--indigo);
+      letter-spacing:.14em;
+      margin-bottom:14px;
+    }
+
+    .cat-buttons { display:flex; justify-content:center; gap:10px; flex-wrap:wrap; }
+
+    .cat-btn {
+      padding:10px 26px;
+      border:2px solid var(--indigo);
+      background:transparent;
+      color:var(--indigo);
+      font-family:inherit;
+      font-size:.9em;
+      cursor:pointer;
+      letter-spacing:.1em;
+      transition:all .22s;
+      position:relative;
+    }
+    .cat-btn::before,.cat-btn::after {
+      content:'';
+      position:absolute;
+      width:7px;height:7px;
+      border:1px solid var(--gold);
+    }
+    .cat-btn::before {top:3px;left:3px;border-right:none;border-bottom:none;}
+    .cat-btn::after  {bottom:3px;right:3px;border-left:none;border-top:none;}
+
+    .cat-btn:hover,.cat-btn.active {
+      background:var(--indigo);
+      color:var(--cream);
+    }
+
+    .cat-btn .note {
+      display:block;
+      font-size:.68em;
+      opacity:.82;
+      margin-top:2px;
+    }
+
+    /* ── ROULETTE SECTION ───────────────────── */
+    .roulette-wrap {
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:22px;
+      margin-bottom:30px;
+    }
+
+    .wheel-outer {
+      position:relative;
+      display:inline-block;
+    }
+
+    .pointer-svg {
+      position:absolute;
+      top:-40px;
+      left:50%;
+      transform:translateX(-50%);
+      z-index:10;
+    }
+
+    canvas#wheel {
+      display:block;
+      border-radius:50%;
+      box-shadow:
+        0 0 0 5px var(--gold),
+        0 0 0 9px var(--indigo),
+        0 12px 32px rgba(0,0,0,.35);
+    }
+
+    .spin-btn {
+      padding:13px 50px;
+      background:linear-gradient(135deg,var(--vermillion),var(--dk-vermillion));
+      color:#fff;
+      border:2px solid var(--dk-vermillion);
+      font-family:inherit;
+      font-size:1.1em;
+      cursor:pointer;
+      letter-spacing:.22em;
+      transition:all .22s;
+      box-shadow:0 4px 16px rgba(181,51,42,.42),inset 0 1px 0 rgba(255,255,255,.18);
+      position:relative;
+    }
+    .spin-btn::before,.spin-btn::after {
+      content:'';
+      position:absolute;
+      width:9px;height:9px;
+      border:1px solid rgba(255,255,255,.45);
+    }
+    .spin-btn::before {top:4px;left:4px;border-right:none;border-bottom:none;}
+    .spin-btn::after  {bottom:4px;right:4px;border-left:none;border-top:none;}
+
+    .spin-btn:hover:not(:disabled) {
+      transform:translateY(-2px);
+      box-shadow:0 6px 22px rgba(181,51,42,.55),inset 0 1px 0 rgba(255,255,255,.18);
+    }
+    .spin-btn:disabled { opacity:.6; cursor:not-allowed; transform:none; }
+
+    .solo-note {
+      font-size:.78em;
+      color:var(--dk-gold);
+      letter-spacing:.08em;
+      margin-top:-10px;
+    }
+
+    /* ── RESULT SECTION ─────────────────────── */
+    .result-section {
+      display:none;
+      background:var(--parchment);
+      border:3px solid var(--indigo);
+      padding:24px;
+      position:relative;
+      animation:fadeUp .8s ease;
+    }
+    @keyframes fadeUp {
+      from{opacity:0;transform:translateY(18px);}
+      to  {opacity:1;transform:translateY(0);}
+    }
+    .result-section::before {
+      content:'';
+      position:absolute;
+      inset:6px;
+      border:1px solid var(--gold);
+      pointer-events:none;
+    }
+
+    .result-hdr { text-align:center; margin-bottom:18px; }
+
+    .result-badge {
+      display:inline-block;
+      background:var(--vermillion);
+      color:#fff;
+      padding:3px 14px;
+      font-size:.76em;
+      letter-spacing:.15em;
+      margin-bottom:8px;
+    }
+
+    .result-name {
+      font-size:clamp(1.3em,4vw,1.7em);
+      font-weight:700;
+      color:var(--indigo);
+      letter-spacing:.08em;
+    }
+
+    .result-stars {
+      margin-top:8px;
+      color:var(--gold);
+      font-size:.95em;
+      letter-spacing:8px;
+    }
+
+    .divider-gold {
+      height:2px;
+      background:linear-gradient(to right,transparent,var(--gold),transparent);
+      margin:14px 0;
+    }
+
+    .result-body {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:22px;
+      align-items:start;
+    }
+    @media(max-width:600px){
+      .result-body {grid-template-columns:1fr;}
+    }
+
+    .result-illus {
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+    }
+    .result-illus svg {
+      width:100%;
+      max-width:290px;
+      height:auto;
+      border:2px solid var(--brown);
+      box-shadow:4px 4px 0 var(--gold);
+    }
+    .illus-caption {
+      font-size:.7em;
+      color:var(--dk-gold);
+      margin-top:7px;
+      font-style:italic;
+      letter-spacing:.06em;
+    }
+
+    .result-details { display:flex; flex-direction:column; gap:11px; }
+
+    .detail-row { display:flex; gap:9px; align-items:flex-start; }
+
+    .dtag {
+      background:var(--indigo);
+      color:var(--cream);
+      padding:3px 9px;
+      font-size:.74em;
+      white-space:nowrap;
+      flex-shrink:0;
+      letter-spacing:.04em;
+      min-width:52px;
+      text-align:center;
+    }
+
+    .dval {
+      font-size:.87em;
+      line-height:1.65;
+      padding-top:2px;
+    }
+    .dval.big {
+      color:var(--vermillion);
+      font-weight:600;
+      font-size:.95em;
+    }
+    .dval.desc {
+      border-left:3px solid var(--gold);
+      padding-left:10px;
+    }
+
+    .feat-tags { display:flex; flex-wrap:wrap; gap:4px; margin-top:2px; }
+    .feat-tag {
+      background:var(--cream);
+      border:1px solid var(--gold);
+      padding:2px 9px;
+      font-size:.75em;
+      color:var(--indigo);
+    }
+
+    /* ── FOOTER ─────────────────────────────── */
+    footer {
+      text-align:center;
+      padding:18px 10px;
+      margin-top:36px;
+      border-top:3px double var(--gold);
+      font-size:.75em;
+      color:var(--dk-gold);
+      letter-spacing:.1em;
+      line-height:1.9;
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ══ HEADER ══════════════════════════════ -->
+  <header>
+    <div class="hdr-inner-border">
+      <img src="logo_illust.png" alt="名古屋 徒歩探索ルーレット ロゴ">
+
+      <h1>名古屋 <span class="red">徒歩探索</span> ルーレット</h1>
+      <div class="subtitle">〜 伊能忠敬に倣いて、大名古屋を歩く 〜</div>
+      <div class="ebi-row">🦐 名古屋の道を、自らの足で測れ 🦐</div>
+      </div><!-- shachihoko-row -->
+    </div>
+  </header>
+
+  <!-- ══ WAVE ══════════════════════════════ -->
+  <div class="wave">
+    <svg viewBox="0 0 1200 30" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,18 C80,4 160,28 240,18 C320,8 400,28 480,18 C560,8 640,28 720,18 C800,8 880,28 960,18 C1040,8 1120,28 1200,18 L1200,30 L0,30Z" fill="#1a3a5c" opacity=".55"/>
+      <path d="M0,23 C100,10 200,30 300,23 C400,16 500,30 600,23 C700,16 800,30 900,23 C1000,16 1100,30 1200,23 L1200,30 L0,30Z" fill="#c8a84b" opacity=".35"/>
+    </svg>
+  </div>
+
+  <!-- ══ CATEGORY ═══════════════════════════ -->
+  <section class="cat-section">
+    <div class="sec-heading">── 距離カテゴリを選んでください ──</div>
+    <div class="cat-buttons">
+      <button class="cat-btn active" data-cat="short"  onclick="selectCat('short')">
+        短距離<span class="note">〜5 km</span>
+      </button>
+      <button class="cat-btn"        data-cat="medium" onclick="selectCat('medium')">
+        中距離<span class="note">5〜15 km</span>
+      </button>
+      <button class="cat-btn"        data-cat="long"   onclick="selectCat('long')">
+        長距離<span class="note">15 km〜</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ══ ROULETTE ════════════════════════════ -->
+  <section class="roulette-wrap">
+    <div class="wheel-outer">
+      <!-- pointer arrow -->
+      <svg class="pointer-svg" width="34" height="56" viewBox="0 0 34 56">
+        <!-- gold knob (handle) at top -->
+        <circle cx="17" cy="11" r="10" fill="#c8a84b" stroke="#7a5c14" stroke-width="1.5"/>
+        <circle cx="17" cy="11" r="5"  fill="#e8c860" stroke="none"/>
+        <!-- stem -->
+        <rect x="15" y="20" width="4" height="18" fill="#b5332a" stroke="#8c2520" stroke-width=".6"/>
+        <!-- downward-pointing arrowhead -->
+        <polygon points="17,56 5,36 29,36" fill="#b5332a" stroke="#8c2520" stroke-width="1.2"/>
+      </svg>
+      <canvas id="wheel" width="310" height="310"></canvas>
+    </div>
+
+    <p class="solo-note" id="soloNote" style="display:none">
+      このカテゴリはルート1本のみ！回すと必ずそのルートに決定します。
+    </p>
+
+    <button class="spin-btn" id="spinBtn" onclick="spin()">
+      🦐 ルーレットを回す 🦐
+    </button>
+  </section>
+
+  <!-- ══ RESULT ══════════════════════════════ -->
+  <section class="result-section" id="result">
+    <div class="result-hdr">
+      <div class="result-badge" id="rBadge">長距離コース</div>
+      <div class="result-name"  id="rName">名城線一周</div>
+      <div class="result-stars">✦ ✦ ✦</div>
+    </div>
+
+    <div class="divider-gold"></div>
+
+    <div class="result-body">
+      <div class="result-illus">
+        <div id="rIllus"></div>
+        <div class="illus-caption" id="rCaption"></div>
+      </div>
+
+      <div class="result-details">
+        <div class="detail-row">
+          <div class="dtag">距　離</div>
+          <div class="dval big" id="rDist"></div>
+        </div>
+        <div class="detail-row">
+          <div class="dtag">所要時間</div>
+          <div class="dval big" id="rTime"></div>
+        </div>
+        <div class="detail-row">
+          <div class="dtag">最寄駅</div>
+          <div class="dval" id="rStation"></div>
+        </div>
+        <div class="detail-row">
+          <div class="dtag">概　要</div>
+          <div class="dval desc" id="rDesc"></div>
+        </div>
+        <div class="detail-row">
+          <div class="dtag">特　徴</div>
+          <div class="feat-tags" id="rFeat"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══ WAVE (bottom) ═════════════════════ -->
+  <div class="wave" style="transform:scaleY(-1);margin-top:20px;">
+    <svg viewBox="0 0 1200 30" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M0,18 C80,4 160,28 240,18 C320,8 400,28 480,18 C560,8 640,28 720,18 C800,8 880,28 960,18 C1040,8 1120,28 1200,18 L1200,30 L0,30Z" fill="#1a3a5c" opacity=".45"/>
+      <path d="M0,23 C100,10 200,30 300,23 C400,16 500,30 600,23 C700,16 800,30 900,23 C1000,16 1100,30 1200,23 L1200,30 L0,30Z" fill="#c8a84b" opacity=".3"/>
+    </svg>
+  </div>
+
+  <footer>
+    🏯 名古屋の道を、一歩一歩 🏯<br>
+    伊能忠敬 × 名古屋 長距離ウォーキング探索<br>
+    <span style="font-size:.9em;">※ 所要時間・距離は目安です。体調・信号待ち等により前後します。水分補給を忘れずに。</span>
+  </footer>
+
+</div><!-- /wrap -->
+
+<script>
+/* ════════════════════════════════════════
+   ROUTE DATA
+════════════════════════════════════════ */
+const ROUTES = {
+  short: [
+    {
+      id:'meijopark',
+      name:'名城公園一周',
+      category:'短距離コース',
+      dist:'約 3.5 km',
+      time:'約 50分',
+      station:'地下鉄名城線「名城公園駅」徒歩すぐ',
+      desc:'名古屋城の外堀に沿って整備された名城公園を一周するウォーキングコース。城郭の石垣と水面が美しい風景を作り出す、名古屋を代表する散策路。春には桜が満開となり、花見客でにぎわいます。',
+      feat:['🌸 桜の名所（春）','🏯 名古屋城を眺望','🏃 ジョギングコース','🌿 藤棚あり'],
+    },
+    {
+      id:'osu',
+      name:'大須商店街 全路地踏破',
+      category:'短距離コース',
+      dist:'約 2.5 km',
+      time:'約 45分〜（休憩なし）',
+      station:'鶴舞線「大須観音駅」徒歩すぐ\n名城線「上前津駅」徒歩5分',
+      desc:'1,200店舗以上が軒を連ねる名古屋最大の商店街を全路地踏破するチャレンジコース。大須観音を中心に広がる迷路のような路地には、古着・電子部品・グルメ・多国籍文化が混在。伊能忠敬のごとく全ての道を歩き尽くせ！',
+      feat:['⛩️ 大須観音','👘 古着・コスプレ','🍜 名古屋グルメ','🌏 多国籍文化'],
+    },
+    {
+      id:'atsutashrine',
+      name:'熱田神宮 境内めぐり',
+      category:'短距離コース',
+      dist:'約 3 km',
+      time:'約 40分',
+      station:'名城線「熱田神宮伝馬町駅」徒歩10分\n名鉄「神宮前駅」徒歩3分',
+      desc:'日本三大神宮のひとつ・熱田神宮の広大な境内を歩く歴史散策コース。樹齢千年を超える楠の巨木が立ち並ぶ神聖な森の中を歩けば、名古屋の喧騒を忘れる別世界が広がります。草薙の剣を祀る信仰の地を、自らの足で踏みしめよ。',
+      feat:['⛩️ 熱田神宮本宮','🌲 千年の楠','🏛️ 宝物館','💧 清水社'],
+    },
+    {
+      id:'tsurumakoen',
+      name:'鶴舞公園〜白川公園 緑の道',
+      category:'短距離コース',
+      dist:'約 3.5 km',
+      time:'約 50分',
+      station:'地下鉄鶴舞線「鶴舞駅」徒歩すぐ',
+      desc:'名古屋市内最古の公園・鶴舞公園から栄を経て白川公園まで都心の緑をつないで歩くコース。鶴舞公園の噴水塔と薔薇園、白川公園の科学館・美術館など、文化と自然が融合した都市型ウォーキングです。',
+      feat:['🌹 バラ園（春）','🔭 名古屋市科学館','🎨 市美術館','🌿 都市の緑道'],
+    },
+  ],
+  medium: [
+    {
+      id:'higashiyama',
+      name:'東山一万歩コース',
+      category:'中距離コース',
+      dist:'約 7 km',
+      time:'約 1時間40分',
+      station:'地下鉄東山線「東山公園駅」徒歩すぐ',
+      desc:'緑豊かな丘陵地帯に広がる東山エリアを歩く、名古屋市民に愛されるウォーキングコース。東山動植物園の外周や自然歩道を辿りながら起伏のある地形を歩き、一万歩以上の達成感を味わえます。都会の中の自然でリフレッシュ！',
+      feat:['🐘 東山動植物園','🌲 豊かな自然','🌿 植物園','🎋 展望台あり'],
+    },
+    {
+      id:'castletoatsuta',
+      name:'名古屋城〜熱田神宮 歴史街道',
+      category:'中距離コース',
+      dist:'約 9 km',
+      time:'約 2時間10分',
+      station:'名城線「名古屋城駅」（起点）\n名鉄「神宮前駅」（終点）',
+      desc:'名古屋城から熱田神宮まで名古屋の歴史を南下するコース。東海道の宿場町の名残が残る旧街道を辿りながら尾張の歴史を感じる本格的な歴史街道ウォーキング。城下町から神宮の杜まで、名古屋を縦断しよう。',
+      feat:['🏯 名古屋城','🛤️ 旧東海道','⛩️ 熱田神宮','📜 歴史街道'],
+    },
+    {
+      id:'kakuozan',
+      name:'覚王山〜本山 寺町散策',
+      category:'中距離コース',
+      dist:'約 7 km',
+      time:'約 1時間45分',
+      station:'東山線「覚王山駅」（起点）\n鶴舞線「八事日赤駅」（終点）',
+      desc:'おしゃれなカフェと寺院が共存する覚王山エリアから本山・八事へと続く個性豊かなコース。日本唯一の万国仏教徒の聖地・日泰寺の参道ケヤキ並木は圧巻。名古屋の「知る人ぞ知る」上質な街並みを散歩しよう。',
+      feat:['🏛️ 日泰寺','☕ 覚王山カフェ','🌳 ケヤキ並木','🗺️ 寺町散策'],
+    },
+  ],
+  long: [
+    {
+      id:'higashiyamaline',
+      name:'東山線横断',
+      category:'長距離コース',
+      dist:'約 20 km',
+      time:'約 4時間30分',
+      station:'東山線「藤が丘駅」（起点）\n〜「中村公園駅」（終点）',
+      desc:'名古屋の東西を貫く東山線の沿線を地上で端から端まで歩く本格横断コース。郊外の住宅地から繁華街・栄、名古屋駅、そして中村の下町まで名古屋の多彩な顔を一日で体感。中部電力MIRAI TOWER（旧テレビ塔）も必ず通過します。',
+      feat:['🗼 MIRAI TOWER','🏙️ 栄・名古屋駅','🏘️ 下町散策','📍 全26駅沿線'],
+    },
+    {
+      id:'meijoline',
+      name:'名城線一周',
+      category:'長距離コース',
+      dist:'約 26 km',
+      time:'約 6時間',
+      station:'名城線「名古屋城駅」を起点に\n環状一周してスタート地点へ',
+      desc:'日本で唯一の環状地下鉄・名城線の沿線を地上で完全一周する究極のウォーキング挑戦。名古屋城から熱田神宮、金山、大曽根まで名古屋の名所を巡りながら26kmを踏破。まさに伊能忠敬が地図を作るように、自らの足で名古屋の輪郭を描け！',
+      feat:['🏯 名古屋城','⛩️ 熱田神宮','🎵 金山','🔄 完全環状'],
+    },
+    {
+      id:'tsurumakosen',
+      name:'鶴舞線横断',
+      category:'長距離コース',
+      dist:'約 18 km',
+      time:'約 4時間',
+      station:'鶴舞線「上小田井駅」（起点）\n〜「赤池駅」（終点）',
+      desc:'名古屋の北西から南東を斜めに横断する鶴舞線の沿線を端から端まで歩くコース。庄内緑地、浄心、大須、鶴舞と名古屋の多彩なエリアを縦横無尽に踏破。東山線横断より少し短めだが、バラエティ豊かさは随一！',
+      feat:['🌳 庄内緑地','⛩️ 大須観音','🌸 鶴舞公園','🎯 全18駅踏破'],
+    },
+    {
+      id:'nagoyakocastle',
+      name:'名古屋港〜名古屋城',
+      category:'長距離コース',
+      dist:'約 16 km',
+      time:'約 3時間45分',
+      station:'名城線「名古屋港駅」（起点）\n〜「名古屋城駅」（終点）',
+      desc:'名古屋港のポートタワーを出発し市内を北上して名古屋城に至る南北縦断コース。港町から下町、繁華街、そして城下町へと劇的に変化する名古屋の風景を堪能できる、コントラスト豊かな長距離ウォーキング。',
+      feat:['🗼 ポートタワー','🚢 名古屋港','🏙️ 市街地縦断','🏯 名古屋城'],
+    },
+  ],
+};
+
+/* ════════════════════════════════════════
+   STATE & CANVAS SETUP
+════════════════════════════════════════ */
+let currentCat = 'short';
+let spinning   = false;
+let wheelAngle = 0;
+
+const canvas = document.getElementById('wheel');
+const ctx    = canvas.getContext('2d');
+
+const SEG_COLORS  = ['#1a3a5c','#b5332a','#2d6a4f','#c8a84b','#3d6b8f','#7a3c14'];
+const TEXT_COLORS = {
+  '#1a3a5c':'#f4e8c1','#b5332a':'#f4e8c1','#2d6a4f':'#f4e8c1',
+  '#c8a84b':'#2c1810','#3d6b8f':'#f4e8c1','#7a3c14':'#f4e8c1',
+};
+
+/* ════════════════════════════════════════
+   CATEGORY SELECT
+════════════════════════════════════════ */
+function selectCat(cat) {
+  currentCat = cat;
+  document.querySelectorAll('.cat-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.cat === cat);
+  });
+  document.getElementById('soloNote').style.display =
+    ROUTES[cat].length === 1 ? 'block' : 'none';
+  document.getElementById('result').style.display = 'none';
+  wheelAngle = 0;
+  drawWheel(0);
+}
+
+/* ════════════════════════════════════════
+   DRAW WHEEL
+════════════════════════════════════════ */
+function drawWheel(rot) {
+  const list = ROUTES[currentCat];
+  const n    = list.length;
+  const seg  = (2 * Math.PI) / n;
+  const cx   = canvas.width  / 2;
+  const cy   = canvas.height / 2;
+  const R    = cx - 12;
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  /* rim ring */
+  ctx.beginPath();
+  ctx.arc(cx, cy, R + 10, 0, 2 * Math.PI);
+  ctx.fillStyle = '#9e7b2a';
+  ctx.fill();
+
+  /* decorative dots on rim */
+  const dotCount = Math.max(24, n * 6);
+  for (let i = 0; i < dotCount; i++) {
+    const a   = (i / dotCount) * 2 * Math.PI + rot;
+    const dx  = cx + (R + 6) * Math.cos(a);
+    const dy  = cy + (R + 6) * Math.sin(a);
+    ctx.beginPath();
+    ctx.arc(dx, dy, 2.2, 0, 2 * Math.PI);
+    ctx.fillStyle = i % 3 === 0 ? '#2c1810' : '#f4e8c1';
+    ctx.fill();
+  }
+
+  /* segments */
+  for (let i = 0; i < n; i++) {
+    const sa  = rot + i * seg;
+    const ea  = sa + seg;
+    const col = SEG_COLORS[i % SEG_COLORS.length];
+
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, R, sa, ea);
+    ctx.closePath();
+    ctx.fillStyle = col;
+    ctx.fill();
+    ctx.strokeStyle = '#c8a84b';
+    ctx.lineWidth   = 1.8;
+    ctx.stroke();
+
+    /* subtle spoke lines */
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, R, sa, ea);
+    ctx.closePath();
+    ctx.clip();
+    for (let k = 0; k < 8; k++) {
+      const pa = sa + (k / 8) * seg;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.lineTo(cx + R * Math.cos(pa), cy + R * Math.sin(pa));
+      ctx.strokeStyle = 'rgba(255,255,255,.07)';
+      ctx.lineWidth   = 5;
+      ctx.stroke();
+    }
+    ctx.restore();
+
+    /* text */
+    const mid   = sa + seg / 2;
+    const tr    = R * 0.60;
+    const tx    = cx + tr * Math.cos(mid);
+    const ty    = cy + tr * Math.sin(mid);
+    const tCol  = TEXT_COLORS[col] || '#f4e8c1';
+
+    ctx.save();
+    ctx.translate(tx, ty);
+    ctx.rotate(mid + Math.PI / 2);
+    ctx.fillStyle   = tCol;
+    ctx.textAlign   = 'center';
+    ctx.textBaseline = 'middle';
+
+    const label = list[i].name;
+    const chunkLen = 6;
+    if (label.length <= chunkLen) {
+      ctx.font = 'bold 14px "Noto Serif JP",serif';
+      ctx.fillText(label, 0, 0);
+    } else {
+      ctx.font = 'bold 12px "Noto Serif JP",serif';
+      const lines = [];
+      for (let c = 0; c < label.length; c += chunkLen) {
+        lines.push(label.slice(c, c + chunkLen));
+      }
+      const lh   = 15;
+      const base = -((lines.length - 1) * lh) / 2;
+      lines.forEach((ln, li) => ctx.fillText(ln, 0, base + li * lh));
+    }
+    ctx.restore();
+  }
+
+  /* center hub */
+  ctx.beginPath();
+  ctx.arc(cx, cy, 30, 0, 2 * Math.PI);
+  ctx.fillStyle   = '#c8a84b';
+  ctx.fill();
+  ctx.strokeStyle = '#2c1810';
+  ctx.lineWidth   = 2.5;
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, 20, 0, 2 * Math.PI);
+  ctx.fillStyle   = '#f4e8c1';
+  ctx.fill();
+  ctx.strokeStyle = '#9e7b2a';
+  ctx.lineWidth   = 1.5;
+  ctx.stroke();
+
+  /* compass cross in hub */
+  [0, Math.PI/2, Math.PI, 3*Math.PI/2].forEach(a => {
+    ctx.beginPath();
+    ctx.moveTo(cx + 6 * Math.cos(a), cy + 6 * Math.sin(a));
+    ctx.lineTo(cx + 17 * Math.cos(a), cy + 17 * Math.sin(a));
+    ctx.strokeStyle = '#1a3a5c';
+    ctx.lineWidth   = 1.8;
+    ctx.stroke();
+  });
+  ctx.beginPath();
+  ctx.arc(cx, cy, 4, 0, 2 * Math.PI);
+  ctx.fillStyle = '#1a3a5c';
+  ctx.fill();
+}
+
+/* ════════════════════════════════════════
+   SPIN
+════════════════════════════════════════ */
+function spin() {
+  if (spinning) return;
+
+  const list = ROUTES[currentCat];
+  const n    = list.length;
+  const seg  = (2 * Math.PI) / n;
+
+  const winIdx     = Math.floor(Math.random() * n);
+  const winMid     = winIdx * seg + seg / 2;
+  // ポインターは真上(-π/2)。finalAngle + winMid ≡ -π/2 (mod 2π) になるよう計算
+  const baseTarget = -Math.PI / 2 - winMid;
+  // 演出用の全周回転を加算（端数ゼロ = 停止位置ずれなし）
+  const spins      = 5 + Math.floor(Math.random() * 5); // 5〜9回転
+  const delta      = ((baseTarget - wheelAngle) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI);
+  const finalAngle = wheelAngle + delta + spins * 2 * Math.PI;
+
+  spinning = true;
+  document.getElementById('spinBtn').disabled = true;
+  document.getElementById('result').style.display = 'none';
+
+  const duration  = 4200 + Math.random() * 1600;
+  const startTime = performance.now();
+  const startAng  = wheelAngle;
+
+  function ease(t){ return 1 - Math.pow(1 - t, 4); }
+
+  function frame(now) {
+    const p = Math.min((now - startTime) / duration, 1);
+    wheelAngle = startAng + (finalAngle - startAng) * ease(p);
+    drawWheel(wheelAngle);
+    if (p < 1) {
+      requestAnimationFrame(frame);
+    } else {
+      wheelAngle = finalAngle;
+      spinning   = false;
+      document.getElementById('spinBtn').disabled = false;
+      showResult(list[winIdx]);
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+/* ════════════════════════════════════════
+   SHOW RESULT
+════════════════════════════════════════ */
+function showResult(route) {
+  document.getElementById('rBadge').textContent   = route.category;
+  document.getElementById('rName').textContent    = route.name;
+  document.getElementById('rDist').textContent    = route.dist;
+  document.getElementById('rTime').textContent    = route.time;
+  document.getElementById('rStation').textContent = route.station;
+  document.getElementById('rDesc').textContent    = route.desc;
+  document.getElementById('rCaption').textContent = '〽 ' + route.name + ' 〽';
+  document.getElementById('rFeat').innerHTML      =
+    route.feat.map(f => `<span class="feat-tag">${f}</span>`).join('');
+  document.getElementById('rIllus').innerHTML     = ILLUS[route.id] || '';
+
+  const el = document.getElementById('result');
+  el.style.display = 'block';
+  setTimeout(() => el.scrollIntoView({ behavior:'smooth', block:'start' }), 80);
+}
+
+/* ════════════════════════════════════════
+   UKIYO-E ILLUSTRATIONS
+════════════════════════════════════════ */
+const ILLUS = {
+
+/* ─────────── 名城公園一周 ─────────── */
+meijopark: `<svg viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg">
+  <!-- sky bands -->
+  <rect x="0" y="0" width="300" height="220" fill="#a0cce0"/>
+  <rect x="0" y="0" width="300" height="30"  fill="#c5dff0"/>
+  <rect x="0" y="30" width="300" height="25" fill="#b4d4ea"/>
+  <rect x="0" y="55" width="300" height="20" fill="#a8cce4"/>
+  <!-- ukiyo-e cloud left -->
+  <ellipse cx="55" cy="38" rx="28" ry="12" fill="#f0eedc" stroke="#ccc" stroke-width=".5"/>
+  <ellipse cx="38" cy="40" rx="16" ry="9"  fill="#f0eedc"/>
+  <ellipse cx="72" cy="41" rx="14" ry="8"  fill="#f0eedc"/>
+  <ellipse cx="55" cy="30" rx="18" ry="8"  fill="#f0eedc"/>
+  <!-- ukiyo-e cloud right -->
+  <ellipse cx="240" cy="28" rx="30" ry="12" fill="#f0eedc" stroke="#ccc" stroke-width=".5"/>
+  <ellipse cx="222" cy="30" rx="16" ry="8"  fill="#f0eedc"/>
+  <ellipse cx="258" cy="31" rx="14" ry="7"  fill="#f0eedc"/>
+  <ellipse cx="240" cy="20" rx="20" ry="9"  fill="#f0eedc"/>
+  <!-- moat water (bottom) with ukiyo-e waves -->
+  <rect x="0" y="172" width="300" height="48" fill="#1a3a5c"/>
+  <path d="M0,178 C20,172 40,184 60,178 C80,172 100,184 120,178 C140,172 160,184 180,178 C200,172 220,184 240,178 C260,172 280,184 300,178" fill="none" stroke="white" stroke-width="1.8" opacity=".6"/>
+  <path d="M0,186 C25,180 50,192 75,186 C100,180 125,192 150,186 C175,180 200,192 225,186 C250,180 275,192 300,186" fill="none" stroke="white" stroke-width="1.4" opacity=".5"/>
+  <path d="M0,194 C20,188 40,200 60,194 C80,188 100,200 120,194 C140,188 160,200 180,194 C200,188 220,200 240,194 C260,188 280,200 300,194" fill="none" stroke="white" stroke-width="1.2" opacity=".4"/>
+  <!-- green ground strip -->
+  <rect x="0" y="155" width="300" height="22" fill="#2d6a4f"/>
+  <rect x="0" y="165" width="300" height="10" fill="#256040"/>
+  <!-- stone walls -->
+  <rect x="60" y="122" width="180" height="38" fill="#888" rx="1" stroke="#555" stroke-width=".8"/>
+  <line x1="60" y1="132" x2="240" y2="132" stroke="#666" stroke-width=".6"/>
+  <line x1="60" y1="142" x2="240" y2="142" stroke="#666" stroke-width=".6"/>
+  <line x1="60" y1="152" x2="240" y2="152" stroke="#666" stroke-width=".6"/>
+  <line x1="100" y1="122" x2="100" y2="160" stroke="#666" stroke-width=".6"/>
+  <line x1="140" y1="122" x2="140" y2="160" stroke="#666" stroke-width=".6"/>
+  <line x1="180" y1="122" x2="180" y2="160" stroke="#666" stroke-width=".6"/>
+  <!-- castle tower (simplified) -->
+  <!-- level 1 base stone -->
+  <rect x="108" y="95" width="84" height="30" fill="#aaa" stroke="#555" stroke-width=".8"/>
+  <!-- level 1 walls -->
+  <rect x="114" y="72" width="72" height="25" fill="#e0d8c4" stroke="#666" stroke-width=".8"/>
+  <!-- level 1 roof -->
+  <polygon points="107,72 117,55 183,55 193,72" fill="#1e1e1e" stroke="#111" stroke-width=".8"/>
+  <path d="M107,72 Q102,70 100,75" fill="#1e1e1e"/>
+  <path d="M193,72 Q198,70 200,75" fill="#1e1e1e"/>
+  <!-- level 2 walls -->
+  <rect x="124" y="46" width="52" height="27" fill="#e0d8c4" stroke="#666" stroke-width=".8"/>
+  <!-- level 2 roof -->
+  <polygon points="117,46 125,30 175,30 183,46" fill="#1e1e1e" stroke="#111" stroke-width=".8"/>
+  <path d="M117,46 Q112,44 110,49" fill="#1e1e1e"/>
+  <path d="M183,46 Q188,44 190,49" fill="#1e1e1e"/>
+  <!-- level 3 walls -->
+  <rect x="132" y="22" width="36" height="26" fill="#e0d8c4" stroke="#666" stroke-width=".8"/>
+  <!-- level 3 roof (top) -->
+  <polygon points="126,22 134,8 166,8 174,22" fill="#1e1e1e" stroke="#111" stroke-width=".8"/>
+  <!-- shachihoko pair -->
+  <path d="M134,8 C131,2 127,-2 129,5 C131,9 134,8 134,8Z" fill="#c8a84b" stroke="#9e7b2a" stroke-width=".8"/>
+  <path d="M166,8 C169,2 173,-2 171,5 C169,9 166,8 166,8Z" fill="#c8a84b" stroke="#9e7b2a" stroke-width=".8"/>
+  <!-- cherry blossoms left -->
+  <rect x="22" y="110" width="6" height="50" fill="#5a3010"/>
+  <path d="M25,112 Q8,100 12,85 Q18,72 28,80 Q16,88 25,112Z" fill="#5a3010"/>
+  <circle cx="18" cy="88"  r="14" fill="#f4a0b0" opacity=".82"/>
+  <circle cx="30" cy="78"  r="12" fill="#fce8ef" opacity=".78"/>
+  <circle cx="10" cy="100" r="10" fill="#f4a0b0" opacity=".75"/>
+  <circle cx="36" cy="92"  r="10" fill="#fce8ef" opacity=".70"/>
+  <!-- cherry blossoms right -->
+  <rect x="272" y="110" width="6" height="50" fill="#5a3010"/>
+  <path d="M275,112 Q292,100 288,85 Q282,72 272,80 Q284,88 275,112Z" fill="#5a3010"/>
+  <circle cx="282" cy="88"  r="14" fill="#f4a0b0" opacity=".82"/>
+  <circle cx="270" cy="78"  r="12" fill="#fce8ef" opacity=".78"/>
+  <circle cx="290" cy="100" r="10" fill="#f4a0b0" opacity=".75"/>
+  <circle cx="264" cy="92"  r="10" fill="#fce8ef" opacity=".70"/>
+  <!-- title stamp -->
+  <rect x="2" y="2" width="60" height="22" fill="#b5332a" opacity=".85" rx="1"/>
+  <text x="32" y="17" text-anchor="middle" font-size="10" fill="white" font-family="serif" letter-spacing="1">名城公園</text>
+</svg>`,
+
+/* ─────────── 大須商店街 ─────────── */
+osu: `<svg viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg">
+  <!-- sky / background -->
+  <rect x="0" y="0" width="300" height="220" fill="#f0e6c8"/>
+  <rect x="0" y="0" width="300" height="60"  fill="#e8dabe"/>
+  <!-- Osu Kannon temple roof -->
+  <rect x="80" y="22" width="140" height="28" fill="#ddd6c4" stroke="#666" stroke-width=".8"/>
+  <polygon points="66,22 150,2 234,22" fill="#1e1e1e" stroke="#111" stroke-width="1"/>
+  <path d="M66,22 Q60,20 58,26" fill="#1e1e1e"/>
+  <path d="M234,22 Q240,20 242,26" fill="#1e1e1e"/>
+  <rect x="110" y="10" width="80" height="14" fill="#c8a84b" stroke="#9e7b2a" stroke-width=".6" rx="1"/>
+  <text x="150" y="21" text-anchor="middle" font-size="9" fill="#2c1810" font-family="serif" font-weight="bold">大須観音</text>
+  <!-- red pillars -->
+  <rect x="94"  y="22" width="10" height="60" fill="#b5332a" stroke="#8c2520" stroke-width=".5"/>
+  <rect x="196" y="22" width="10" height="60" fill="#b5332a" stroke="#8c2520" stroke-width=".5"/>
+  <rect x="120" y="22" width="8"  height="55" fill="#b5332a" stroke="#8c2520" stroke-width=".5"/>
+  <rect x="172" y="22" width="8"  height="55" fill="#b5332a" stroke="#8c2520" stroke-width=".5"/>
+  <!-- lantern strings -->
+  <line x1="60" y1="52" x2="240" y2="52" stroke="#555" stroke-width=".7"/>
+  <line x1="60" y1="72" x2="240" y2="72" stroke="#555" stroke-width=".7"/>
+  <line x1="60" y1="92" x2="240" y2="92" stroke="#555" stroke-width=".7"/>
+  <!-- lanterns row 1 -->
+  <ellipse cx="80"  cy="57" rx="8" ry="11" fill="#c0392b" stroke="#8c2520" stroke-width=".8"/>
+  <ellipse cx="110" cy="57" rx="8" ry="11" fill="#c0392b" stroke="#8c2520" stroke-width=".8"/>
+  <ellipse cx="140" cy="57" rx="8" ry="11" fill="#c0392b" stroke="#8c2520" stroke-width=".8"/>
+  <ellipse cx="170" cy="57" rx="8" ry="11" fill="#c0392b" stroke="#8c2520" stroke-width=".8"/>
+  <ellipse cx="200" cy="57" rx="8" ry="11" fill="#c0392b" stroke="#8c2520" stroke-width=".8"/>
+  <ellipse cx="230" cy="57" rx="8" ry="11" fill="#c0392b" stroke="#8c2520" stroke-width=".8"/>
+  <text x="80"  y="59" text-anchor="middle" font-size="6" fill="white" font-family="serif">大</text>
+  <text x="140" y="59" text-anchor="middle" font-size="6" fill="white" font-family="serif">須</text>
+  <text x="200" y="59" text-anchor="middle" font-size="6" fill="white" font-family="serif">大</text>
+  <!-- lanterns row 2 -->
+  <ellipse cx="70"  cy="77" rx="7" ry="10" fill="#9b2335" stroke="#7a1a25" stroke-width=".7"/>
+  <ellipse cx="100" cy="77" rx="7" ry="10" fill="#9b2335" stroke="#7a1a25" stroke-width=".7"/>
+  <ellipse cx="130" cy="77" rx="7" ry="10" fill="#c8a84b" stroke="#9e7b2a" stroke-width=".7"/>
+  <ellipse cx="160" cy="77" rx="7" ry="10" fill="#9b2335" stroke="#7a1a25" stroke-width=".7"/>
+  <ellipse cx="190" cy="77" rx="7" ry="10" fill="#9b2335" stroke="#7a1a25" stroke-width=".7"/>
+  <ellipse cx="220" cy="77" rx="7" ry="10" fill="#c8a84b" stroke="#9e7b2a" stroke-width=".7"/>
+  <!-- shop fronts -->
+  <rect x="0"   y="100" width="300" height="80"  fill="#c8b88a"/>
+  <rect x="0"   y="100" width="80"  height="80"  fill="#d4c090" stroke="#555" stroke-width=".7"/>
+  <rect x="80"  y="100" width="70"  height="80"  fill="#c4b080" stroke="#555" stroke-width=".7"/>
+  <rect x="150" y="100" width="80"  height="80"  fill="#ccc08e" stroke="#555" stroke-width=".7"/>
+  <rect x="230" y="100" width="70"  height="80"  fill="#bca878" stroke="#555" stroke-width=".7"/>
+  <!-- shop windows/details -->
+  <rect x="10"  y="110" width="60" height="30" fill="#8ba0c0" rx="1" stroke="#555" stroke-width=".6"/>
+  <rect x="90"  y="110" width="50" height="30" fill="#c8a84b" rx="1" stroke="#555" stroke-width=".6"/>
+  <text x="115" y="130" text-anchor="middle" font-size="9" fill="#2c1810" font-family="serif" font-weight="bold">古着屋</text>
+  <rect x="160" y="110" width="60" height="30" fill="#88a870" rx="1" stroke="#555" stroke-width=".6"/>
+  <text x="190" y="130" text-anchor="middle" font-size="9" fill="white" font-family="serif" font-weight="bold">グルメ</text>
+  <rect x="240" y="110" width="50" height="30" fill="#b05030" rx="1" stroke="#555" stroke-width=".6"/>
+  <!-- noren curtains -->
+  <rect x="10"  y="100" width="12" height="20" fill="#1a3a5c" rx="1" stroke="#0a2040" stroke-width=".5"/>
+  <rect x="24"  y="100" width="12" height="22" fill="#b5332a" rx="1" stroke="#8c2520" stroke-width=".5"/>
+  <rect x="38"  y="100" width="12" height="18" fill="#1a3a5c" rx="1"/>
+  <rect x="52"  y="100" width="12" height="21" fill="#b5332a" rx="1"/>
+  <!-- people silhouettes -->
+  <ellipse cx="35"  cy="195" rx="7"  ry="9"  fill="#2c1810"/>
+  <ellipse cx="75"  cy="198" rx="6"  ry="8"  fill="#3c2818"/>
+  <ellipse cx="120" cy="194" rx="7"  ry="9"  fill="#2c1810"/>
+  <ellipse cx="180" cy="197" rx="6"  ry="8"  fill="#3c2818"/>
+  <ellipse cx="240" cy="195" rx="7"  ry="9"  fill="#2c1810"/>
+  <!-- ground -->
+  <rect x="0" y="180" width="300" height="40" fill="#b8a888"/>
+  <line x1="0" y1="182" x2="300" y2="182" stroke="#a09878" stroke-width=".7"/>
+  <!-- stamp -->
+  <rect x="2" y="2" width="56" height="22" fill="#b5332a" opacity=".85" rx="1"/>
+  <text x="30" y="17" text-anchor="middle" font-size="9.5" fill="white" font-family="serif" letter-spacing="1">大須商店街</text>
+</svg>`,
+
+/* ─────────── 東山一万歩コース ─────────── */
+higashiyama: `<svg viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg">
+  <!-- sky -->
+  <rect x="0" y="0" width="300" height="220" fill="#87ceeb"/>
+  <rect x="0" y="0" width="300" height="35"  fill="#b4d8ee"/>
+  <rect x="0" y="35" width="300" height="25" fill="#a0cce6"/>
+  <!-- clouds -->
+  <ellipse cx="70"  cy="30" rx="30" ry="13" fill="#f0eedc"/>
+  <ellipse cx="50"  cy="33" rx="18" ry="10" fill="#f0eedc"/>
+  <ellipse cx="92"  cy="33" rx="16" ry="9"  fill="#f0eedc"/>
+  <ellipse cx="70"  cy="20" rx="20" ry="9"  fill="#f0eedc"/>
+  <ellipse cx="220" cy="25" rx="26" ry="11" fill="#f0eedc"/>
+  <ellipse cx="200" cy="28" rx="16" ry="8"  fill="#f0eedc"/>
+  <ellipse cx="240" cy="28" rx="14" ry="7"  fill="#f0eedc"/>
+  <!-- far hills -->
+  <path d="M0,130 Q60,90 120,110 Q180,90 240,105 Q270,98 300,112 L300,220 L0,220Z" fill="#1e5038"/>
+  <!-- mid hills -->
+  <path d="M0,145 Q50,115 100,130 Q160,105 220,125 Q260,115 300,128 L300,220 L0,220Z" fill="#2d6a4f"/>
+  <!-- foreground hill -->
+  <path d="M0,165 Q80,140 150,155 Q220,138 300,155 L300,220 L0,220Z" fill="#4a8a6f"/>
+  <!-- ground -->
+  <rect x="0" y="195" width="300" height="25" fill="#3a7858"/>
+  <!-- winding path -->
+  <path d="M60,220 Q80,200 100,185 Q120,170 150,172 Q180,174 210,160 Q240,148 270,155" fill="none" stroke="#c8a84b" stroke-width="5" stroke-linecap="round"/>
+  <path d="M60,220 Q80,200 100,185 Q120,170 150,172 Q180,174 210,160 Q240,148 270,155" fill="none" stroke="#e8d088" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="4,4"/>
+  <!-- pine trees left -->
+  <rect x="18" y="162" width="5" height="22" fill="#5a3010"/>
+  <polygon points="20,148 10,172 30,172" fill="#1e5038" stroke="#0e3018" stroke-width=".6"/>
+  <polygon points="20,140 8,164 32,164" fill="#2d6a4f" stroke="#1a4a30" stroke-width=".6"/>
+  <rect x="48" y="168" width="5" height="18" fill="#5a3010"/>
+  <polygon points="50,155 40,178 60,178" fill="#1e5038"/>
+  <polygon points="50,147 38,170 62,170" fill="#2d6a4f"/>
+  <!-- pine trees right -->
+  <rect x="252" y="155" width="5" height="25" fill="#5a3010"/>
+  <polygon points="254,140 242,165 266,165" fill="#1e5038"/>
+  <polygon points="254,132 240,157 268,157" fill="#2d6a4f"/>
+  <rect x="278" y="160" width="5" height="20" fill="#5a3010"/>
+  <polygon points="280,146 268,170 292,170" fill="#1e5038"/>
+  <!-- Elephant peeking from right hill -->
+  <ellipse cx="195" cy="148" rx="28" ry="22" fill="#8a8a7a" stroke="#555" stroke-width=".8"/>
+  <ellipse cx="205" cy="135" rx="16" ry="14" fill="#9a9a8a" stroke="#666" stroke-width=".7"/>
+  <!-- elephant ears -->
+  <ellipse cx="220" cy="134" rx="11" ry="8" fill="#b0a090" stroke="#777" stroke-width=".6"/>
+  <!-- trunk -->
+  <path d="M196,145 Q190,158 194,165 Q198,168 200,162 Q197,155 202,148" fill="#8a8a7a" stroke="#555" stroke-width=".6"/>
+  <!-- eyes -->
+  <circle cx="208" cy="132" r="2.5" fill="#2c1810"/>
+  <circle cx="208.6" cy="131.4" r=".7" fill="white"/>
+  <!-- tusk -->
+  <path d="M196,143 Q188,148 185,155" fill="none" stroke="#f0e8c8" stroke-width="2" stroke-linecap="round"/>
+  <!-- fence/zoo -->
+  <line x1="0" y1="180" x2="80" y2="172" stroke="#555" stroke-width=".8"/>
+  <line x1="0" y1="180" x2="0" y2="195" stroke="#555" stroke-width=".8"/>
+  <line x1="20" y1="178" x2="20" y2="190" stroke="#555" stroke-width=".8"/>
+  <line x1="40" y1="176" x2="40" y2="188" stroke="#555" stroke-width=".8"/>
+  <line x1="60" y1="174" x2="60" y2="186" stroke="#555" stroke-width=".8"/>
+  <!-- birds -->
+  <path d="M100,58 Q105,54 110,58" fill="none" stroke="#2c1810" stroke-width="1.2"/>
+  <path d="M130,48 Q135,44 140,48" fill="none" stroke="#2c1810" stroke-width="1.2"/>
+  <!-- stamp -->
+  <rect x="2" y="2" width="72" height="22" fill="#2d6a4f" opacity=".88" rx="1"/>
+  <text x="38" y="17" text-anchor="middle" font-size="9" fill="white" font-family="serif" letter-spacing="1">東山一万歩</text>
+</svg>`,
+
+/* ─────────── 東山線横断 ─────────── */
+higashiyamaline: `<svg viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg">
+  <!-- sky gradient bands -->
+  <rect x="0" y="0"   width="300" height="220" fill="#7ab8d4"/>
+  <rect x="0" y="0"   width="300" height="40"  fill="#a8cce4"/>
+  <rect x="0" y="40"  width="300" height="30"  fill="#90bedd"/>
+  <!-- clouds -->
+  <ellipse cx="50"  cy="28" rx="24" ry="10" fill="#f0eedc"/>
+  <ellipse cx="32"  cy="31" rx="14" ry="7"  fill="#f0eedc"/>
+  <ellipse cx="68"  cy="31" rx="12" ry="6"  fill="#f0eedc"/>
+  <ellipse cx="240" cy="22" rx="28" ry="11" fill="#f0eedc"/>
+  <ellipse cx="220" cy="25" rx="16" ry="7"  fill="#f0eedc"/>
+  <ellipse cx="260" cy="26" rx="14" ry="6"  fill="#f0eedc"/>
+  <!-- MIRAI TOWER (Nagoya TV tower) centered -->
+  <!-- legs/base support -->
+  <polygon points="138,220 130,168 148,168" fill="#c0392b" stroke="#8c2520" stroke-width=".7"/>
+  <polygon points="162,220 152,168 170,168" fill="#c0392b" stroke="#8c2520" stroke-width=".7"/>
+  <!-- tower shaft -->
+  <rect x="140" y="55" width="20" height="115" fill="#c0392b" stroke="#8c2520" stroke-width=".8"/>
+  <rect x="144" y="55" width="12" height="115" fill="#d4453c"/>
+  <!-- lattice structure left -->
+  <line x1="130" y1="168" x2="140" y2="55" stroke="#c0392b" stroke-width="2.5"/>
+  <line x1="130" y1="168" x2="140" y2="130" stroke="#c0392b" stroke-width="1.5"/>
+  <line x1="130" y1="168" x2="140" y2="100" stroke="#c0392b" stroke-width="1.2"/>
+  <!-- lattice structure right -->
+  <line x1="170" y1="168" x2="160" y2="55" stroke="#c0392b" stroke-width="2.5"/>
+  <line x1="170" y1="168" x2="160" y2="130" stroke="#c0392b" stroke-width="1.5"/>
+  <line x1="170" y1="168" x2="160" y2="100" stroke="#c0392b" stroke-width="1.2"/>
+  <!-- cross braces -->
+  <line x1="132" y1="155" x2="168" y2="145" stroke="#a02820" stroke-width="1.2"/>
+  <line x1="132" y1="145" x2="168" y2="155" stroke="#a02820" stroke-width="1"/>
+  <line x1="134" y1="130" x2="166" y2="120" stroke="#a02820" stroke-width="1"/>
+  <line x1="134" y1="120" x2="166" y2="130" stroke="#a02820" stroke-width=".9"/>
+  <line x1="136" y1="108" x2="164" y2="100" stroke="#a02820" stroke-width=".9"/>
+  <line x1="136" y1="100" x2="164" y2="108" stroke="#a02820" stroke-width=".8"/>
+  <!-- viewing decks -->
+  <rect x="133" y="100" width="34" height="7" fill="#e8d088" stroke="#9e7b2a" stroke-width=".6"/>
+  <rect x="136" y="72"  width="28" height="6" fill="#c8a84b" stroke="#9e7b2a" stroke-width=".6"/>
+  <!-- antenna spire -->
+  <rect x="148" y="22" width="4" height="34" fill="#888" stroke="#555" stroke-width=".5"/>
+  <rect x="146" y="18" width="8" height="6" fill="#c8a84b"/>
+  <rect x="148" y="10" width="4" height="10" fill="#555"/>
+  <!-- observation lights -->
+  <circle cx="150" cy="10" r="3" fill="#fff" opacity=".9"/>
+  <!-- city building silhouettes left -->
+  <rect x="0"   y="120" width="50" height="100" fill="#1a3a5c" opacity=".75"/>
+  <rect x="18"  y="108" width="30" height="14"  fill="#1a3a5c" opacity=".75"/>
+  <rect x="50"  y="100" width="40" height="120" fill="#2d5f8a" opacity=".65"/>
+  <rect x="55"  y="88"  width="28" height="14"  fill="#2d5f8a" opacity=".65"/>
+  <rect x="90"  y="115" width="35" height="105" fill="#1a3a5c" opacity=".55"/>
+  <!-- windows in buildings -->
+  <rect x="5"  y="128" width="6" height="5" fill="#f0e898" opacity=".6"/>
+  <rect x="16" y="128" width="6" height="5" fill="#f0e898" opacity=".6"/>
+  <rect x="5"  y="140" width="6" height="5" fill="#f0e898" opacity=".6"/>
+  <rect x="16" y="140" width="6" height="5" fill="#f0e898" opacity=".6"/>
+  <rect x="56" y="108" width="5" height="4" fill="#f0e898" opacity=".55"/>
+  <rect x="66" y="108" width="5" height="4" fill="#f0e898" opacity=".55"/>
+  <!-- city building silhouettes right -->
+  <rect x="210" y="125" width="40" height="95" fill="#1a3a5c" opacity=".70"/>
+  <rect x="216" y="112" width="26" height="15" fill="#1a3a5c" opacity=".70"/>
+  <rect x="250" y="105" width="50" height="115" fill="#2d5f8a" opacity=".60"/>
+  <rect x="258" y="92"  width="32" height="15"  fill="#2d5f8a" opacity=".60"/>
+  <rect x="218" y="133" width="5" height="4" fill="#f0e898" opacity=".55"/>
+  <rect x="228" y="133" width="5" height="4" fill="#f0e898" opacity=".55"/>
+  <!-- cherry blossom trees street level -->
+  <rect x="62" y="178" width="5" height="30" fill="#5a3010"/>
+  <circle cx="64" cy="174" r="14" fill="#f4a0b0" opacity=".78"/>
+  <circle cx="56" cy="168" r="10" fill="#fce8ef" opacity=".70"/>
+  <circle cx="72" cy="168" r="10" fill="#f4a0b0" opacity=".72"/>
+  <rect x="228" y="178" width="5" height="30" fill="#5a3010"/>
+  <circle cx="230" cy="174" r="14" fill="#f4a0b0" opacity=".78"/>
+  <circle cx="222" cy="168" r="10" fill="#fce8ef" opacity=".70"/>
+  <circle cx="238" cy="168" r="10" fill="#f4a0b0" opacity=".72"/>
+  <!-- boulevard / street -->
+  <rect x="0" y="200" width="300" height="20" fill="#c8b888"/>
+  <rect x="0" y="208" width="300" height="4"  fill="#b8a870"/>
+  <line x1="0" y1="210" x2="300" y2="210" stroke="#e8d890" stroke-width="1.5" stroke-dasharray="20,10"/>
+  <!-- stamp -->
+  <rect x="2" y="2" width="68" height="22" fill="#1a3a5c" opacity=".88" rx="1"/>
+  <text x="36" y="17" text-anchor="middle" font-size="9" fill="white" font-family="serif" letter-spacing="1">東山線横断</text>
+</svg>`,
+
+/* ─────────── 名城線一周 ─────────── */
+meijoline: `<svg viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg">
+  <!-- deep night-blue sky -->
+  <rect x="0" y="0" width="300" height="220" fill="#0e2038"/>
+  <rect x="0" y="0" width="300" height="50"  fill="#1a3258"/>
+  <rect x="0" y="50" width="300" height="40" fill="#152840"/>
+  <!-- stars -->
+  <circle cx="20"  cy="15" r="1"   fill="white" opacity=".7"/>
+  <circle cx="55"  cy="8"  r="1.2" fill="white" opacity=".8"/>
+  <circle cx="90"  cy="20" r=".9"  fill="white" opacity=".6"/>
+  <circle cx="180" cy="12" r="1.1" fill="white" opacity=".75"/>
+  <circle cx="220" cy="6"  r=".9"  fill="white" opacity=".65"/>
+  <circle cx="260" cy="18" r="1"   fill="white" opacity=".7"/>
+  <circle cx="290" cy="9"  r=".8"  fill="white" opacity=".6"/>
+  <circle cx="40"  cy="38" r=".7"  fill="white" opacity=".5"/>
+  <circle cx="140" cy="30" r=".8"  fill="white" opacity=".6"/>
+  <!-- moon -->
+  <circle cx="248" cy="28" r="20" fill="#f0e8a0" opacity=".9"/>
+  <circle cx="256" cy="22" r="17" fill="#1a3258"/>
+  <!-- moat water with ukiyo-e waves -->
+  <rect x="0" y="168" width="300" height="52" fill="#1a3a5c"/>
+  <path d="M0,174 C22,166 44,182 66,174 C88,166 110,182 132,174 C154,166 176,182 198,174 C220,166 242,182 264,174 C278,168 292,174 300,174" fill="none" stroke="#7ab8d4" stroke-width="2" opacity=".65"/>
+  <path d="M0,183 C25,175 50,191 75,183 C100,175 125,191 150,183 C175,175 200,191 225,183 C250,175 275,191 300,183" fill="none" stroke="#5a9ab8" stroke-width="1.6" opacity=".55"/>
+  <path d="M0,192 C20,184 40,200 60,192 C80,184 100,200 120,192 C140,184 160,200 180,192 C200,184 220,200 240,192 C260,184 280,200 300,192" fill="none" stroke="#4a8aa8" stroke-width="1.3" opacity=".45"/>
+  <!-- white wave crests -->
+  <path d="M10,176 Q18,172 22,176" fill="none" stroke="white" stroke-width="1.2" opacity=".6"/>
+  <path d="M80,178 Q88,174 92,178" fill="none" stroke="white" stroke-width="1.1" opacity=".55"/>
+  <path d="M160,175 Q168,171 172,175" fill="none" stroke="white" stroke-width="1.1" opacity=".55"/>
+  <path d="M230,177 Q238,173 242,177" fill="none" stroke="white" stroke-width="1" opacity=".5"/>
+  <!-- green ground -->
+  <rect x="0" y="155" width="300" height="16" fill="#1a4028"/>
+  <!-- stone walls -->
+  <rect x="38" y="125" width="200" height="32" fill="#6a6a6a" stroke="#444" stroke-width=".7"/>
+  <line x1="38" y1="134" x2="238" y2="134" stroke="#555" stroke-width=".6"/>
+  <line x1="38" y1="143" x2="238" y2="143" stroke="#555" stroke-width=".6"/>
+  <line x1="38" y1="153" x2="238" y2="153" stroke="#555" stroke-width=".6"/>
+  <line x1="80"  y1="125" x2="80"  y2="157" stroke="#555" stroke-width=".5"/>
+  <line x1="120" y1="125" x2="120" y2="157" stroke="#555" stroke-width=".5"/>
+  <line x1="160" y1="125" x2="160" y2="157" stroke="#555" stroke-width=".5"/>
+  <line x1="200" y1="125" x2="200" y2="157" stroke="#555" stroke-width=".5"/>
+  <!-- Nagoya Castle (prominent, centered, larger) -->
+  <!-- base stone -->
+  <rect x="88" y="96" width="124" height="30" fill="#7a7a7a" stroke="#444" stroke-width=".8"/>
+  <!-- level 1 walls -->
+  <rect x="96" y="68" width="108" height="30" fill="#ddd6c4" stroke="#777" stroke-width=".8"/>
+  <!-- level 1 roof -->
+  <polygon points="82,68 96,48 204,48 218,68" fill="#0e1e0e" stroke="#050e05" stroke-width=".9"/>
+  <path d="M82,68 Q76,65 74,72" fill="#0e1e0e"/>
+  <path d="M218,68 Q224,65 226,72" fill="#0e1e0e"/>
+  <!-- gold eave tips -->
+  <circle cx="76" cy="70" r="3" fill="#c8a84b"/>
+  <circle cx="224" cy="70" r="3" fill="#c8a84b"/>
+  <!-- level 2 walls -->
+  <rect x="108" y="40" width="84" height="30" fill="#ddd6c4" stroke="#777" stroke-width=".8"/>
+  <!-- level 2 roof -->
+  <polygon points="96,40 108,22 192,22 204,40" fill="#0e1e0e" stroke="#050e05" stroke-width=".9"/>
+  <path d="M96,40 Q90,37 88,44" fill="#0e1e0e"/>
+  <path d="M204,40 Q210,37 212,44" fill="#0e1e0e"/>
+  <circle cx="90"  cy="42" r="2.5" fill="#c8a84b"/>
+  <circle cx="210" cy="42" r="2.5" fill="#c8a84b"/>
+  <!-- level 3 walls -->
+  <rect x="120" y="14" width="60" height="28" fill="#ddd6c4" stroke="#777" stroke-width=".8"/>
+  <!-- level 3 roof (top) -->
+  <polygon points="109,14 120,0 180,0 191,14" fill="#0e1e0e" stroke="#050e05" stroke-width=".9"/>
+  <path d="M109,14 Q103,11 101,18" fill="#0e1e0e"/>
+  <path d="M191,14 Q197,11 199,18" fill="#0e1e0e"/>
+  <circle cx="103" cy="16" r="2" fill="#c8a84b"/>
+  <circle cx="197" cy="16" r="2" fill="#c8a84b"/>
+  <!-- shachihoko pair - LARGE and prominent -->
+  <!-- left shachihoko -->
+  <path d="M120,0 C115,-8 109,-14 112,-5 C114,1 120,0 120,0Z" fill="#c8a84b" stroke="#9e7b2a" stroke-width=".9"/>
+  <path d="M120,0 C116,-12 108,-16 110,-6 C112,0 120,0 120,0Z" fill="#c8a84b" stroke="#9e7b2a" stroke-width=".9"/>
+  <ellipse cx="113" cy="3" rx="4" ry="3" fill="#c8a84b" stroke="#9e7b2a" stroke-width=".7"/>
+  <path d="M112,-6 A2,1 0 0,0 116,-6" fill="none" stroke="#9e7b2a" stroke-width=".5"/>
+  <path d="M112,-2 A2,1 0 0,0 116,-2" fill="none" stroke="#9e7b2a" stroke-width=".5"/>
+  <!-- right shachihoko -->
+  <path d="M180,0 C185,-8 191,-14 188,-5 C186,1 180,0 180,0Z" fill="#c8a84b" stroke="#9e7b2a" stroke-width=".9"/>
+  <path d="M180,0 C184,-12 192,-16 190,-6 C188,0 180,0 180,0Z" fill="#c8a84b" stroke="#9e7b2a" stroke-width=".9"/>
+  <ellipse cx="187" cy="3" rx="4" ry="3" fill="#c8a84b" stroke="#9e7b2a" stroke-width=".7"/>
+  <path d="M184,-6 A2,1 0 0,0 188,-6" fill="none" stroke="#9e7b2a" stroke-width=".5"/>
+  <path d="M184,-2 A2,1 0 0,0 188,-2" fill="none" stroke="#9e7b2a" stroke-width=".5"/>
+  <!-- windows -->
+  <rect x="108" y="76" width="12" height="10" fill="#1a3a5c" rx="1" stroke="#555" stroke-width=".4"/>
+  <rect x="126" y="76" width="12" height="10" fill="#1a3a5c" rx="1" stroke="#555" stroke-width=".4"/>
+  <rect x="144" y="76" width="12" height="10" fill="#1a3a5c" rx="1" stroke="#555" stroke-width=".4"/>
+  <rect x="162" y="76" width="12" height="10" fill="#1a3a5c" rx="1" stroke="#555" stroke-width=".4"/>
+  <rect x="180" y="76" width="12" height="10" fill="#1a3a5c" rx="1" stroke="#555" stroke-width=".4"/>
+  <!-- pine trees left -->
+  <rect x="10"  y="145" width="5" height="26" fill="#2c1810"/>
+  <polygon points="12,130 2,155 22,155" fill="#1a4028" stroke="#0e2818" stroke-width=".6"/>
+  <polygon points="12,122 0,147 24,147" fill="#245c38" stroke="#14421e" stroke-width=".6"/>
+  <rect x="34"  y="150" width="4" height="18" fill="#2c1810"/>
+  <polygon points="36,138 26,158 46,158" fill="#1a4028"/>
+  <polygon points="36,131 24,153 48,153" fill="#245c38"/>
+  <!-- pine trees right -->
+  <rect x="258" y="148" width="5" height="22" fill="#2c1810"/>
+  <polygon points="260,133 250,155 270,155" fill="#1a4028"/>
+  <polygon points="260,126 248,150 272,150" fill="#245c38"/>
+  <!-- loop ring hint -->
+  <circle cx="150" cy="180" r="28" fill="none" stroke="#c8a84b" stroke-width="1.2" opacity=".45" stroke-dasharray="4,6"/>
+  <circle cx="150" cy="180" r="24" fill="none" stroke="#c8a84b" stroke-width=".7" opacity=".3"/>
+  <!-- stamp -->
+  <rect x="2" y="2" width="60" height="22" fill="#c8a84b" opacity=".88" rx="1"/>
+  <text x="32" y="17" text-anchor="middle" font-size="9.5" fill="#2c1810" font-family="serif" font-weight="bold" letter-spacing="1">名城線一周</text>
+</svg>`,
+
+
+
+/* ─────────── 熱田神宮境内めぐり ─────────── */
+atsutashrine: `<svg viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg">
+  <!-- deep forest background -->
+  <rect x="0" y="0" width="300" height="220" fill="#1e3a1e"/>
+  <!-- sky glimpse at top -->
+  <rect x="0" y="0" width="300" height="22" fill="#6a9898"/>
+  <rect x="0" y="22" width="300" height="18" fill="#3a6048"/>
+  <!-- tree canopies blanketing top -->
+  <ellipse cx="20"  cy="22" rx="38" ry="28" fill="#183818"/>
+  <ellipse cx="75"  cy="16" rx="36" ry="24" fill="#224822"/>
+  <ellipse cx="135" cy="20" rx="34" ry="22" fill="#183818"/>
+  <ellipse cx="192" cy="15" rx="36" ry="24" fill="#1e4a1e"/>
+  <ellipse cx="252" cy="18" rx="34" ry="26" fill="#183818"/>
+  <ellipse cx="295" cy="22" rx="30" ry="22" fill="#224822"/>
+  <!-- second canopy layer -->
+  <ellipse cx="48"  cy="38" rx="30" ry="20" fill="#1e4a1e" opacity=".85"/>
+  <ellipse cx="110" cy="32" rx="28" ry="18" fill="#224822" opacity=".85"/>
+  <ellipse cx="168" cy="36" rx="32" ry="20" fill="#1a4218" opacity=".85"/>
+  <ellipse cx="228" cy="30" rx="30" ry="19" fill="#1e4a1e" opacity=".85"/>
+  <!-- gravel path (perspective) -->
+  <path d="M112,220 L120,95 L180,95 L188,220Z" fill="#c0b090"/>
+  <path d="M118,220 L124,95 L176,95 L182,220Z" fill="#d0c0a0"/>
+  <!-- path texture -->
+  <line x1="125" y1="130" x2="175" y2="132" stroke="#b0a080" stroke-width=".5"/>
+  <line x1="122" y1="155" x2="178" y2="157" stroke="#b0a080" stroke-width=".5"/>
+  <line x1="120" y1="180" x2="180" y2="182" stroke="#b0a080" stroke-width=".5"/>
+  <!-- main torii gate -->
+  <!-- shimagi (uppermost) -->
+  <rect x="72" y="64" width="156" height="7"  fill="#c0392b" stroke="#8c2520" stroke-width=".8" rx="1"/>
+  <path d="M72,64 Q66,60 69,70" fill="#c0392b"/>
+  <path d="M228,64 Q234,60 231,70" fill="#c0392b"/>
+  <!-- kashagi (main top beam) -->
+  <rect x="78" y="71" width="144" height="10" fill="#c0392b" stroke="#8c2520" stroke-width=".9" rx="1"/>
+  <path d="M78,71 Q72,68 74,80" fill="#c0392b"/>
+  <path d="M222,71 Q228,68 226,80" fill="#c0392b"/>
+  <!-- nuki (middle crossbar) -->
+  <rect x="88" y="98" width="124" height="7"  fill="#c0392b" stroke="#8c2520" stroke-width=".7"/>
+  <!-- hashira (left pillar) -->
+  <rect x="88"  y="80" width="14" height="140" fill="#c0392b" stroke="#8c2520" stroke-width=".8" rx="2"/>
+  <!-- hashira (right pillar) -->
+  <rect x="198" y="80" width="14" height="140" fill="#c0392b" stroke="#8c2520" stroke-width=".8" rx="2"/>
+  <!-- shrine building in background -->
+  <rect x="118" y="60" width="64" height="38" fill="#7a6a50" stroke="#5a4a30" stroke-width=".8"/>
+  <polygon points="108,60 150,40 192,60" fill="#0e0e06" stroke="#050500" stroke-width=".9"/>
+  <path d="M108,60 Q102,57 100,64" fill="#0e0e06"/>
+  <path d="M192,60 Q198,57 200,64" fill="#0e0e06"/>
+  <!-- gold ornament on shrine roof -->
+  <circle cx="150" cy="40" r="4" fill="#c8a84b" stroke="#9e7b2a" stroke-width=".7"/>
+  <!-- stone lanterns -->
+  <rect x="52"  y="150" width="10" height="38" fill="#7a7a7a" rx="1" stroke="#555" stroke-width=".5"/>
+  <rect x="49"  y="146" width="16" height="7"  fill="#909090" stroke="#666" stroke-width=".4"/>
+  <rect x="52"  y="126" width="10" height="24" fill="#696969" rx="1" stroke="#555" stroke-width=".4"/>
+  <rect x="49"  y="121" width="16" height="6"  fill="#7a7a7a"/>
+  <polygon points="50,121 57,108 64,121" fill="#585858" stroke="#444" stroke-width=".4"/>
+  <circle cx="57" cy="136" r="5" fill="#f0d060" opacity=".45"/>
+  <rect x="238" y="150" width="10" height="38" fill="#7a7a7a" rx="1" stroke="#555" stroke-width=".5"/>
+  <rect x="235" y="146" width="16" height="7"  fill="#909090" stroke="#666" stroke-width=".4"/>
+  <rect x="238" y="126" width="10" height="24" fill="#696969" rx="1" stroke="#555" stroke-width=".4"/>
+  <rect x="235" y="121" width="16" height="6"  fill="#7a7a7a"/>
+  <polygon points="236,121 243,108 250,121" fill="#585858" stroke="#444" stroke-width=".4"/>
+  <circle cx="243" cy="136" r="5" fill="#f0d060" opacity=".45"/>
+  <!-- tree trunks -->
+  <rect x="12"  y="45" width="12" height="175" fill="#2c1808"/>
+  <rect x="60"  y="52" width="10" height="168" fill="#3a2010"/>
+  <rect x="228" y="52" width="10" height="168" fill="#3a2010"/>
+  <rect x="278" y="45" width="12" height="175" fill="#2c1808"/>
+  <!-- moss at tree bases -->
+  <ellipse cx="18"  cy="218" rx="28" ry="7" fill="#1e4a1e" opacity=".6"/>
+  <ellipse cx="65"  cy="218" rx="20" ry="6" fill="#224822" opacity=".55"/>
+  <ellipse cx="233" cy="218" rx="20" ry="6" fill="#224822" opacity=".55"/>
+  <ellipse cx="284" cy="218" rx="28" ry="7" fill="#1e4a1e" opacity=".6"/>
+  <!-- stamp -->
+  <rect x="2" y="2" width="72" height="22" fill="#c0392b" opacity=".88" rx="1"/>
+  <text x="38" y="17" text-anchor="middle" font-size="9" fill="white" font-family="serif" letter-spacing="1">熱田神宮境内</text>
+</svg>`,
+
+/* ─────────── 鶴舞公園〜白川公園 ─────────── */
+tsurumakoen: `<svg viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg">
+  <!-- sky -->
+  <rect x="0" y="0" width="300" height="220" fill="#90c8e0"/>
+  <rect x="0" y="0" width="300" height="45"  fill="#b8d8ee"/>
+  <!-- ukiyo-e clouds -->
+  <ellipse cx="60"  cy="30" rx="28" ry="11" fill="#f0eedc"/>
+  <ellipse cx="42"  cy="33" rx="16" ry="7"  fill="#f0eedc"/>
+  <ellipse cx="78"  cy="33" rx="14" ry="6"  fill="#f0eedc"/>
+  <ellipse cx="60"  cy="22" rx="18" ry="7"  fill="#f0eedc"/>
+  <ellipse cx="228" cy="22" rx="26" ry="10" fill="#f0eedc"/>
+  <ellipse cx="208" cy="25" rx="15" ry="7"  fill="#f0eedc"/>
+  <ellipse cx="248" cy="25" rx="13" ry="6"  fill="#f0eedc"/>
+  <!-- park lawn -->
+  <rect x="0" y="162" width="300" height="58" fill="#4a8a4a"/>
+  <rect x="0" y="188" width="300" height="32" fill="#3a7a3a"/>
+  <!-- Tsurumai fountain tower - ornamental Western style (1909) -->
+  <!-- base platform -->
+  <rect x="128" y="178" width="44" height="10" fill="#ddd6c0" stroke="#999" stroke-width=".7" rx="1"/>
+  <rect x="132" y="170" width="36" height="10" fill="#ccc8b0" stroke="#999" stroke-width=".6" rx="1"/>
+  <!-- shaft -->
+  <rect x="141" y="82" width="18" height="90" fill="#e8e0c8" stroke="#bbb" stroke-width=".6"/>
+  <line x1="145" y1="82" x2="145" y2="170" stroke="#ccc8a0" stroke-width=".5"/>
+  <line x1="150" y1="82" x2="150" y2="170" stroke="#ccc8a0" stroke-width=".5"/>
+  <line x1="155" y1="82" x2="155" y2="170" stroke="#ccc8a0" stroke-width=".5"/>
+  <!-- capital -->
+  <rect x="135" y="77" width="30" height="8"  fill="#d8d0b8" stroke="#aaa" stroke-width=".6" rx="1"/>
+  <rect x="131" y="71" width="38" height="7"  fill="#e0d8c0" stroke="#bbb" stroke-width=".6" rx="1"/>
+  <!-- observation chamber -->
+  <rect x="137" y="56" width="26" height="18" fill="#c8c0a8" stroke="#999" stroke-width=".7" rx="2"/>
+  <ellipse cx="150" cy="56" rx="14" ry="5"   fill="#d8d0b8" stroke="#aaa" stroke-width=".6"/>
+  <!-- spire -->
+  <rect x="148" y="30" width="4"  height="28" fill="#bbb" stroke="#999" stroke-width=".5"/>
+  <polygon points="150,18 144,32 156,32"       fill="#c8a84b" stroke="#9e7b2a" stroke-width=".7"/>
+  <!-- fountain basin -->
+  <ellipse cx="150" cy="183" rx="42" ry="8"  fill="#6aaac8" stroke="#4a8aaa" stroke-width=".8"/>
+  <ellipse cx="150" cy="183" rx="32" ry="5"  fill="#7abcd8"/>
+  <!-- water jets -->
+  <path d="M150,180 Q146,166 144,156" fill="none" stroke="#a8d8f0" stroke-width="1.5" opacity=".8"/>
+  <path d="M150,180 Q154,166 156,156" fill="none" stroke="#a8d8f0" stroke-width="1.5" opacity=".8"/>
+  <path d="M139,178 Q132,165 130,155" fill="none" stroke="#a8d8f0" stroke-width="1.2" opacity=".65"/>
+  <path d="M161,178 Q168,165 170,155" fill="none" stroke="#a8d8f0" stroke-width="1.2" opacity=".65"/>
+  <!-- cherry trees -->
+  <rect x="32" y="148" width="5" height="40" fill="#5a3010"/>
+  <circle cx="34"  cy="140" r="17" fill="#f4a0b0" opacity=".82"/>
+  <circle cx="25"  cy="134" r="12" fill="#fce8ef" opacity=".72"/>
+  <circle cx="46"  cy="134" r="11" fill="#f4a0b0" opacity=".72"/>
+  <rect x="260" y="148" width="5" height="40" fill="#5a3010"/>
+  <circle cx="262" cy="140" r="17" fill="#f4a0b0" opacity=".82"/>
+  <circle cx="253" cy="134" r="12" fill="#fce8ef" opacity=".72"/>
+  <circle cx="274" cy="134" r="11" fill="#f4a0b0" opacity=".72"/>
+  <!-- rose bushes -->
+  <circle cx="85"  cy="176" r="8" fill="#c8506a" opacity=".75"/>
+  <circle cx="100" cy="173" r="7" fill="#e07090" opacity=".7"/>
+  <circle cx="75"  cy="182" r="6" fill="#f08080" opacity=".65"/>
+  <circle cx="200" cy="176" r="8" fill="#c8506a" opacity=".75"/>
+  <circle cx="215" cy="173" r="7" fill="#e07090" opacity=".7"/>
+  <circle cx="226" cy="180" r="6" fill="#f08080" opacity=".65"/>
+  <!-- sci museum globe far bg -->
+  <circle cx="272" cy="88" r="20" fill="#5a88a8" stroke="#3a6888" stroke-width="1"/>
+  <ellipse cx="272" cy="88" rx="20" ry="7"  fill="none" stroke="#7aaac8" stroke-width=".8"/>
+  <ellipse cx="272" cy="88" rx="7"  ry="20" fill="none" stroke="#7aaac8" stroke-width=".8"/>
+  <!-- stamp -->
+  <rect x="2" y="2" width="76" height="22" fill="#4a8a4a" opacity=".88" rx="1"/>
+  <text x="40" y="17" text-anchor="middle" font-size="8.5" fill="white" font-family="serif" letter-spacing=".8">鶴舞〜白川公園</text>
+</svg>`,
+
+/* ─────────── 名古屋城〜熱田神宮 歴史街道 ─────────── */
+castletoatsuta: `<svg viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg">
+  <!-- sky -->
+  <rect x="0" y="0" width="300" height="220" fill="#87ceeb"/>
+  <rect x="0" y="0" width="300" height="38" fill="#b0d0e8"/>
+  <!-- clouds center -->
+  <ellipse cx="150" cy="24" rx="30" ry="11" fill="#f0eedc"/>
+  <ellipse cx="132" cy="27" rx="17" ry="7"  fill="#f0eedc"/>
+  <ellipse cx="168" cy="27" rx="15" ry="6"  fill="#f0eedc"/>
+  <!-- ── LEFT: Nagoya Castle ── -->
+  <!-- stone base -->
+  <rect x="8"  y="112" width="84" height="24" fill="#7a7a7a" stroke="#555" stroke-width=".7"/>
+  <!-- level 1 walls -->
+  <rect x="14" y="88"  width="72" height="26" fill="#ddd6c4" stroke="#777" stroke-width=".7"/>
+  <!-- level 1 roof -->
+  <polygon points="8,88 16,72 80,72 88,88" fill="#1a1a0a" stroke="#0a0a00" stroke-width=".8"/>
+  <path d="M8,88 Q3,85 1,92" fill="#1a1a0a"/>
+  <path d="M88,88 Q93,85 95,92" fill="#1a1a0a"/>
+  <!-- level 2 walls -->
+  <rect x="22" y="60"  width="56" height="30" fill="#ddd6c4" stroke="#777" stroke-width=".7"/>
+  <!-- level 2 roof -->
+  <polygon points="16,60 24,45 76,45 84,60" fill="#1a1a0a" stroke="#0a0a00" stroke-width=".8"/>
+  <path d="M16,60 Q10,57 8,64"  fill="#1a1a0a"/>
+  <path d="M84,60 Q90,57 92,64" fill="#1a1a0a"/>
+  <!-- level 3 walls -->
+  <rect x="28" y="34"  width="44" height="28" fill="#ddd6c4" stroke="#777" stroke-width=".7"/>
+  <!-- level 3 roof -->
+  <polygon points="22,34 30,20 70,20 78,34" fill="#1a1a0a" stroke="#0a0a00" stroke-width=".8"/>
+  <!-- shachihoko -->
+  <path d="M30,20 C27,14 23,10 25,16 C27,21 30,20 30,20Z" fill="#c8a84b" stroke="#9e7b2a" stroke-width=".7"/>
+  <path d="M70,20 C73,14 77,10 75,16 C73,21 70,20 70,20Z" fill="#c8a84b" stroke="#9e7b2a" stroke-width=".7"/>
+  <!-- castle windows -->
+  <rect x="28" y="96" width="8" height="7" fill="#1a3a5c" rx="1" stroke="#444" stroke-width=".3"/>
+  <rect x="44" y="96" width="8" height="7" fill="#1a3a5c" rx="1" stroke="#444" stroke-width=".3"/>
+  <rect x="60" y="96" width="8" height="7" fill="#1a3a5c" rx="1" stroke="#444" stroke-width=".3"/>
+  <!-- ── RIGHT: Large Torii ── -->
+  <!-- shimagi -->
+  <rect x="186" y="62" width="110" height="7"  fill="#c0392b" stroke="#8c2520" stroke-width=".8" rx="1"/>
+  <path d="M186,62 Q180,58 183,68" fill="#c0392b"/>
+  <!-- kashagi -->
+  <rect x="192" y="69" width="98"  height="10" fill="#c0392b" stroke="#8c2520" stroke-width=".9" rx="1"/>
+  <path d="M192,69 Q186,66 188,78" fill="#c0392b"/>
+  <!-- nuki -->
+  <rect x="198" y="92" width="86"  height="7"  fill="#c0392b" stroke="#8c2520" stroke-width=".7"/>
+  <!-- hashira -->
+  <rect x="198" y="77" width="13" height="143" fill="#c0392b" stroke="#8c2520" stroke-width=".7" rx="2"/>
+  <rect x="277" y="77" width="13" height="143" fill="#c0392b" stroke="#8c2520" stroke-width=".7" rx="2"/>
+  <!-- forest behind torii -->
+  <ellipse cx="238" cy="50" rx="38" ry="24" fill="#1e4a1e"/>
+  <ellipse cx="268" cy="44" rx="28" ry="18" fill="#2a5a2a"/>
+  <ellipse cx="205" cy="52" rx="24" ry="16" fill="#1a4218"/>
+  <!-- connecting road in middle -->
+  <path d="M98,220 L110,118 L190,118 L202,220Z" fill="#c8b888"/>
+  <path d="M104,220 L114,118 L186,118 L192,220Z" fill="#d8c898"/>
+  <!-- road center line -->
+  <line x1="150" y1="118" x2="150" y2="220" stroke="#e0d090" stroke-width="2" stroke-dasharray="10,8" opacity=".7"/>
+  <!-- distance text -->
+  <rect x="132" y="148" width="36" height="18" fill="white" rx="3" opacity=".75"/>
+  <text x="150" y="154" text-anchor="middle" font-size="6" fill="#c0392b" font-family="serif" font-weight="bold">約 9 km</text>
+  <text x="150" y="162" text-anchor="middle" font-size="5.5" fill="#1a3a5c" font-family="serif">歴史街道</text>
+  <!-- ground -->
+  <rect x="0" y="185" width="300" height="35" fill="#4a7a4a"/>
+  <!-- trees left of castle -->
+  <ellipse cx="0" cy="100" rx="20" ry="30" fill="#2d6a4f" opacity=".7"/>
+  <!-- stamp -->
+  <rect x="2" y="2" width="82" height="22" fill="#c0392b" opacity=".85" rx="1"/>
+  <text x="42" y="17" text-anchor="middle" font-size="8" fill="white" font-family="serif" letter-spacing=".7">城〜熱田 歴史街道</text>
+</svg>`,
+
+/* ─────────── 覚王山〜本山 寺町散策 ─────────── */
+kakuozan: `<svg viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg">
+  <!-- sky -->
+  <rect x="0" y="0" width="300" height="220" fill="#c0d8e8"/>
+  <rect x="0" y="0" width="300" height="42"  fill="#d8e8f4"/>
+  <!-- small clouds -->
+  <ellipse cx="80"  cy="24" rx="22" ry="9"  fill="#f0eedc"/>
+  <ellipse cx="65"  cy="27" rx="13" ry="6"  fill="#f0eedc"/>
+  <ellipse cx="220" cy="20" rx="24" ry="9"  fill="#f0eedc"/>
+  <ellipse cx="238" cy="23" rx="14" ry="6"  fill="#f0eedc"/>
+  <!-- Nittaiji 5-story pagoda (日泰寺) - center background -->
+  <rect x="118" y="126" width="64" height="18" fill="#8a7a60" stroke="#5a4a30" stroke-width=".7"/>
+  <!-- level 1 walls+roof -->
+  <rect x="122" y="108" width="56" height="20" fill="#c8b88a" stroke="#7a6a40" stroke-width=".7"/>
+  <polygon points="114,108 123,94 177,94 186,108" fill="#1a1a08" stroke="#080800" stroke-width=".8"/>
+  <path d="M114,108 Q108,105 106,112" fill="#1a1a08"/>
+  <path d="M186,108 Q192,105 194,112" fill="#1a1a08"/>
+  <!-- level 2 -->
+  <rect x="128" y="92" width="44" height="18" fill="#c8b88a" stroke="#7a6a40" stroke-width=".6"/>
+  <polygon points="120,92 128,79 172,79 180,92"  fill="#1a1a08" stroke="#080800" stroke-width=".7"/>
+  <path d="M120,92 Q114,89 112,96" fill="#1a1a08"/>
+  <path d="M180,92 Q186,89 188,96" fill="#1a1a08"/>
+  <!-- level 3 -->
+  <rect x="132" y="77" width="36" height="17" fill="#c8b88a" stroke="#7a6a40" stroke-width=".6"/>
+  <polygon points="124,77 132,65 168,65 176,77"  fill="#1a1a08" stroke="#080800" stroke-width=".6"/>
+  <!-- level 4 -->
+  <rect x="135" y="63" width="30" height="16" fill="#c8b88a" stroke="#7a6a40" stroke-width=".5"/>
+  <polygon points="128,63 136,52 164,52 172,63"  fill="#1a1a08" stroke="#080800" stroke-width=".6"/>
+  <!-- level 5 top -->
+  <rect x="138" y="50" width="24" height="15" fill="#c8b88a" stroke="#7a6a40" stroke-width=".5"/>
+  <polygon points="132,50 140,40 160,40 168,50"  fill="#1a1a08" stroke="#080800" stroke-width=".6"/>
+  <!-- spire + finial -->
+  <rect x="148" y="24" width="4" height="18" fill="#c8a84b" stroke="#9e7b2a" stroke-width=".5"/>
+  <circle cx="150" cy="22" r="5" fill="#c8a84b" stroke="#9e7b2a" stroke-width=".6"/>
+  <rect x="149" y="12" width="2" height="12" fill="#aaa" stroke="#888" stroke-width=".4"/>
+  <!-- zelkova trees - LEFT side -->
+  <rect x="10"  y="82" width="8" height="128" fill="#3a2010"/>
+  <ellipse cx="14"  cy="65" rx="22" ry="34"  fill="#2a5020" stroke="#1a3a10" stroke-width=".5"/>
+  <ellipse cx="6"   cy="75" rx="14" ry="22"  fill="#366028"/>
+  <ellipse cx="24"  cy="72" rx="13" ry="19"  fill="#2a5020"/>
+  <rect x="40"  y="92" width="7" height="118" fill="#3a2010"/>
+  <ellipse cx="43"  cy="77" rx="19" ry="29"  fill="#244a1c" stroke="#1a3a10" stroke-width=".5"/>
+  <ellipse cx="36"  cy="85" rx="12" ry="20"  fill="#2e5a24"/>
+  <rect x="68"  y="100" width="6" height="110" fill="#4a2c10"/>
+  <ellipse cx="71"  cy="88" rx="16" ry="24"  fill="#2a5820"/>
+  <!-- zelkova trees - RIGHT side -->
+  <rect x="282" y="82" width="8" height="128" fill="#3a2010"/>
+  <ellipse cx="286" cy="65" rx="22" ry="34"  fill="#2a5020" stroke="#1a3a10" stroke-width=".5"/>
+  <ellipse cx="278" cy="75" rx="13" ry="19"  fill="#366028"/>
+  <ellipse cx="295" cy="72" rx="14" ry="22"  fill="#2a5020"/>
+  <rect x="253" y="92" width="7" height="118" fill="#3a2010"/>
+  <ellipse cx="257" cy="77" rx="19" ry="29"  fill="#244a1c" stroke="#1a3a10" stroke-width=".5"/>
+  <ellipse cx="264" cy="85" rx="12" ry="20"  fill="#2e5a24"/>
+  <rect x="226" y="100" width="6" height="110" fill="#4a2c10"/>
+  <ellipse cx="229" cy="88" rx="16" ry="24"  fill="#2a5820"/>
+  <!-- stone path -->
+  <path d="M106,220 L114,144 L186,144 L194,220Z" fill="#c0b090"/>
+  <path d="M110,220 L117,144 L183,144 L190,220Z" fill="#d0c0a0"/>
+  <rect x="122" y="175" width="20" height="10" fill="#b0a080" rx="1"/>
+  <rect x="146" y="175" width="18" height="10" fill="#b8a888" rx="1"/>
+  <rect x="120" y="190" width="22" height="10" fill="#b0a080" rx="1"/>
+  <rect x="145" y="190" width="20" height="10" fill="#b8a888" rx="1"/>
+  <!-- stone lanterns on path -->
+  <rect x="104" y="158" width="8" height="28" fill="#888" rx="1" stroke="#555" stroke-width=".4"/>
+  <rect x="102" y="154" width="12" height="6" fill="#999" stroke="#666" stroke-width=".4"/>
+  <rect x="104" y="138" width="8" height="20" fill="#777" rx="1"/>
+  <rect x="102" y="133" width="12" height="5" fill="#888"/>
+  <polygon points="103,133 108,122 113,133"     fill="#666" stroke="#444" stroke-width=".4"/>
+  <circle cx="108" cy="147" r="4" fill="#f0d060" opacity=".4"/>
+  <rect x="188" y="158" width="8" height="28" fill="#888" rx="1"/>
+  <rect x="186" y="154" width="12" height="6" fill="#999"/>
+  <rect x="188" y="138" width="8" height="20" fill="#777" rx="1"/>
+  <rect x="186" y="133" width="12" height="5" fill="#888"/>
+  <polygon points="187,133 192,122 197,133"     fill="#666" stroke="#444" stroke-width=".4"/>
+  <!-- café building bg left -->
+  <rect x="0"  y="136" width="86" height="84" fill="#d4c8a0" stroke="#8a7a60" stroke-width=".7"/>
+  <rect x="8"  y="144" width="32" height="22" fill="#8090a8" rx="1" stroke="#6070a0" stroke-width=".4"/>
+  <rect x="44" y="146" width="32" height="18" fill="#c8b890" rx="1" stroke="#909060" stroke-width=".4" opacity=".8"/>
+  <text x="60" y="160" text-anchor="middle" font-size="8" fill="#3c2010" font-family="serif">カフェ</text>
+  <!-- ground -->
+  <rect x="0" y="205" width="300" height="15" fill="#3a6a3a"/>
+  <!-- stamp -->
+  <rect x="2" y="2" width="68" height="22" fill="#1a3a5c" opacity=".85" rx="1"/>
+  <text x="36" y="17" text-anchor="middle" font-size="9" fill="white" font-family="serif" letter-spacing=".8">覚王山〜本山</text>
+</svg>`,
+
+/* ─────────── 鶴舞線横断 ─────────── */
+tsurumakosen: `<svg viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg">
+  <!-- sky -->
+  <rect x="0" y="0" width="300" height="220" fill="#90c0d8"/>
+  <rect x="0" y="0" width="300" height="42"  fill="#b4d4ec"/>
+  <!-- clouds -->
+  <ellipse cx="75"  cy="26" rx="30" ry="11" fill="#f0eedc"/>
+  <ellipse cx="56"  cy="29" rx="17" ry="7"  fill="#f0eedc"/>
+  <ellipse cx="94"  cy="29" rx="15" ry="6"  fill="#f0eedc"/>
+  <ellipse cx="228" cy="20" rx="28" ry="10" fill="#f0eedc"/>
+  <ellipse cx="210" cy="23" rx="16" ry="7"  fill="#f0eedc"/>
+  <ellipse cx="246" cy="23" rx="14" ry="6"  fill="#f0eedc"/>
+  <!-- LEFT: Shonai green park area -->
+  <path d="M0,75 Q42,55 84,78 Q84,145 0,145Z" fill="#2d6a4f"/>
+  <!-- park trees left -->
+  <rect x="12"  y="88" width="6" height="50" fill="#2c1808"/>
+  <ellipse cx="15"  cy="74" rx="18" ry="24" fill="#1e5038"/>
+  <ellipse cx="7"   cy="82" rx="12" ry="16" fill="#265a42"/>
+  <rect x="42"  y="96" width="5" height="44" fill="#2c1808"/>
+  <ellipse cx="44"  cy="83" rx="16" ry="21" fill="#1e5038"/>
+  <!-- RIGHT: Urban Nagoya buildings -->
+  <rect x="216" y="65"  width="45" height="155" fill="#7a8a9a" opacity=".75" stroke="#5a6a7a" stroke-width=".5"/>
+  <rect x="222" y="55"  width="32" height="14"  fill="#6a7a8a" opacity=".7"/>
+  <rect x="262" y="72"  width="38" height="148" fill="#8a9aaa" opacity=".65" stroke="#6a7a8a" stroke-width=".5"/>
+  <rect x="266" y="60"  width="28" height="14"  fill="#7a8a9a" opacity=".65"/>
+  <!-- windows right buildings -->
+  <rect x="220" y="74" width="5" height="4" fill="#f0e898" opacity=".55"/>
+  <rect x="232" y="74" width="5" height="4" fill="#f0e898" opacity=".55"/>
+  <rect x="220" y="86" width="5" height="4" fill="#f0e898" opacity=".5"/>
+  <rect x="232" y="86" width="5" height="4" fill="#f0e898" opacity=".5"/>
+  <rect x="265" y="80" width="5" height="4" fill="#f0e898" opacity=".55"/>
+  <rect x="278" y="80" width="5" height="4" fill="#f0e898" opacity=".55"/>
+  <!-- CENTER: Street level, Osu lanterns hint -->
+  <rect x="84"  y="100" width="132" height="120" fill="#c8b888"/>
+  <rect x="84"  y="100" width="60"  height="120" fill="#d4c898"/>
+  <rect x="156" y="100" width="60"  height="120" fill="#c0b080"/>
+  <!-- Osu-style lanterns in center -->
+  <line x1="84" y1="118" x2="216" y2="118" stroke="#555" stroke-width=".7"/>
+  <ellipse cx="108" cy="124" rx="7" ry="10" fill="#c0392b" stroke="#8c2520" stroke-width=".6"/>
+  <ellipse cx="130" cy="124" rx="7" ry="10" fill="#c0392b" stroke="#8c2520" stroke-width=".6"/>
+  <ellipse cx="152" cy="124" rx="7" ry="10" fill="#c0392b" stroke="#8c2520" stroke-width=".6"/>
+  <ellipse cx="174" cy="124" rx="7" ry="10" fill="#c0392b" stroke="#8c2520" stroke-width=".6"/>
+  <ellipse cx="196" cy="124" rx="7" ry="10" fill="#c8a84b" stroke="#9e7b2a" stroke-width=".6"/>
+  <text x="130" y="127" text-anchor="middle" font-size="6" fill="white" font-family="serif">大須</text>
+  <!-- Tsuruma park fountain hint in center-right -->
+  <rect x="168" y="148" width="4" height="30" fill="#c8b8a0" stroke="#aaa" stroke-width=".4"/>
+  <ellipse cx="170" cy="148" rx="6" ry="2.5" fill="#d8c8b0" stroke="#bbb" stroke-width=".4"/>
+  <polygon points="170,130 166,148 174,148" fill="#c8a84b" stroke="#9e7b2a" stroke-width=".5"/>
+  <!-- subway line diagonal RED -->
+  <path d="M4,216 Q80,200 150,178 Q222,156 296,138" fill="none" stroke="#c0392b" stroke-width="5.5" opacity=".55"/>
+  <path d="M4,216 Q80,200 150,178 Q222,156 296,138" fill="none" stroke="#e04040" stroke-width="2.5" opacity=".8" stroke-dasharray="9,6"/>
+  <!-- station circles along line -->
+  <circle cx="28"  cy="212" r="5.5" fill="white" stroke="#c0392b" stroke-width="2"/>
+  <circle cx="80"  cy="200" r="5"   fill="white" stroke="#c0392b" stroke-width="2"/>
+  <circle cx="150" cy="178" r="5.5" fill="white" stroke="#c0392b" stroke-width="2"/>
+  <circle cx="220" cy="156" r="5"   fill="white" stroke="#c0392b" stroke-width="2"/>
+  <circle cx="274" cy="141" r="5.5" fill="white" stroke="#c0392b" stroke-width="2"/>
+  <!-- station labels -->
+  <text x="20"  y="206" font-size="5.5" fill="#2c1810" font-family="serif">上小田井</text>
+  <text x="72"  y="194" font-size="5.5" fill="#2c1810" font-family="serif">庄内緑地</text>
+  <text x="141" y="172" font-size="5.5" fill="#2c1810" font-family="serif">大須</text>
+  <text x="266" y="135" font-size="5.5" fill="#2c1810" font-family="serif">赤池</text>
+  <!-- stamp -->
+  <rect x="2" y="2" width="68" height="22" fill="#c0392b" opacity=".88" rx="1"/>
+  <text x="36" y="17" text-anchor="middle" font-size="9.5" fill="white" font-family="serif" letter-spacing="1">鶴舞線横断</text>
+</svg>`,
+
+/* ─────────── 名古屋港〜名古屋城 ─────────── */
+nagoyakocastle: `<svg viewBox="0 0 300 220" xmlns="http://www.w3.org/2000/svg">
+  <!-- sky gradient bands -->
+  <rect x="0" y="0"   width="300" height="220" fill="#72b0cc"/>
+  <rect x="0" y="0"   width="300" height="48"  fill="#9ccae0"/>
+  <rect x="0" y="48"  width="300" height="30"  fill="#84bcd4"/>
+  <!-- sea (lower portion) -->
+  <rect x="0" y="144" width="300" height="76"  fill="#1a5070"/>
+  <!-- sea wave bands -->
+  <path d="M0,152 C28,142 56,162 84,152 C112,142 140,162 168,152 C196,142 224,162 252,152 C272,144 288,152 300,152" fill="none" stroke="#3a90b8" stroke-width="2" opacity=".7"/>
+  <path d="M0,164 C25,154 50,174 75,164 C100,154 125,174 150,164 C175,154 200,174 225,164 C250,154 275,174 300,164" fill="none" stroke="#2880a8" stroke-width="1.6" opacity=".6"/>
+  <path d="M0,176 C22,166 44,186 66,176 C88,166 110,186 132,176 C154,166 176,186 198,176 C220,166 242,186 264,176 C280,168 294,176 300,176" fill="none" stroke="#206898" stroke-width="1.3" opacity=".5"/>
+  <!-- wave crests -->
+  <path d="M14,154 Q21,150 25,154" fill="none" stroke="white" stroke-width="1.3" opacity=".6"/>
+  <path d="M82,155 Q89,151 93,155" fill="none" stroke="white" stroke-width="1.2" opacity=".55"/>
+  <path d="M164,153 Q171,149 175,153" fill="none" stroke="white" stroke-width="1.1" opacity=".55"/>
+  <path d="M238,154 Q245,150 249,154" fill="none" stroke="white" stroke-width="1" opacity=".5"/>
+  <!-- clouds -->
+  <ellipse cx="55"  cy="28" rx="28" ry="11" fill="#f0eedc"/>
+  <ellipse cx="38"  cy="31" rx="16" ry="7"  fill="#f0eedc"/>
+  <ellipse cx="72"  cy="31" rx="14" ry="6"  fill="#f0eedc"/>
+  <ellipse cx="240" cy="22" rx="30" ry="11" fill="#f0eedc"/>
+  <ellipse cx="220" cy="25" rx="17" ry="7"  fill="#f0eedc"/>
+  <ellipse cx="260" cy="25" rx="15" ry="6"  fill="#f0eedc"/>
+  <!-- Nagoya Port Tower (ポートタワー) centered - slim lattice -->
+  <!-- base legs spreading -->
+  <polygon points="136,220 130,168 148,168" fill="#c0392b" stroke="#8c2520" stroke-width=".7"/>
+  <polygon points="164,220 152,168 170,168" fill="#c0392b" stroke="#8c2520" stroke-width=".7"/>
+  <!-- tower shaft (slim) -->
+  <rect x="141" y="42" width="18" height="128" fill="#c0392b" stroke="#8c2520" stroke-width=".7"/>
+  <rect x="144" y="42" width="12" height="128" fill="#d4453c"/>
+  <!-- outer lattice legs -->
+  <line x1="130" y1="168" x2="141" y2="42" stroke="#c0392b" stroke-width="2.5"/>
+  <line x1="170" y1="168" x2="159" y2="42" stroke="#c0392b" stroke-width="2.5"/>
+  <!-- cross braces -->
+  <line x1="131" y1="154" x2="169" y2="146" stroke="#9e2820" stroke-width="1.1"/>
+  <line x1="131" y1="146" x2="169" y2="154" stroke="#9e2820" stroke-width="1"/>
+  <line x1="133" y1="132" x2="167" y2="124" stroke="#9e2820" stroke-width="1"/>
+  <line x1="133" y1="124" x2="167" y2="132" stroke="#9e2820" stroke-width=".9"/>
+  <line x1="134" y1="108" x2="166" y2="100" stroke="#9e2820" stroke-width=".9"/>
+  <line x1="134" y1="100" x2="166" y2="108" stroke="#9e2820" stroke-width=".8"/>
+  <line x1="136" y1="84"  x2="164" y2="76"  stroke="#9e2820" stroke-width=".8"/>
+  <line x1="136" y1="76"  x2="164" y2="84"  stroke="#9e2820" stroke-width=".7"/>
+  <line x1="137" y1="62"  x2="163" y2="55"  stroke="#9e2820" stroke-width=".7"/>
+  <line x1="137" y1="55"  x2="163" y2="62"  stroke="#9e2820" stroke-width=".6"/>
+  <!-- observation decks -->
+  <rect x="135" y="108" width="30" height="7" fill="#e8d088" stroke="#9e7b2a" stroke-width=".5" rx="1"/>
+  <rect x="137" y="65"  width="26" height="6" fill="#c8a84b" stroke="#9e7b2a" stroke-width=".5" rx="1"/>
+  <!-- top structure + beacon -->
+  <rect x="147" y="20" width="6"  height="24" fill="#888" stroke="#555" stroke-width=".4"/>
+  <rect x="144" y="14" width="12" height="7"  fill="#c8a84b" stroke="#9e7b2a" stroke-width=".5" rx="1"/>
+  <rect x="148" y="6"  width="4"  height="10" fill="#555"/>
+  <circle cx="150" cy="5" r="3.5" fill="white" opacity=".9"/>
+  <!-- ship (left of tower) -->
+  <path d="M8,155 Q12,148 72,148 Q78,148 80,155 Q80,167 8,167Z" fill="#2c1810" stroke="#1a0e0a" stroke-width=".8"/>
+  <!-- superstructure -->
+  <rect x="24"  y="138" width="38" height="12" fill="#e0d8c0" stroke="#bbb" stroke-width=".5"/>
+  <rect x="44"  y="130" width="14" height="10" fill="#d8d0b8" stroke="#aaa" stroke-width=".4"/>
+  <!-- funnel -->
+  <rect x="56"  y="120" width="8" height="20" fill="#444" stroke="#222" stroke-width=".4"/>
+  <path d="M54,120 Q60,113 68,120" fill="#444"/>
+  <!-- flag mast -->
+  <rect x="30"  y="116" width="2" height="24" fill="#888" stroke="#555" stroke-width=".3"/>
+  <polygon points="32,116 32,123 40,119" fill="#c0392b"/>
+  <!-- ship wake -->
+  <path d="M6,168 Q20,163 38,168 Q56,173 72,168 Q84,163 82,168" fill="none" stroke="#4090b8" stroke-width="1.2" opacity=".55"/>
+  <!-- dock/port structure right -->
+  <rect x="228" y="132" width="72" height="88" fill="#506878" opacity=".55" stroke="#405868" stroke-width=".5"/>
+  <rect x="240" y="122" width="48" height="14" fill="#405868" opacity=".55"/>
+  <!-- seagulls -->
+  <path d="M100,58 Q106,54 112,58" fill="none" stroke="#2c1810" stroke-width="1.2"/>
+  <path d="M118,46 Q124,42 130,46" fill="none" stroke="#2c1810" stroke-width="1.1"/>
+  <path d="M186,52 Q192,48 198,52" fill="none" stroke="#2c1810" stroke-width="1.1"/>
+  <!-- stamp -->
+  <rect x="2" y="2" width="76" height="22" fill="#1a5070" opacity=".88" rx="1"/>
+  <text x="40" y="17" text-anchor="middle" font-size="8.5" fill="white" font-family="serif" letter-spacing=".7">名古屋港〜名古屋城</text>
+</svg>`,
+
+}; /* end ILLUS */
+
+/* ════════════════════════════════════════
+   INIT
+════════════════════════════════════════ */
+selectCat('short');
+</script>
+</body>
+</html>

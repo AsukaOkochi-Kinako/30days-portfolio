@@ -1,0 +1,13 @@
+{
+  "name": "今日のコーデ",
+  "short_name": "コーデ提案",
+  "description": "気温・天気・シーンに合わせてコーデを提案",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#FFF8F0",
+  "theme_color": "#F59E0B",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

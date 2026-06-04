@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>30 Days of Building with Claude</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;900&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- HERO -->
+  <section class="hero" id="hero">
+    <div class="hero-bg-orbs">
+      <div class="orb orb1"></div>
+      <div class="orb orb2"></div>
+      <div class="orb orb3"></div>
+    </div>
+    <div class="hero-content">
+      <div class="hero-badge">🎉 Day 30 Complete</div>
+      <h1 class="hero-title">
+        <span class="title-line1">30 Days of</span>
+        <span class="title-line2">Building with</span>
+        <span class="title-line3">Claude</span>
+      </h1>
+      <p class="hero-sub">毎日1プロダクト。30日間、Claudeと一緒に作り続けた記録。</p>
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-num" data-target="30">0</span>
+          <span class="stat-label">Days</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-num" data-target="28">0</span>
+          <span class="stat-label">Products</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="stat">
+          <span class="stat-num" data-target="8">0</span>
+          <span class="stat-label">Categories</span>
+        </div>
+      </div>
+      <a href="#portfolio" class="hero-cta">作品を見る ↓</a>
+    </div>
+    <div class="scroll-indicator">
+      <div class="scroll-dot"></div>
+    </div>
+  </section>
+
+  <!-- PORTFOLIO -->
+  <section class="portfolio" id="portfolio">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">All Products</h2>
+        <p class="section-sub">30日間で作った全プロダクト</p>
+      </div>
+
+      <div class="filter-bar">
+        <button class="filter-btn active" data-filter="all">🌟 すべて</button>
+        <button class="filter-btn" data-filter="game">🎮 ゲーム</button>
+        <button class="filter-btn" data-filter="music">🎵 音楽</button>
+        <button class="filter-btn" data-filter="sports">💪 スポーツ</button>
+        <button class="filter-btn" data-filter="books">📚 読書</button>
+        <button class="filter-btn" data-filter="food">🍴 フード</button>
+        <button class="filter-btn" data-filter="lifestyle">💚 ライフスタイル</button>
+        <button class="filter-btn" data-filter="creative">🎨 クリエイティブ</button>
+        <button class="filter-btn" data-filter="tools">🔧 ツール</button>
+      </div>
+
+      <div class="projects-grid" id="projectsGrid">
+        <!-- cards injected by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- START YOUR CHALLENGE -->
+  <section class="challenge" id="challenge">
+    <div class="container">
+      <div class="challenge-inner">
+        <div class="challenge-header">
+          <div class="challenge-badge">🚀 Starter Kit</div>
+          <h2 class="challenge-title">あなたも30日チャレンジを<br>始めよう！</h2>
+          <p class="challenge-sub">Claude Codeで毎日1プロダクト。30日後には驚くほど成長している。</p>
+        </div>
+
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">01</div>
+            <div class="step-icon">🤖</div>
+            <h3>Claude Codeを使う</h3>
+            <p>AIとペアプログラミング。アイデアを話しかけるだけでプロダクトが動き出す。</p>
+          </div>
+          <div class="step-arrow">→</div>
+          <div class="step">
+            <div class="step-num">02</div>
+            <div class="step-icon">⚡</div>
+            <h3>毎日1プロダクト</h3>
+            <p>完璧じゃなくていい。動くものを毎日1つ。小さくてもOK。</p>
+          </div>
+          <div class="step-arrow">→</div>
+          <div class="step">
+            <div class="step-num">03</div>
+            <div class="step-icon">📢</div>
+            <h3>シェアする</h3>
+            <p>作ったものをSNSやGitHubで公開。仲間と繋がって次へ進む。</p>
+          </div>
+        </div>
+
+        <div class="rules">
+          <h3 class="rules-title">📋 チャレンジルール</h3>
+          <ul class="rules-list">
+            <li><span class="rule-icon">✅</span> 1日1プロダクト（小さくてOK）</li>
+            <li><span class="rule-icon">✅</span> Claude Codeを主なツールとして使う</li>
+            <li><span class="rule-icon">✅</span> 完成したら何らかの形で記録・公開する</li>
+          </ul>
+        </div>
+
+        <div class="challenge-cta">
+          <a href="https://claude.ai/code" target="_blank" class="cta-btn cta-primary">
+            🚀 Claude Codeを始める
+          </a>
+          <a href="https://github.com" target="_blank" class="cta-btn cta-secondary">
+            📁 GitHubに記録する
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <p>30 Days of Building with Claude — Day 30 / 2026</p>
+      <p class="footer-sub">Made with Claude Code ❤️</p>
+    </div>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

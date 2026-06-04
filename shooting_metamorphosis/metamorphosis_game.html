@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>変身 ─ りんご避けゲー</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:#0f0806;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  width:100vw;
+  height:100vh;
+  overflow:hidden;
+  touch-action:none;
+  -webkit-user-select:none;
+  user-select:none;
+}
+canvas{display:block}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+
+const LW = 480, LH = 720;
+let scale = 1;
+
+function resize() {
+  scale = Math.min(window.innerWidth / LW, window.innerHeight / LH);
+  canvas.width = LW;
+  canvas.height = LH;
+  canvas.style.width  = (LW * scale) + 'px';
+  canvas.style.height = (LH * scale) + 'px';
+}
+resize();
+window.addEventListener('resize', resize);
+
+const GRAVITY       = 460;
+const FLOOR_Y       = LH - 90;
+const GREGOR_MIN_Y  = Math.floor(LH * 0.35);
+
+let state    = 'title';
+let lives, timeLeft, apples, particles;
+let gregor, father;
+let hitFlash, clickHint;
+let lastTime = 0;
+
+/* ─── INIT ──────────────────────────────────────────────────────────── */
+
+function init() {
+  lives     = 3;
+  timeLeft  = 60;
+  apples    = [];
+  particles = [];
+  hitFlash  = 0;
+  clickHint = 2.0;
+
+  gregor = {
+    x: LW / 2, y: FLOOR_Y - 30,
+    tx: LW / 2, ty: FLOOR_Y - 30,
+    speed: 240,
+    r: 22,
+    legPhase: 0,
+    stunned: 0,
+    opacity: 1,
+    showTarget: false
+  };
+
+  father = {
+    x: LW - 75, y: 95,
+    throwTimer: 1.2,
+    throwInterval: 2.5,
+    throwAnim: 0
+  };
+}
+
+/* ─── DRAW: ROOM ─────────────────────────────────────────────────────── */
+
+function drawRoom() {
+  // Wall
+  ctx.fillStyle = '#291608';
+  ctx.fillRect(0, 0, LW, LH);
+
+  // Wallpaper vertical stripes
+  ctx.strokeStyle = 'rgba(90,48,18,0.25)';
+  ctx.lineWidth = 1;
+  for (let x = 0; x < LW; x += 28) {
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, FLOOR_Y - 8); ctx.stroke();
+  }
+  // Wallpaper small diamonds
+  ctx.fillStyle = 'rgba(100,55,18,0.18)';
+  for (let xi = 0; xi < LW; xi += 28) {
+    for (let yi = 22; yi < FLOOR_Y - 8; yi += 38) {
+      const ox = (Math.floor(yi / 38) % 2) * 14;
+      ctx.save();
+      ctx.translate(xi + ox, yi);
+      ctx.rotate(Math.PI / 4);
+      ctx.fillRect(-4, -4, 8, 8);
+      ctx.restore();
+    }
+  }
+
+  // Top shadow
+  const topGrad = ctx.createLinearGradient(0, 0, 0, 160);
+  topGrad.addColorStop(0, 'rgba(0,0,0,0.65)');
+  topGrad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = topGrad;
+  ctx.fillRect(0, 0, LW, 160);
+
+  // Dim window (top-left)
+  ctx.fillStyle = 'rgba(130,105,55,0.12)';
+  ctx.fillRect(38, 38, 84, 112);
+  ctx.strokeStyle = '#3e2610';
+  ctx.lineWidth = 3;
+  ctx.strokeRect(38, 38, 84, 112);
+  ctx.strokeStyle = '#3e2610';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(80, 38); ctx.lineTo(80, 150);
+  ctx.moveTo(38, 94); ctx.lineTo(122, 94);
+  ctx.stroke();
+
+  // Baseboard
+  ctx.fillStyle = '#2a1508';
+  ctx.fillRect(0, FLOOR_Y - 12, LW, 10);
+
+  // Floor planks
+  const plankColors = ['#3c2410','#332009','#3c2410','#2e1c08','#3c2410'];
+  for (let i = 0; i < 7; i++) {
+    const py = FLOOR_Y - 2 + i * 13;
+    ctx.fillStyle = plankColors[i % plankColors.length];
+    ctx.fillRect(0, py, LW, 13);
+    ctx.strokeStyle = 'rgba(15,7,2,0.55)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(LW, py); ctx.stroke();
+    const seg = 140 + (i % 3) * 30;
+    const off = (i * 70) % seg;
+    for (let sx = off; sx < LW; sx += seg) {
+      ctx.beginPath(); ctx.moveTo(sx, py); ctx.lineTo(sx, py + 13); ctx.stroke();
+    }
+  }
+}
+
+/* ─── DRAW: FATHER ───────────────────────────────────────────────────── */
+
+function drawFather(dt) {
+  if (father.throwAnim > 0) father.throwAnim = Math.max(0, father.throwAnim - dt * 3.2);
+
+  const fx = father.x, fy = father.y;
+  const swing = father.throwAnim * Math.PI * 0.75;
+
+  ctx.save();
+  ctx.translate(fx, fy);
+
+  // Shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.28)';
+  ctx.beginPath();
+  ctx.ellipse(0, 145, 26, 7, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Trousers / legs
+  ctx.strokeStyle = '#1c1510';
+  ctx.lineWidth = 8; ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(-7, 90); ctx.lineTo(-16, 148);
+  ctx.moveTo( 7, 90); ctx.lineTo( 12, 148);
+  ctx.stroke();
+  // Shoes
+  ctx.fillStyle = '#1a0e05';
+  ctx.beginPath();
+  ctx.ellipse(-19, 149, 11, 5, -0.18, 0, Math.PI * 2); ctx.fill();
+  ctx.beginPath();
+  ctx.ellipse( 14, 149, 11, 5,  0.12, 0, Math.PI * 2); ctx.fill();
+
+  // Body (suit)
+  ctx.fillStyle = '#1e1c14';
+  ctx.fillRect(-21, 28, 42, 65);
+  // Jacket lapels
+  ctx.fillStyle = '#2a2818';
+  ctx.beginPath();
+  ctx.moveTo(0,34); ctx.lineTo(-12,52); ctx.lineTo(0,56); ctx.closePath(); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(0,34); ctx.lineTo( 12,52); ctx.lineTo(0,56); ctx.closePath(); ctx.fill();
+  // Shirt / tie
+  ctx.fillStyle = '#cfc8aa';
+  ctx.beginPath();
+  ctx.moveTo(-3,34); ctx.lineTo(3,34); ctx.lineTo(3,54); ctx.lineTo(0,60); ctx.lineTo(-3,54); ctx.closePath();
+  ctx.fill();
+
+  // LEFT arm (resting)
+  ctx.save();
+  ctx.translate(21, 42);
+  ctx.strokeStyle = '#1e1c14'; ctx.lineWidth = 9; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(16,38); ctx.stroke();
+  ctx.restore();
+
+  // RIGHT arm (throwing)
+  ctx.save();
+  ctx.translate(-21, 40);
+  ctx.rotate(Math.PI * 0.25 - swing);
+  ctx.strokeStyle = '#1e1c14'; ctx.lineWidth = 9; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(-28,32); ctx.stroke();
+  // Hand
+  ctx.fillStyle = '#a87855';
+  ctx.beginPath(); ctx.arc(-28,32,6.5,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+
+  // Neck
+  ctx.fillStyle = '#aa7a52';
+  ctx.fillRect(-6, 18, 12, 14);
+
+  // Head
+  ctx.fillStyle = '#c09068';
+  ctx.beginPath();
+  ctx.ellipse(0, 7, 17, 21, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  // Hair (thinning)
+  ctx.fillStyle = '#352518';
+  ctx.beginPath();
+  ctx.ellipse(0, -10, 16, 9, 0, Math.PI, Math.PI * 2);
+  ctx.fill();
+  ctx.fillRect(-16, -10, 32, 5);
+
+  // Eyes (angry)
+  ctx.fillStyle = '#150a02';
+  ctx.beginPath();
+  ctx.arc(-5, 5, 2.5, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath();
+  ctx.arc( 5, 5, 2.5, 0, Math.PI*2); ctx.fill();
+
+  // Angry brows
+  ctx.strokeStyle = '#150a02'; ctx.lineWidth = 2.5; ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(-9, 0); ctx.lineTo(-2, 2.5); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo( 9, 0); ctx.lineTo( 2, 2.5); ctx.stroke();
+
+  // Moustache
+  ctx.fillStyle = '#352518';
+  ctx.beginPath();
+  ctx.ellipse(0, 14, 7, 3.5, 0, 0, Math.PI); ctx.fill();
+
+  ctx.restore();
+}
+
+/* ─── DRAW: GREGOR ───────────────────────────────────────────────────── */
+
+function drawGregor(dt) {
+  const gx = gregor.x, gy = gregor.y;
+  const moving = Math.abs(gregor.tx - gx) > 3 || Math.abs(gregor.ty - gy) > 3;
+  if (moving) gregor.legPhase += dt * 9;
+
+  // Target marker
+  if (gregor.showTarget && state === 'playing') {
+    ctx.save();
+    ctx.globalAlpha = 0.35;
+    ctx.strokeStyle = '#c8a040';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath();
+    ctx.arc(gregor.tx, gregor.ty, gregor.r + 4, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.restore();
+  }
+
+  ctx.save();
+  ctx.translate(gx, gy);
+  ctx.globalAlpha = gregor.opacity;
+
+  // Shadow
+  ctx.fillStyle = 'rgba(0,0,0,0.22)';
+  ctx.beginPath();
+  ctx.ellipse(0, 28, 24, 7, 0, 0, Math.PI * 2); ctx.fill();
+
+  // Six legs
+  ctx.strokeStyle = '#3a2508'; ctx.lineWidth = 2.2; ctx.lineCap = 'round';
+  const legXs = [-13, -1, 11];
+  for (let i = 0; i < 3; i++) {
+    const wave = Math.sin(gregor.legPhase + i * 1.3) * 9;
+    const lx = legXs[i];
+    ctx.beginPath();
+    ctx.moveTo(lx - 4,  2); ctx.quadraticCurveTo(lx - 16, 14 + wave, lx - 24, 20 + wave); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(lx + 4,  2); ctx.quadraticCurveTo(lx + 16, 14 - wave, lx + 24, 20 - wave); ctx.stroke();
+  }
+
+  // Main body
+  ctx.fillStyle = gregor.stunned > 0 ? '#8a6535' : '#513818';
+  ctx.beginPath();
+  ctx.ellipse(0, 4, 21, 30, 0, 0, Math.PI * 2); ctx.fill();
+
+  // Carapace sheen
+  ctx.fillStyle = 'rgba(210,160,70,0.14)';
+  ctx.beginPath();
+  ctx.ellipse(-5, -6, 9, 14, -0.25, 0, Math.PI * 2); ctx.fill();
+
+  // Shell segments
+  ctx.strokeStyle = 'rgba(25,12,3,0.45)'; ctx.lineWidth = 1.4;
+  [-4, 6, 16].forEach(sy => {
+    ctx.beginPath();
+    ctx.moveTo(-19, sy); ctx.lineTo(19, sy); ctx.stroke();
+  });
+
+  // Head
+  ctx.fillStyle = '#624018';
+  ctx.beginPath();
+  ctx.ellipse(0, -28, 13, 12, 0, 0, Math.PI * 2); ctx.fill();
+
+  // Eyes
+  ctx.fillStyle = '#c8e8c0';
+  ctx.beginPath();
+  ctx.arc(-5.5, -30, 4, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath();
+  ctx.arc( 5.5, -30, 4, 0, Math.PI*2); ctx.fill();
+  ctx.fillStyle = '#183015';
+  ctx.beginPath();
+  ctx.arc(-5.5, -30, 2, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath();
+  ctx.arc( 5.5, -30, 2, 0, Math.PI*2); ctx.fill();
+
+  // Antennae
+  ctx.strokeStyle = '#4a2e10'; ctx.lineWidth = 1.5;
+  const aw = Math.sin(gregor.legPhase * 0.45) * 6;
+  ctx.beginPath();
+  ctx.moveTo(-4, -38);
+  ctx.quadraticCurveTo(-16, -54, -21 + aw, -63);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo( 4, -38);
+  ctx.quadraticCurveTo( 16, -54,  21 - aw, -63);
+  ctx.stroke();
+  ctx.fillStyle = '#4a2e10';
+  ctx.beginPath();
+  ctx.arc(-21 + aw, -63, 3, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath();
+  ctx.arc( 21 - aw, -63, 3, 0, Math.PI*2); ctx.fill();
+
+  ctx.globalAlpha = 1;
+  ctx.restore();
+}
+
+/* ─── DRAW: APPLE ────────────────────────────────────────────────────── */
+
+function drawApple(a) {
+  ctx.save();
+  ctx.translate(a.x, a.y);
+  ctx.rotate(a.rot);
+
+  ctx.fillStyle = '#bd1e12';
+  ctx.beginPath(); ctx.arc(0, 0, a.r, 0, Math.PI * 2); ctx.fill();
+  // Highlight
+  ctx.fillStyle = 'rgba(255,190,170,0.32)';
+  ctx.beginPath(); ctx.arc(-3, -3, a.r * 0.45, 0, Math.PI * 2); ctx.fill();
+  // Indent top
+  ctx.fillStyle = 'rgba(0,0,0,0.18)';
+  ctx.beginPath(); ctx.arc(0, -a.r + 1, 3, 0, Math.PI * 2); ctx.fill();
+  // Stem
+  ctx.strokeStyle = '#4a2808'; ctx.lineWidth = 2; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(0, -a.r); ctx.lineTo(3, -a.r - 8); ctx.stroke();
+  // Leaf
+  ctx.fillStyle = '#4a8018';
+  ctx.save();
+  ctx.translate(4, -a.r - 6); ctx.rotate(-0.55);
+  ctx.beginPath(); ctx.ellipse(5, -3, 7, 3.5, 0, 0, Math.PI * 2); ctx.fill();
+  ctx.restore();
+
+  ctx.restore();
+}
+
+/* ─── DRAW: HUD ──────────────────────────────────────────────────────── */
+
+function drawHeart(cx, cy, sz, filled) {
+  ctx.fillStyle = filled ? '#c02018' : 'rgba(70,30,20,0.45)';
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.beginPath();
+  ctx.moveTo(0, sz * 0.5);
+  ctx.bezierCurveTo(0,  0,       -sz,  0,       -sz, -sz * 0.35);
+  ctx.bezierCurveTo(-sz, -sz,     0,  -sz * 0.9,   0, -sz * 0.4);
+  ctx.bezierCurveTo(0,  -sz * 0.9, sz, -sz,        sz, -sz * 0.35);
+  ctx.bezierCurveTo(sz,  0,        0,   0,           0,  sz * 0.5);
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawHUD() {
+  // Lives
+  for (let i = 0; i < 3; i++) drawHeart(22 + i * 28, 26, 10, i < lives);
+
+  // Timer bar
+  const bx = LW / 2 - 95, by = 16, bw = 190, bh = 14;
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.fillRect(bx, by, bw, bh);
+
+  const pct = timeLeft / 60;
+  ctx.fillStyle = pct > 0.5 ? '#5e9430' : pct > 0.22 ? '#b07820' : '#a02010';
+  ctx.fillRect(bx, by, bw * pct, bh);
+
+  ctx.strokeStyle = 'rgba(190,145,65,0.4)';
+  ctx.lineWidth = 1; ctx.strokeRect(bx, by, bw, bh);
+
+  ctx.fillStyle = '#ddc880';
+  ctx.font = '11px Georgia, serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(Math.ceil(timeLeft) + '秒', LW / 2, by + 11);
+
+  ctx.fillStyle = 'rgba(165,125,55,0.55)';
+  ctx.font = '9px Georgia, serif';
+  ctx.fillText('生存時間', LW / 2, by + 26);
+}
+
+/* ─── DRAW: PARTICLES ────────────────────────────────────────────────── */
+
+function drawParticles() {
+  for (const p of particles) {
+    ctx.globalAlpha = p.alpha;
+    ctx.fillStyle = p.color;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.sz, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+
+/* ─── DRAW: SCREENS ──────────────────────────────────────────────────── */
+
+function roundRect(x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.lineTo(x + w - r, y);
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+  ctx.lineTo(x + w, y + h - r);
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  ctx.lineTo(x + r, y + h);
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+  ctx.lineTo(x, y + r);
+  ctx.quadraticCurveTo(x, y, x + r, y);
+  ctx.closePath();
+}
+
+function drawCard(cx, cy, w, h, borderColor) {
+  ctx.fillStyle = 'rgba(18,9,4,0.96)';
+  roundRect(cx - w/2, cy - h/2, w, h, 5);
+  ctx.fill();
+  ctx.strokeStyle = borderColor || '#6a4020';
+  ctx.lineWidth = 1.8;
+  roundRect(cx - w/2, cy - h/2, w, h, 5);
+  ctx.stroke();
+}
+
+function drawButton(cx, by, label) {
+  ctx.fillStyle = '#321508';
+  roundRect(cx - 68, by, 136, 40, 4);
+  ctx.fill();
+  ctx.strokeStyle = '#8a5020';
+  ctx.lineWidth = 1.5;
+  roundRect(cx - 68, by, 136, 40, 4);
+  ctx.stroke();
+  ctx.fillStyle = '#d0a058';
+  ctx.font = '17px Georgia, serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(label, cx, by + 27);
+}
+
+function drawTitleScreen() {
+  ctx.fillStyle = 'rgba(0,0,0,0.62)';
+  ctx.fillRect(0, 0, LW, LH);
+
+  const cx = LW / 2, cy = LH / 2 - 20;
+  drawCard(cx, cy, 330, 310);
+
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#c09050';
+  ctx.font = 'italic 13px Georgia, serif';
+  ctx.fillText('Franz Kafka', cx, cy - 130);
+
+  ctx.fillStyle = '#e0c878';
+  ctx.font = 'bold 52px Georgia, serif';
+  ctx.fillText('変身', cx, cy - 80);
+
+  ctx.fillStyle = '#907040';
+  ctx.font = '12px Georgia, serif';
+  ctx.fillText('Die Verwandlung', cx, cy - 56);
+
+  ctx.strokeStyle = '#5a3210';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(cx - 110, cy - 40); ctx.lineTo(cx + 110, cy - 40); ctx.stroke();
+
+  ctx.fillStyle = '#a08050';
+  ctx.font = '13px Georgia, serif';
+  ctx.fillText('グレーゴルになったあなたは', cx, cy - 18);
+  ctx.fillText('父親のりんごを避け続けなければならない', cx, cy + 5);
+
+  ctx.fillStyle = '#786038';
+  ctx.font = '12px Georgia, serif';
+  ctx.fillText('60秒生き残れ！　ハートが3つなくなると終了', cx, cy + 32);
+  ctx.fillText('タップ / クリック → グレーゴルを移動', cx, cy + 53);
+
+  drawButton(cx, cy + 80, 'はじめる');
+}
+
+function drawResultScreen(win) {
+  ctx.fillStyle = 'rgba(0,0,0,0.70)';
+  ctx.fillRect(0, 0, LW, LH);
+
+  const cx = LW / 2, cy = LH / 2 - 20;
+  drawCard(cx, cy, 320, 260, win ? '#3e6018' : '#6e1c10');
+
+  ctx.textAlign = 'center';
+
+  if (win) {
+    ctx.fillStyle = '#88c048';
+    ctx.font = 'bold 30px Georgia, serif';
+    ctx.fillText('脱出成功！', cx, cy - 90);
+    ctx.fillStyle = '#68a030';
+    ctx.font = '14px Georgia, serif';
+    ctx.fillText('グレーゴルは60秒間、', cx, cy - 58);
+    ctx.fillText('りんごを避け続けた…', cx, cy - 36);
+    ctx.fillStyle = '#4a7820';
+    ctx.font = '12px Georgia, serif';
+    ctx.fillText('もっとも、その後どうなったかは', cx, cy - 10);
+    ctx.fillText('また別の話である。', cx, cy + 10);
+  } else {
+    ctx.fillStyle = '#c03020';
+    ctx.font = 'bold 30px Georgia, serif';
+    ctx.fillText('やられた…', cx, cy - 90);
+    ctx.fillStyle = '#a02510';
+    ctx.font = '14px Georgia, serif';
+    ctx.fillText('父親のりんごが直撃し、', cx, cy - 58);
+    ctx.fillText('グレーゴルは力尽きた。', cx, cy - 36);
+    ctx.fillStyle = '#6e1e10';
+    ctx.font = '12px Georgia, serif';
+    ctx.fillText('「おまえのせいで我が家は滅んだ」', cx, cy - 10);
+    ctx.fillText('──父は憤然と言い放った。', cx, cy + 10);
+  }
+
+  drawButton(cx, cy + 80, 'もう一度');
+}
+
+/* ─── GAME LOGIC ─────────────────────────────────────────────────────── */
+
+function getThrowInterval() {
+  return Math.max(0.68, 2.5 - (60 - timeLeft) * 0.028);
+}
+
+function getAppleSpeed() {
+  return 255 + (60 - timeLeft) * 4.2;
+}
+
+function spawnApple() {
+  const fx = father.x - 26, fy = father.y + 38;
+  const spread = 50 + (60 - timeLeft) * 0.6;
+  const tx = gregor.x + (Math.random() - 0.5) * spread;
+  const ty = gregor.y + (Math.random() - 0.5) * 30;
+  const dx = tx - fx, dy = ty - fy;
+  const dist = Math.sqrt(dx * dx + dy * dy);
+  const T = dist / getAppleSpeed();
+  apples.push({
+    x: fx, y: fy,
+    vx: dx / T,
+    vy: dy / T - GRAVITY * T / 2,
+    r: 13,
+    rot: 0,
+    rotSpeed: (Math.random() - 0.5) * 7
+  });
+  father.throwAnim = 1.0;
+}
+
+function spawnHitParticles(x, y) {
+  for (let i = 0; i < 14; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const spd = 60 + Math.random() * 130;
+    particles.push({
+      x, y,
+      vx: Math.cos(a) * spd,
+      vy: Math.sin(a) * spd,
+      color: ['#c83018','#e05030','#d04020','#a06830'][Math.floor(Math.random()*4)],
+      alpha: 1,
+      sz: 2.5 + Math.random() * 4,
+      life: 0.4 + Math.random() * 0.3
+    });
+  }
+}
+
+function update(dt) {
+  if (state !== 'playing') return;
+
+  timeLeft -= dt;
+  if (timeLeft <= 0) { timeLeft = 0; state = 'win'; return; }
+
+  // Father throws
+  father.throwInterval = getThrowInterval();
+  father.throwTimer += dt;
+  if (father.throwTimer >= father.throwInterval) {
+    father.throwTimer = 0;
+    spawnApple();
+    // Double throw at the end
+    if (timeLeft < 18 && Math.random() < 0.45) {
+      const delay = 280 + Math.random() * 180;
+      setTimeout(() => { if (state === 'playing') spawnApple(); }, delay);
+    }
+  }
+
+  // Move Gregor
+  if (gregor.stunned > 0) {
+    gregor.stunned -= dt;
+    gregor.opacity = Math.sin(gregor.stunned * 22) > 0 ? 1 : 0.28;
+  } else {
+    gregor.opacity = 1;
+    const dx = gregor.tx - gregor.x;
+    const dy = gregor.ty - gregor.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist > 2) {
+      const mv = Math.min(gregor.speed * dt, dist);
+      gregor.x += (dx / dist) * mv;
+      gregor.y += (dy / dist) * mv;
+    }
+  }
+
+  // Update apples
+  for (let i = apples.length - 1; i >= 0; i--) {
+    const a = apples[i];
+    a.vy += GRAVITY * dt;
+    a.x  += a.vx * dt;
+    a.y  += a.vy * dt;
+    a.rot += a.rotSpeed * dt;
+
+    if (a.y > LH + 60 || a.x < -60 || a.x > LW + 60) {
+      apples.splice(i, 1); continue;
+    }
+
+    if (gregor.stunned <= 0) {
+      const dx = a.x - gregor.x, dy = a.y - gregor.y;
+      if (Math.sqrt(dx*dx + dy*dy) < gregor.r + a.r - 5) {
+        apples.splice(i, 1);
+        lives--;
+        gregor.stunned = 1.6;
+        hitFlash = 0.35;
+        spawnHitParticles(gregor.x, gregor.y);
+        if (lives <= 0) { state = 'lose'; return; }
+        continue;
+      }
+    }
+  }
+
+  // Update particles
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    p.x += p.vx * dt; p.y += p.vy * dt;
+    p.vy += 220 * dt;
+    p.life -= dt;
+    p.alpha = Math.max(0, p.life / 0.7);
+    if (p.life <= 0) particles.splice(i, 1);
+  }
+
+  if (hitFlash > 0) hitFlash -= dt * 2.5;
+  if (clickHint > 0) clickHint -= dt;
+}
+
+/* ─── RENDER ─────────────────────────────────────────────────────────── */
+
+function render(dt) {
+  ctx.clearRect(0, 0, LW, LH);
+  drawRoom();
+
+  if (state !== 'title') {
+    drawFather(dt);
+    for (const a of apples) drawApple(a);
+    drawParticles();
+    drawGregor(dt);
+    drawHUD();
+
+    if (hitFlash > 0) {
+      ctx.fillStyle = `rgba(200,18,6,${hitFlash * 0.42})`;
+      ctx.fillRect(0, 0, LW, LH);
+    }
+
+    if (state === 'playing' && clickHint > 0 && clickHint < 1.8) {
+      ctx.globalAlpha = Math.min(1, clickHint) * 0.65;
+      ctx.fillStyle = '#c8a040';
+      ctx.font = '12px Georgia, serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('タップ / クリックで移動', LW / 2, LH - 18);
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  if (state === 'title') drawTitleScreen();
+  if (state === 'win')   drawResultScreen(true);
+  if (state === 'lose')  drawResultScreen(false);
+}
+
+/* ─── MAIN LOOP ──────────────────────────────────────────────────────── */
+
+function loop(ts) {
+  const dt = Math.min((ts - lastTime) / 1000, 0.05);
+  lastTime = ts;
+  update(dt);
+  render(dt);
+  requestAnimationFrame(loop);
+}
+
+requestAnimationFrame(ts => { lastTime = ts; requestAnimationFrame(loop); });
+
+/* ─── INPUT ──────────────────────────────────────────────────────────── */
+
+function toLogical(clientX, clientY) {
+  const r = canvas.getBoundingClientRect();
+  return {
+    x: (clientX - r.left)  / scale,
+    y: (clientY - r.top)   / scale
+  };
+}
+
+function hitButton(px, py, cx, by) {
+  return px >= cx - 68 && px <= cx + 68 && py >= by && py <= by + 40;
+}
+
+function onInput(clientX, clientY) {
+  const p = toLogical(clientX, clientY);
+  const cx = LW / 2;
+
+  if (state === 'title') {
+    if (hitButton(p.x, p.y, cx, LH/2 - 20 + 80)) {
+      init(); state = 'playing';
+    }
+    return;
+  }
+  if (state === 'win' || state === 'lose') {
+    if (hitButton(p.x, p.y, cx, LH/2 - 20 + 80)) {
+      init(); state = 'playing';
+    }
+    return;
+  }
+  if (state === 'playing') {
+    gregor.tx = Math.max(gregor.r, Math.min(LW - gregor.r, p.x));
+    gregor.ty = Math.max(GREGOR_MIN_Y, Math.min(FLOOR_Y - 15, p.y));
+    gregor.showTarget = true;
+    clickHint = 0;
+  }
+}
+
+canvas.addEventListener('click',      e => { e.preventDefault(); onInput(e.clientX, e.clientY); });
+canvas.addEventListener('touchstart', e => { e.preventDefault(); onInput(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
+canvas.addEventListener('touchmove',  e => { e.preventDefault(); onInput(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
+
+// Init
+init();
+</script>
+</body>
+</html>

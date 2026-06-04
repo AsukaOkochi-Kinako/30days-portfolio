@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OTSUKABE | 記録する</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Dela+Gothic+One&family=Inter:wght@400;500;600;700;900&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
+  <style>
+    :root {
+      --bg: #0D0D0D;
+      --surface: #1A1A1A;
+      --surface2: #222222;
+      --accent: #C9FF00;
+      --accent2: #FF5C00;
+      --text: #FFFFFF;
+      --text2: #888888;
+      --border: #2E2E2E;
+      --radius: 16px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', 'Noto Sans JP', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── HEADER ── */
+    .form-header {
+      padding: 28px 24px 0;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+    .logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 36px;
+      letter-spacing: 4px;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .tagline {
+      font-size: 10px;
+      color: var(--text2);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-top: 4px;
+    }
+    .accent-stripe {
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent) 0%, transparent 70%);
+      margin: 16px 24px 0;
+      border-radius: 2px;
+    }
+
+    /* ── FORM BODY ── */
+    .form-body {
+      padding: 32px 24px 120px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .form-section { margin-bottom: 36px; }
+
+    .section-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text2);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-label span { font-size: 14px; }
+
+    /* ── PHOTO UPLOAD ── */
+    .photo-upload {
+      width: 100%;
+      aspect-ratio: 4/3;
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative;
+      overflow: hidden;
+      background: var(--surface);
+    }
+    .photo-upload:hover { border-color: var(--accent); background: #1c2500; }
+    .photo-upload.has-photo { border: 3px solid var(--accent); }
+    #photo-preview {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover; display: none;
+    }
+    .photo-upload-overlay {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.55);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.2s;
+    }
+    .photo-upload.has-photo:hover .photo-upload-overlay { opacity: 1; }
+    .photo-placeholder { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .photo-placeholder-icon { font-size: 52px; }
+    .photo-placeholder-text { font-size: 14px; font-weight: 600; color: var(--text2); }
+    .photo-placeholder-sub { font-size: 11px; color: var(--text2); opacity: 0.5; }
+    #photo-file-input {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+      z-index: 10;
+    }
+    .photo-converting {
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+    }
+    .photo-converting-icon { font-size: 40px; animation: spin 1s linear infinite; }
+    .photo-converting-text { font-size: 13px; font-weight: 600; color: var(--text2); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── LOCATION ── */
+    .search-wrapper { position: relative; }
+    .search-input {
+      width: 100%;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 16px 16px 50px;
+      color: var(--text);
+      font-size: 15px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-input:focus { border-color: var(--accent); }
+    .search-input::placeholder { color: var(--text2); }
+    .search-icon {
+      position: absolute; left: 16px; top: 50%;
+      transform: translateY(-50%); font-size: 18px; pointer-events: none;
+    }
+    .search-dropdown {
+      position: absolute; top: calc(100% + 8px);
+      left: 0; right: 0;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden; z-index: 200;
+      display: none;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    }
+    .search-dropdown.visible { display: block; }
+    .search-item {
+      padding: 14px 16px; cursor: pointer;
+      display: flex; align-items: center; gap: 12px;
+      transition: background 0.1s; border-bottom: 1px solid var(--border);
+    }
+    .search-item:last-child { border-bottom: none; }
+    .search-item:hover { background: #2a2a2a; }
+    .search-item-icon { font-size: 18px; flex-shrink: 0; }
+    .search-item-name { font-size: 14px; font-weight: 600; }
+    .search-item-address { font-size: 11px; color: var(--text2); margin-top: 2px; }
+
+    .selected-gym {
+      margin-top: 10px;
+      display: none;
+      align-items: center; gap: 12px;
+      padding: 14px 16px;
+      background: #1c2500;
+      border: 2px solid var(--accent);
+      border-radius: 12px;
+    }
+    .selected-gym.visible { display: flex; }
+    .selected-gym-name { font-weight: 700; font-size: 14px; color: var(--accent); }
+    .selected-gym-address { font-size: 11px; color: var(--text2); margin-top: 2px; }
+    .clear-gym {
+      margin-left: auto; background: none; border: none;
+      color: var(--text2); cursor: pointer; font-size: 18px; line-height: 1; padding: 4px;
+    }
+    .clear-gym:hover { color: var(--text); }
+    .input-note {
+      margin-top: 8px;
+      font-size: 11px; color: var(--text2);
+      display: flex; align-items: center; gap: 6px;
+    }
+
+    /* ── GRADE ── */
+    .grade-scroll {
+      display: flex; gap: 8px;
+      overflow-x: auto; padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+    .grade-scroll::-webkit-scrollbar { display: none; }
+    .grade-pill {
+      flex-shrink: 0;
+      padding: 10px 22px;
+      border-radius: 100px;
+      border: 2px solid var(--border);
+      background: var(--surface);
+      color: var(--text2);
+      font-size: 14px; font-weight: 700;
+      cursor: pointer; transition: all 0.15s;
+      user-select: none;
+    }
+    .grade-pill:hover { border-color: #666; color: var(--text); }
+    .grade-pill.selected { background: var(--accent); border-color: var(--accent); color: #000; }
+    .grade-custom {
+      width: 100%; margin-top: 12px;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      color: var(--text); font-size: 15px; font-family: inherit;
+      outline: none; transition: border-color 0.2s;
+    }
+    .grade-custom:focus { border-color: var(--accent); }
+    .grade-custom::placeholder { color: var(--text2); }
+
+    /* ── COLOR ── */
+    .color-grid { display: flex; gap: 10px; flex-wrap: wrap; }
+    .color-item { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+    .color-swatch {
+      width: 48px; height: 48px; border-radius: 50%;
+      cursor: pointer;
+      border: 3px solid transparent;
+      transition: all 0.15s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .color-swatch:hover { transform: scale(1.12); }
+    .color-swatch.selected { border-color: #fff; box-shadow: 0 0 0 2px rgba(255,255,255,0.3); }
+    .color-swatch.selected::after { content: '✓'; font-size: 18px; font-weight: 900; }
+    .color-name { font-size: 10px; color: var(--text2); }
+
+    /* ── MEMO ── */
+    .memo-input {
+      width: 100%;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      color: var(--text); font-size: 15px; font-family: inherit;
+      outline: none; resize: none; min-height: 80px;
+      transition: border-color 0.2s;
+    }
+    .memo-input:focus { border-color: var(--accent); }
+    .memo-input::placeholder { color: var(--text2); }
+
+    /* ── SUBMIT ── */
+    .submit-btn {
+      width: 100%; padding: 22px;
+      background: var(--accent); color: #000;
+      border: none; border-radius: 100px;
+      font-size: 20px; font-weight: 900;
+      font-family: 'Bebas Neue', sans-serif;
+      letter-spacing: 4px; cursor: pointer;
+      transition: all 0.15s;
+    }
+    .submit-btn:hover { transform: scale(1.02); background: #d6ff1a; }
+    .submit-btn:active { transform: scale(0.97); }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--surface); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+  <div class="form-header">
+    <div>
+      <div class="logo">OTSUKABE</div>
+      <div class="tagline">BOULDERING LOG</div>
+    </div>
+    <div style="font-size:32px;margin-top:2px">🧗</div>
+  </div>
+  <div class="accent-stripe"></div>
+
+  <div class="form-body">
+
+    <!-- ① PHOTO -->
+    <div class="form-section">
+      <div class="section-label"><span>📸</span> クリア写真</div>
+      <div class="photo-upload" id="photo-upload-area">
+        <input type="file" id="photo-file-input" accept="image/*,image/heic,image/heif,.heic,.heif" onchange="handlePhotoSelect(event)">
+        <img id="photo-preview" alt="プレビュー">
+        <div class="photo-placeholder" id="photo-placeholder">
+          <div class="photo-placeholder-icon">📷</div>
+          <div class="photo-placeholder-text">写真をアップロード</div>
+          <div class="photo-placeholder-sub">タップして選択</div>
+        </div>
+        <div class="photo-upload-overlay">
+          <span style="color:#fff;font-size:13px;font-weight:700;letter-spacing:1px;">✏️ 写真を変更</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ② LOCATION -->
+    <div class="form-section">
+      <div class="section-label"><span>📍</span> ジムの場所</div>
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input
+          type="text" id="gym-search" class="search-input"
+          placeholder="ジム名・エリアで検索"
+          oninput="handleGymSearch(this.value)"
+          autocomplete="off"
+        >
+        <div class="search-dropdown" id="gym-dropdown"></div>
+      </div>
+      <div class="selected-gym" id="selected-gym-display">
+        <span style="font-size:20px">📍</span>
+        <div>
+          <div class="selected-gym-name" id="selected-gym-name"></div>
+          <div class="selected-gym-address" id="selected-gym-address"></div>
+        </div>
+        <button class="clear-gym" onclick="clearGym()">✕</button>
+      </div>
+      <div class="input-note"><span>✏️</span> ジム名・住所を自由に入力できます</div>
+    </div>
+
+    <!-- ③ GRADE -->
+    <div class="form-section">
+      <div class="section-label"><span>🎯</span> レベル・グレード</div>
+      <div class="grade-scroll" id="grade-scroll"></div>
+      <input
+        type="text" id="grade-custom" class="grade-custom"
+        placeholder="フリー入力（例: V5, SD, ジム独自グレードなど）"
+        oninput="handleCustomGrade(this.value)"
+      >
+    </div>
+
+    <!-- ④ COLOR -->
+    <div class="form-section">
+      <div class="section-label"><span>🎨</span> テープの色</div>
+      <div class="color-grid" id="color-grid"></div>
+    </div>
+
+    <!-- ⑤ MEMO -->
+    <div class="form-section">
+      <div class="section-label"><span>💬</span> メモ（任意）</div>
+      <textarea class="memo-input" id="memo-input"
+        placeholder="ムーブの感想、次回への課題など…"></textarea>
+    </div>
+
+    <button class="submit-btn" onclick="submitForm()">
+      おつ壁！ COMPLETE 🏆
+    </button>
+
+  </div>
+
+<script>
+/* ── STATE ── */
+const state = {
+  photoDataURL: null,
+  gym: null,
+  grade: null,
+  color: null,
+  colorLabel: null,
+  colorHex: null,
+  colorTextColor: null,
+};
+
+/* ── DATA ── */
+const GYMS = [
+  { name: 'B-PUMP 荻窪店',                address: '東京都杉並区荻窪5-12-8' },
+  { name: 'B-PUMP 秋葉原店',              address: '東京都千代田区神田松永町12' },
+  { name: 'Gravity Research 新宿',        address: '東京都渋谷区代々木2-1-1' },
+  { name: 'T-WALL 錦糸町',               address: '東京都墨田区太平4-1-3' },
+  { name: 'BASE CAMP CLIMBING 渋谷',     address: '東京都渋谷区円山町23-1' },
+  { name: 'CRUX 渋谷',                   address: '東京都渋谷区道玄坂2-11-1' },
+  { name: 'ROCK LANDS 池袋',             address: '東京都豊島区池袋2-13-1' },
+  { name: 'クライミングパーク 吉祥寺',      address: '東京都武蔵野市吉祥寺本町1-11-1' },
+  { name: 'Vertical World 横浜',          address: '神奈川県横浜市西区みなとみらい4-6-2' },
+  { name: 'FUNCLIMB 川崎',               address: '神奈川県川崎市中原区小杉町1-418' },
+  { name: 'BLOC 大阪梅田',               address: '大阪府大阪市北区梅田1-1-3' },
+  { name: 'SLAB 南船場',                 address: '大阪府大阪市中央区南船場4-1-1' },
+  { name: 'クライミングジム PAY 京都',      address: '京都府京都市下京区四条通烏丸' },
+  { name: 'ROCK CHILD 名古屋',            address: '愛知県名古屋市中区錦3-7-13' },
+  { name: 'B-PUMP 仙台',                address: '宮城県仙台市青葉区一番町4-9-1' },
+  { name: 'CLIMBING GYM BLOC 札幌',      address: '北海道札幌市中央区大通西11丁目4' },
+  { name: 'ノースフェイス クライミング 福岡', address: '福岡県福岡市中央区大名1-12-61' },
+];
+
+const GRADES = ['10級','9級','8級','7級','6級','5級','4級','3級','2級','1級','初段','二段','三段','四段+'];
+
+const COLORS = [
+  { key:'white',  hex:'#FFFFFF', label:'ホワイト', name:'白', tc:'#000' },
+  { key:'yellow', hex:'#FFE400', label:'イエロー',  name:'黄', tc:'#000' },
+  { key:'orange', hex:'#FF8C00', label:'オレンジ',  name:'橙', tc:'#fff' },
+  { key:'pink',   hex:'#FF4081', label:'ピンク',    name:'桃', tc:'#fff' },
+  { key:'red',    hex:'#F44336', label:'レッド',    name:'赤', tc:'#fff' },
+  { key:'purple', hex:'#9C27B0', label:'パープル',  name:'紫', tc:'#fff' },
+  { key:'blue',   hex:'#2196F3', label:'ブルー',    name:'青', tc:'#fff' },
+  { key:'cyan',   hex:'#00BCD4', label:'水色',      name:'水', tc:'#000' },
+  { key:'green',  hex:'#4CAF50', label:'グリーン',  name:'緑', tc:'#fff' },
+  { key:'brown',  hex:'#795548', label:'ブラウン',  name:'茶', tc:'#fff' },
+  { key:'gray',   hex:'#607D8B', label:'グレー',    name:'灰', tc:'#fff' },
+  { key:'black',  hex:'#1C1C1C', label:'ブラック',  name:'黒', tc:'#fff' },
+];
+
+/* ── INIT ── */
+(function init() {
+  // Grade pills
+  const scroll = document.getElementById('grade-scroll');
+  GRADES.forEach(g => {
+    const el = document.createElement('div');
+    el.className = 'grade-pill';
+    el.textContent = g;
+    el.onclick = () => selectGrade(el, g);
+    scroll.appendChild(el);
+  });
+
+  // Color swatches
+  const grid = document.getElementById('color-grid');
+  const style = document.createElement('style');
+  style.textContent = `.color-swatch.selected::after { color: var(--check-color, #fff); }`;
+  document.head.appendChild(style);
+
+  COLORS.forEach(c => {
+    const item = document.createElement('div');
+    item.className = 'color-item';
+    const swatch = document.createElement('div');
+    swatch.className = 'color-swatch';
+    swatch.style.cssText = `background:${c.hex}; --check-color:${c.tc};${c.key==='white'?'border-color:#444;':''}`;
+    swatch.dataset.key = c.key;
+    swatch.dataset.label = c.label;
+    swatch.dataset.hex = c.hex;
+    swatch.dataset.tc = c.tc;
+    swatch.onclick = () => selectColor(swatch);
+    const name = document.createElement('div');
+    name.className = 'color-name';
+    name.textContent = c.name;
+    item.appendChild(swatch);
+    item.appendChild(name);
+    grid.appendChild(item);
+  });
+
+})();
+
+/* ── PHOTO ── */
+async function handlePhotoSelect(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const isHeic = file.type === 'image/heic' ||
+                 file.type === 'image/heif' ||
+                 file.name.toLowerCase().endsWith('.heic') ||
+                 file.name.toLowerCase().endsWith('.heif');
+
+  // ローディング表示
+  const placeholder = document.getElementById('photo-placeholder');
+  placeholder.style.display = 'flex';
+  placeholder.innerHTML = `
+    <div class="photo-converting">
+      <div class="photo-converting-icon">⚙️</div>
+      <div class="photo-converting-text">${isHeic ? 'HEICを変換中…' : '読み込み中…'}</div>
+    </div>
+  `;
+
+  let blob = file;
+  if (isHeic) {
+    try {
+      blob = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.92 });
+      // heic2any が配列を返す場合がある
+      if (Array.isArray(blob)) blob = blob[0];
+    } catch (err) {
+      placeholder.innerHTML = `
+        <div class="photo-placeholder-icon">⚠️</div>
+        <div class="photo-placeholder-text">変換に失敗しました</div>
+        <div class="photo-placeholder-sub">別の形式でお試しください</div>
+      `;
+      console.error('HEIC conversion error:', err);
+      return;
+    }
+  }
+
+  const reader = new FileReader();
+  reader.onload = ev => {
+    state.photoDataURL = ev.target.result;
+    document.getElementById('photo-preview').src = ev.target.result;
+    document.getElementById('photo-preview').style.display = 'block';
+    placeholder.style.display = 'none';
+    document.getElementById('photo-upload-area').classList.add('has-photo');
+  };
+  reader.readAsDataURL(blob);
+}
+
+/* ── LOCATION ── */
+let gymTimer;
+function handleGymSearch(val) {
+  clearTimeout(gymTimer);
+  const dd = document.getElementById('gym-dropdown');
+  if (!val.trim()) { dd.classList.remove('visible'); return; }
+  gymTimer = setTimeout(() => {
+    const q = val.toLowerCase();
+    const results = GYMS.filter(g =>
+      g.name.toLowerCase().includes(q) || g.address.toLowerCase().includes(q)
+    ).slice(0, 6);
+
+    const items = results.length
+      ? results.map(g => gymItemHTML('🏟️', g.name, g.address, g.name, g.address))
+      : [gymItemHTML('📍', `「${esc(val)}」を使用`, 'フリーテキスト', val, '')];
+
+    dd.innerHTML = items.join('');
+    dd.classList.add('visible');
+  }, 180);
+}
+
+function gymItemHTML(icon, name, addr, nv, av) {
+  return `<div class="search-item" onclick="selectGym('${esc(nv)}','${esc(av)}')">
+    <span class="search-item-icon">${icon}</span>
+    <div>
+      <div class="search-item-name">${name}</div>
+      <div class="search-item-address">${addr}</div>
+    </div>
+  </div>`;
+}
+
+function selectGym(name, address) {
+  state.gym = { name, address };
+  document.getElementById('gym-search').value = '';
+  document.getElementById('gym-dropdown').classList.remove('visible');
+  document.getElementById('selected-gym-name').textContent = name;
+  document.getElementById('selected-gym-address').textContent = address;
+  document.getElementById('selected-gym-display').classList.add('visible');
+}
+
+function clearGym() {
+  state.gym = null;
+  document.getElementById('selected-gym-display').classList.remove('visible');
+  document.getElementById('gym-search').value = '';
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.search-wrapper')) {
+    document.getElementById('gym-dropdown').classList.remove('visible');
+  }
+});
+
+/* ── GRADE ── */
+let activeGradePill = null;
+function selectGrade(el, grade) {
+  if (activeGradePill) activeGradePill.classList.remove('selected');
+  el.classList.add('selected');
+  activeGradePill = el;
+  state.grade = grade;
+  document.getElementById('grade-custom').value = '';
+}
+function handleCustomGrade(val) {
+  if (activeGradePill) { activeGradePill.classList.remove('selected'); activeGradePill = null; }
+  state.grade = val || null;
+}
+
+/* ── COLOR ── */
+let activeColorSwatch = null;
+function selectColor(el) {
+  if (activeColorSwatch) activeColorSwatch.classList.remove('selected');
+  el.classList.add('selected');
+  activeColorSwatch = el;
+  state.color      = el.dataset.key;
+  state.colorLabel = el.dataset.label;
+  state.colorHex   = el.dataset.hex;
+  state.colorTextColor = el.dataset.tc;
+}
+
+/* ── SUBMIT → result.html ── */
+function submitForm() {
+  const memo = document.getElementById('memo-input').value.trim();
+  const now  = new Date();
+  const dateStr = `${now.getFullYear()}.${pad(now.getMonth()+1)}.${pad(now.getDate())}`;
+
+  const payload = {
+    photoDataURL:    state.photoDataURL,
+    gym:             state.gym,
+    grade:           state.grade,
+    colorLabel:      state.colorLabel,
+    colorHex:        state.colorHex,
+    colorTextColor:  state.colorTextColor,
+    memo,
+    dateStr,
+  };
+
+  localStorage.setItem('otsukabe_result', JSON.stringify(payload));
+  window.location.href = 'result.html';
+}
+
+function pad(n) { return String(n).padStart(2,'0'); }
+function esc(s) { return s.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+</script>
+</body>
+</html>

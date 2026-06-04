@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>元気アクション！</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@900&display=swap');
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #fff9e6;
+      font-family: 'Noto Sans JP', 'Arial Black', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* 背景のスピードライン */
+    .speed-lines {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.1s;
+      z-index: 0;
+    }
+
+    .speed-lines.active {
+      opacity: 1;
+      animation: flash 0.4s ease-out forwards;
+    }
+
+    @keyframes flash {
+      0% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    .speed-lines svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* メインコンテナ */
+    .container {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 20px;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    /* タイトル */
+    .title {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #111;
+      text-shadow:
+        3px 3px 0 #ff4444,
+        -1px -1px 0 #111,
+        1px -1px 0 #111,
+        -1px 1px 0 #111;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+      transform: rotate(-2deg);
+      display: inline-block;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: #555;
+      font-weight: 700;
+      border: 3px solid #111;
+      display: inline-block;
+      padding: 4px 16px;
+      background: white;
+      transform: rotate(1deg);
+      margin-bottom: 32px;
+    }
+
+    /* キャラクター */
+    .character {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 24px;
+      position: relative;
+      transition: transform 0.15s;
+    }
+
+    .character.bounce {
+      animation: charBounce 0.4s ease-out;
+    }
+
+    @keyframes charBounce {
+      0% { transform: scale(1); }
+      30% { transform: scale(1.3) rotate(-10deg); }
+      60% { transform: scale(0.95) rotate(5deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+
+    /* 吹き出しエリア */
+    .bubble-area {
+      min-height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 28px;
+    }
+
+    .speech-bubble {
+      position: relative;
+      background: white;
+      border: 4px solid #111;
+      border-radius: 16px;
+      padding: 20px 24px;
+      max-width: 380px;
+      width: 100%;
+      box-shadow: 5px 5px 0 #111;
+    }
+
+    .speech-bubble::before {
+      content: '';
+      position: absolute;
+      bottom: -22px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 20px 14px 0;
+      border-style: solid;
+      border-color: #111 transparent transparent;
+    }
+
+    .speech-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 16px 11px 0;
+      border-style: solid;
+      border-color: white transparent transparent;
+    }
+
+    .bubble-text {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #111;
+      line-height: 1.4;
+      letter-spacing: 0.03em;
+    }
+
+    .bubble-text.hidden {
+      opacity: 0;
+    }
+
+    .bubble-text.visible {
+      opacity: 1;
+      animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes popIn {
+      0% { transform: scale(0.5); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .placeholder-text {
+      font-size: 1rem;
+      color: #aaa;
+      font-weight: 700;
+    }
+
+    /* ボタン */
+    .btn-wrapper {
+      margin-top: 40px;
+    }
+
+    .action-btn {
+      background: #ff4444;
+      color: white;
+      border: 4px solid #111;
+      border-radius: 12px;
+      padding: 18px 48px;
+      font-size: 1.5rem;
+      font-weight: 900;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: 6px 6px 0 #111;
+      transition: transform 0.1s, box-shadow 0.1s;
+      letter-spacing: 0.05em;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .action-btn:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 8px 8px 0 #111;
+    }
+
+    .action-btn:active {
+      transform: translate(4px, 4px);
+      box-shadow: 2px 2px 0 #111;
+    }
+
+    /* エフェクト文字 */
+    .effect-text {
+      position: fixed;
+      font-size: 2rem;
+      font-weight: 900;
+      color: #ff4444;
+      text-shadow: 3px 3px 0 #111;
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0;
+    }
+
+    .effect-text.burst {
+      animation: burstAnim 0.6s ease-out forwards;
+    }
+
+    @keyframes burstAnim {
+      0% { opacity: 1; transform: scale(0.5) rotate(-15deg); }
+      50% { opacity: 1; transform: scale(1.4) rotate(10deg); }
+      100% { opacity: 0; transform: scale(1) translateY(-60px); }
+    }
+
+    /* カウンター */
+    .counter {
+      margin-top: 20px;
+      font-size: 0.85rem;
+      color: #888;
+      font-weight: 700;
+    }
+
+    .counter span {
+      color: #ff4444;
+      font-size: 1.1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- スピードライン背景 -->
+  <div class="speed-lines" id="speedLines">
+    <svg viewBox="0 0 500 800" xmlns="http://www.w3.org/2000/svg" id="speedSvg"></svg>
+  </div>
+
+  <div class="container">
+    <div class="title">元気アクション！</div><br>
+    <div class="subtitle">落ち込んだらコレをやれ！</div>
+
+    <!-- キャラクター -->
+    <div class="character" id="character">
+      <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+        <!-- 顔 -->
+        <circle cx="60" cy="55" r="38" fill="white" stroke="#111" stroke-width="4"/>
+        <!-- 目 (通常) -->
+        <g id="eyesNormal">
+          <ellipse cx="45" cy="48" rx="7" ry="8" fill="#111"/>
+          <ellipse cx="75" cy="48" rx="7" ry="8" fill="#111"/>
+          <circle cx="47" cy="46" r="2.5" fill="white"/>
+          <circle cx="77" cy="46" r="2.5" fill="white"/>
+        </g>
+        <!-- 目 (ハッピー) -->
+        <g id="eyesHappy" style="display:none">
+          <path d="M38 48 Q45 40 52 48" stroke="#111" stroke-width="4" fill="none" stroke-linecap="round"/>
+          <path d="M68 48 Q75 40 82 48" stroke="#111" stroke-width="4" fill="none" stroke-linecap="round"/>
+        </g>
+        <!-- 口 -->
+        <path id="mouth" d="M47 66 Q60 76 73 66" stroke="#111" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <!-- 頭 -->
+        <ellipse cx="60" cy="20" rx="20" ry="15" fill="#ffcc44" stroke="#111" stroke-width="3.5"/>
+        <!-- 耳 -->
+        <circle cx="22" cy="55" r="10" fill="white" stroke="#111" stroke-width="3.5"/>
+        <circle cx="98" cy="55" r="10" fill="white" stroke="#111" stroke-width="3.5"/>
+        <!-- ほっぺ -->
+        <ellipse cx="42" cy="63" rx="7" ry="5" fill="#ffaaaa" opacity="0.6"/>
+        <ellipse cx="78" cy="63" rx="7" ry="5" fill="#ffaaaa" opacity="0.6"/>
+        <!-- 胴体 -->
+        <rect x="38" y="90" width="44" height="25" rx="8" fill="#ff4444" stroke="#111" stroke-width="3.5"/>
+        <line x1="60" y1="90" x2="60" y2="115" stroke="#111" stroke-width="2"/>
+      </svg>
+    </div>
+
+    <!-- 吹き出し -->
+    <div class="bubble-area">
+      <div class="speech-bubble">
+        <div class="bubble-text hidden" id="actionText"></div>
+        <div class="placeholder-text" id="placeholderText">↓ ボタンを押せ！</div>
+      </div>
+    </div>
+
+    <!-- ボタン -->
+    <div class="btn-wrapper">
+      <button class="action-btn" id="actionBtn" onclick="showAction()">
+        ！ 指令をくれ ！
+      </button>
+    </div>
+
+    <div class="counter">今日 <span id="count">0</span> 回 指令を受けた</div>
+  </div>
+
+  <script>
+    const actions = [
+      "3km 走れ！",
+      "腕立て 20回！",
+      "冷水シャワーを浴びろ！",
+      "大声で笑え！",
+      "窓を開けて\n深呼吸 10回！",
+      "友達に\nLINEしろ！",
+      "好きな曲を\n全力で歌え！",
+      "ストレッチ\n5分！",
+      "外に出て\n空を見ろ！",
+      "コーヒーを\n一杯飲め！",
+      "スクワット\n30回！",
+      "10分間\n散歩しろ！",
+      "日記に\n気持ちを書け！",
+      "好きな動画を\n1本見ろ！",
+      "水を\nコップ2杯飲め！",
+      "バンザイを\n10回しろ！",
+      "好きな食べ物を\n今すぐ食べろ！",
+      "体をめいっぱい\n伸ばせ！",
+    ];
+
+    const effects = ["ドン！", "ズバッ！", "ガッ！", "ゴォ！", "バシッ！"];
+
+    let count = 0;
+
+    function showAction() {
+      const action = actions[Math.floor(Math.random() * actions.length)];
+      const effect = effects[Math.floor(Math.random() * effects.length)];
+
+      // テキスト更新
+      const actionText = document.getElementById('actionText');
+      const placeholder = document.getElementById('placeholderText');
+      actionText.innerHTML = action.replace('\n', '<br>');
+      actionText.classList.remove('visible');
+      actionText.classList.add('hidden');
+      placeholder.style.display = 'none';
+
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          actionText.classList.remove('hidden');
+          actionText.classList.add('visible');
+        });
+      });
+
+      // キャラクターアニメ
+      const char = document.getElementById('character');
+      const eyesNormal = document.getElementById('eyesNormal');
+      const eyesHappy = document.getElementById('eyesHappy');
+      char.classList.remove('bounce');
+      void char.offsetWidth;
+      char.classList.add('bounce');
+      eyesNormal.style.display = 'none';
+      eyesHappy.style.display = 'block';
+      setTimeout(() => {
+        eyesNormal.style.display = 'block';
+        eyesHappy.style.display = 'none';
+      }, 600);
+
+      // スピードライン
+      triggerSpeedLines();
+
+      // エフェクト文字
+      spawnEffect(effect);
+
+      // カウンター
+      count++;
+      document.getElementById('count').textContent = count;
+    }
+
+    function triggerSpeedLines() {
+      const el = document.getElementById('speedLines');
+      const svg = document.getElementById('speedSvg');
+      const cx = 250, cy = 400;
+      const numLines = 40;
+      let paths = '';
+      for (let i = 0; i < numLines; i++) {
+        const angle = (i / numLines) * Math.PI * 2;
+        const r1 = 60 + Math.random() * 40;
+        const r2 = 700 + Math.random() * 200;
+        const spread = 0.04 + Math.random() * 0.04;
+        const x1a = cx + Math.cos(angle - spread) * r1;
+        const y1a = cy + Math.sin(angle - spread) * r1;
+        const x1b = cx + Math.cos(angle + spread) * r1;
+        const y1b = cy + Math.sin(angle + spread) * r1;
+        const x2a = cx + Math.cos(angle - spread * 0.3) * r2;
+        const y2a = cy + Math.sin(angle - spread * 0.3) * r2;
+        paths += `<polygon points="${x1a},${y1a} ${x1b},${y1b} ${x2a},${y2a}" fill="#111" opacity="0.07"/>`;
+      }
+      svg.innerHTML = paths;
+      el.classList.remove('active');
+      void el.offsetWidth;
+      el.classList.add('active');
+    }
+
+    function spawnEffect(text) {
+      const el = document.createElement('div');
+      el.className = 'effect-text';
+      el.textContent = text;
+      const x = 30 + Math.random() * 60;
+      const y = 20 + Math.random() * 40;
+      el.style.left = x + '%';
+      el.style.top = y + '%';
+      document.body.appendChild(el);
+      void el.offsetWidth;
+      el.classList.add('burst');
+      setTimeout(() => el.remove(), 700);
+    }
+  </script>
+</body>
+</html>

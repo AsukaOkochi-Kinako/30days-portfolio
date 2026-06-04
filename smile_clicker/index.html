@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>😃 増殖クリッカー</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="bg-stripe"></div>
+
+<header>
+  <div class="logo-box">😃 クリッカー</div>
+  <div class="seg-boxes">
+    <span>SMILE</span><span>IS</span><span class="seg-accent">LIFE</span>
+  </div>
+</header>
+
+<div id="achievement-toast">
+  <div class="toast-emoji" id="toast-emoji">🎉</div>
+  <div class="toast-body">
+    <div class="toast-label">新しい称号を獲得！</div>
+    <div class="toast-title" id="toast-title"></div>
+  </div>
+</div>
+
+<main>
+  <!-- カウンター -->
+  <div class="stats">
+    <div class="count-display" id="count-display">0</div>
+    <div class="count-label">😃 の総数</div>
+    <div class="per-sec" id="per-sec">毎秒 +0 😃</div>
+  </div>
+
+  <!-- 現在の称号 -->
+  <div class="current-title">
+    <div class="ct-label">現在の称号</div>
+    <div class="ct-value" id="current-title-display">😶 無名の者</div>
+  </div>
+
+  <!-- オービット -->
+  <div class="orbit-area">
+    <div id="orbit-wrapper">
+      <button id="main-emoji" aria-label="クリック">😃</button>
+    </div>
+    <div class="multiplier-info">
+      クリック倍率: <span id="click-mult-display">×1</span>
+      &nbsp;·&nbsp;
+      自動: <span id="auto-display">0</span>/秒
+    </div>
+  </div>
+
+  <!-- アップグレードと称号（SP: タブ切り替え / PC: 横並び） -->
+  <div class="bottom-panels">
+
+    <!-- タブ（SP用） -->
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="upgrades">⬆️ アップグレード</button>
+      <button class="tab-btn" data-tab="titles">🏆 称号</button>
+    </div>
+
+    <div class="tab-content" id="tab-upgrades">
+      <div class="upgrade-list" id="upgrade-list"></div>
+    </div>
+
+    <div class="tab-content hidden" id="tab-titles">
+      <div class="title-list" id="title-list"></div>
+    </div>
+
+  </div>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>

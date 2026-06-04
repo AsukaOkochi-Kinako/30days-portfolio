@@ -1,0 +1,7 @@
+.DS_Store
+*.py
+__pycache__/
+*.pyc
+.env
+node_modules/
+build_deploy.sh

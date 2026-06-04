@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>H!P MUSIC SELECTOR</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue-deep: #001a4d;
+      --blue-mid: #003399;
+      --blue-bright: #0066cc;
+      --blue-light: #00aaff;
+      --blue-pale: #88ccff;
+      --white: #ffffff;
+      --silver: #c8dff0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: linear-gradient(160deg, #000d2e 0%, #001f6b 40%, #003399 70%, #0055aa 100%);
+      min-height: 100vh;
+      font-family: 'Noto Sans JP', sans-serif;
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* Starfield */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(1px 1px at 10% 15%, #fff 0%, transparent 100%),
+        radial-gradient(1px 1px at 25% 60%, rgba(180,220,255,.9) 0%, transparent 100%),
+        radial-gradient(1px 1px at 40% 30%, #fff 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 55% 80%, rgba(200,230,255,.8) 0%, transparent 100%),
+        radial-gradient(1px 1px at 70% 20%, #fff 0%, transparent 100%),
+        radial-gradient(1px 1px at 85% 55%, rgba(180,220,255,.9) 0%, transparent 100%),
+        radial-gradient(1px 1px at 15% 85%, #fff 0%, transparent 100%),
+        radial-gradient(1px 1px at 60% 50%, rgba(200,230,255,.6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 90% 10%, #fff 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 35% 45%, rgba(150,200,255,.7) 0%, transparent 100%),
+        radial-gradient(1px 1px at 78% 70%, #fff 0%, transparent 100%),
+        radial-gradient(1px 1px at 5% 40%, rgba(200,230,255,.8) 0%, transparent 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Scanlines */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 3px,
+        rgba(0,0,0,.04) 3px,
+        rgba(0,0,0,.04) 4px
+      );
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .container {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 20px 16px 120px;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* ── HEADER ── */
+    header {
+      text-align: center;
+      padding: 36px 0 28px;
+    }
+
+    .badge {
+      display: inline-block;
+      border: 1px solid rgba(0,170,255,.5);
+      border-radius: 100px;
+      padding: 4px 16px;
+      font-size: .7rem;
+      letter-spacing: 4px;
+      color: var(--blue-pale);
+      margin-bottom: 14px;
+      background: rgba(0,60,180,.2);
+    }
+
+    h1 {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(1.4rem, 5vw, 2.2rem);
+      font-weight: 900;
+      background: linear-gradient(90deg, #7ec8ff, #ffffff, #00aaff, #ffffff, #7ec8ff);
+      background-size: 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 4s linear infinite;
+      letter-spacing: 3px;
+      line-height: 1.2;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: 0% }
+      100% { background-position: 300% }
+    }
+
+    .subtitle {
+      margin-top: 10px;
+      font-size: .85rem;
+      color: var(--blue-pale);
+      letter-spacing: 2px;
+    }
+
+    .deco-line {
+      width: 200px;
+      height: 1px;
+      margin: 18px auto 0;
+      background: linear-gradient(90deg, transparent, var(--blue-light), transparent);
+    }
+
+    /* ── CARD ── */
+    .card {
+      background: rgba(0, 30, 100, .45);
+      border: 1px solid rgba(0, 150, 255, .25);
+      border-radius: 18px;
+      padding: 28px 24px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 40px rgba(0,80,255,.15), inset 0 1px 0 rgba(255,255,255,.08);
+      margin-bottom: 18px;
+    }
+
+    .section-label {
+      font-family: 'Orbitron', monospace;
+      font-size: .65rem;
+      letter-spacing: 4px;
+      color: var(--blue-pale);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(0,170,255,.4), transparent);
+    }
+
+    /* ── SENTENCE UI ── */
+    .sentence {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px 8px;
+      font-size: clamp(1rem, 3.5vw, 1.3rem);
+      font-weight: 700;
+      line-height: 1.8;
+      margin-bottom: 4px;
+    }
+
+    .select-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .select-wrap::after {
+      content: '▾';
+      position: absolute;
+      right: 12px;
+      color: var(--blue-light);
+      pointer-events: none;
+      font-size: .85rem;
+    }
+
+    select.inline-select {
+      appearance: none;
+      -webkit-appearance: none;
+      background: rgba(0,60,200,.35);
+      border: 1.5px solid rgba(0,170,255,.5);
+      border-radius: 10px;
+      color: #fff;
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: clamp(.9rem, 3vw, 1.1rem);
+      font-weight: 700;
+      padding: 8px 36px 8px 14px;
+      cursor: pointer;
+      outline: none;
+      transition: border-color .18s, box-shadow .18s, background .18s;
+      box-shadow: 0 0 0 0 rgba(0,170,255,0);
+    }
+
+    select.inline-select:focus,
+    select.inline-select:hover {
+      border-color: var(--blue-light);
+      background: rgba(0,90,230,.45);
+      box-shadow: 0 0 16px rgba(0,170,255,.3);
+    }
+
+    select.inline-select option {
+      background: #001f6b;
+      color: #fff;
+    }
+
+    .sentence-suffix {
+      white-space: nowrap;
+    }
+
+    /* ── SEARCH BUTTON ── */
+    .btn-search {
+      width: 100%;
+      margin-top: 24px;
+      padding: 17px;
+      background: linear-gradient(135deg, #0055bb, #0099ee, #0055bb);
+      background-size: 200%;
+      border: none;
+      border-radius: 14px;
+      color: #fff;
+      font-family: 'Orbitron', monospace;
+      font-size: .9rem;
+      font-weight: 700;
+      letter-spacing: 4px;
+      cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+      box-shadow: 0 4px 24px rgba(0,120,255,.35), 0 0 0 1px rgba(0,160,255,.25);
+      animation: btnGlow 3s ease-in-out infinite;
+    }
+
+    @keyframes btnGlow {
+      0%, 100% { box-shadow: 0 4px 24px rgba(0,120,255,.35), 0 0 0 1px rgba(0,160,255,.25); }
+      50% { box-shadow: 0 4px 36px rgba(0,160,255,.55), 0 0 0 1px rgba(0,200,255,.4); }
+    }
+
+    .btn-search:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 32px rgba(0,160,255,.5), 0 0 0 1px rgba(0,200,255,.4);
+    }
+
+    .btn-search:active:not(:disabled) { transform: translateY(0); }
+
+    .btn-search:disabled {
+      opacity: .35;
+      cursor: not-allowed;
+      animation: none;
+    }
+
+    /* ── RESULT ── */
+    .result { display: none; }
+    .result.show {
+      display: block;
+      animation: fadeUp .5s ease;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .song-card {
+      display: flex;
+      gap: 22px;
+      align-items: flex-start;
+    }
+
+    @media (max-width: 480px) {
+      .song-card { flex-direction: column; align-items: center; }
+    }
+
+    .album-wrap {
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .album-art {
+      width: 150px;
+      height: 150px;
+      border-radius: 12px;
+      object-fit: cover;
+      box-shadow: 0 8px 32px rgba(0,0,0,.5), 0 0 0 2px rgba(0,170,255,.3);
+      display: block;
+    }
+
+    .album-glow {
+      position: absolute;
+      inset: -4px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(0,170,255,.2), transparent);
+      pointer-events: none;
+    }
+
+    .song-info { flex: 1; }
+
+    .song-artist {
+      font-family: 'Orbitron', monospace;
+      font-size: .62rem;
+      letter-spacing: 3px;
+      color: var(--blue-pale);
+      margin-bottom: 7px;
+    }
+
+    .song-title {
+      font-size: clamp(1rem, 3vw, 1.25rem);
+      font-weight: 700;
+      line-height: 1.45;
+      margin-bottom: 18px;
+      color: #fff;
+    }
+
+    .streaming { display: flex; flex-wrap: wrap; gap: 8px; }
+
+    .s-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 7px 13px;
+      border-radius: 100px;
+      font-size: .72rem;
+      font-weight: 700;
+      text-decoration: none;
+      letter-spacing: .3px;
+      transition: transform .15s, filter .15s;
+      white-space: nowrap;
+    }
+    .s-btn:hover { transform: translateY(-2px); filter: brightness(1.15); }
+
+    .s-spotify  { background: #1db954; color: #fff; }
+    .s-apple    { background: linear-gradient(135deg, #fa233b, #fb5c74); color: #fff; }
+    .s-youtube  { background: #ff0000; color: #fff; }
+    .s-line     { background: #00b900; color: #fff; }
+
+    .no-result {
+      text-align: center;
+      padding: 24px 0;
+      color: var(--blue-pale);
+      font-size: .9rem;
+      line-height: 1.8;
+    }
+
+    /* ── FAB ── */
+    .fab {
+      position: fixed;
+      bottom: 28px;
+      right: 24px;
+      z-index: 50;
+      width: 58px;
+      height: 58px;
+      border-radius: 50%;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      background: linear-gradient(135deg, #ff4fa3, #c120ff, #4f8fff);
+      box-shadow: 0 4px 22px rgba(200,50,200,.5);
+      animation: fabPulse 2.5s ease-in-out infinite;
+      transition: transform .2s;
+    }
+    .fab:hover { transform: scale(1.12) rotate(8deg); }
+
+    @keyframes fabPulse {
+      0%, 100% { box-shadow: 0 4px 22px rgba(200,50,200,.5); }
+      50%       { box-shadow: 0 4px 36px rgba(220,80,255,.75), 0 0 50px rgba(200,50,200,.25); }
+    }
+
+    /* ── MODAL ── */
+    .modal-bg {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.78);
+      backdrop-filter: blur(6px);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal-bg.show { display: flex; }
+
+    .modal {
+      background: linear-gradient(160deg, #18003a, #3a006e, #18003a);
+      border: 1px solid rgba(255,100,200,.35);
+      border-radius: 22px;
+      padding: 40px 32px;
+      max-width: 380px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 0 60px rgba(200,50,255,.25), inset 0 1px 0 rgba(255,255,255,.08);
+      animation: modalIn .3s cubic-bezier(.34,1.56,.64,1);
+    }
+
+    @keyframes modalIn {
+      from { opacity: 0; transform: scale(.75); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-emoji { font-size: 2.8rem; margin-bottom: 14px; }
+
+    .modal-q {
+      font-size: 1.15rem;
+      font-weight: 700;
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+
+    .modal-btns { display: flex; gap: 14px; justify-content: center; }
+
+    .btn-yes {
+      padding: 12px 28px;
+      background: linear-gradient(135deg, #ff4fa3, #ff1493);
+      border: none;
+      border-radius: 100px;
+      color: #fff;
+      font-size: .95rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(255,60,160,.4);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .btn-yes:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(255,60,160,.6); }
+
+    .btn-no {
+      padding: 12px 28px;
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.25);
+      border-radius: 100px;
+      color: #fff;
+      font-size: .95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .2s, transform .2s;
+    }
+    .btn-no:hover { background: rgba(255,255,255,.18); transform: translateY(-2px); }
+
+    /* rainbow label for gay bar result */
+    .rainbow-label {
+      font-family: 'Orbitron', monospace;
+      font-size: .65rem;
+      letter-spacing: 3px;
+      text-align: center;
+      margin-bottom: 16px;
+      background: linear-gradient(90deg, #ff0080, #ff8800, #ffee00, #00cc44, #0088ff, #cc00ff);
+      background-size: 200%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 2s linear infinite;
+    }
+
+    footer {
+      text-align: center;
+      padding-top: 20px;
+      font-size: .7rem;
+      color: rgba(100,150,255,.35);
+      line-height: 1.8;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <div class="badge">✦ HELLO! PROJECT ✦</div>
+    <h1>MUSIC SELECTOR</h1>
+    <p class="subtitle">〜 気持ちで選ぶ、今日の一曲 〜</p>
+    <div class="deco-line"></div>
+  </header>
+
+  <div class="card">
+    <div class="section-label">SELECT YOUR FEELING</div>
+
+    <div class="sentence">
+      <div class="select-wrap">
+        <select id="sel-x" class="inline-select" onchange="onSelChange()">
+          <option value="">── 状況を選ぶ ──</option>
+          <option value="片思いして">片思いして</option>
+          <option value="恋して">恋して</option>
+          <option value="失恋して">失恋して</option>
+          <option value="仕事して">仕事して</option>
+          <option value="世界を救って">世界を救って</option>
+        </select>
+      </div>
+      <div class="select-wrap">
+        <select id="sel-y" class="inline-select" onchange="onSelChange()">
+          <option value="">── 気分を選ぶ ──</option>
+          <option value="ハッピーな">ハッピーな</option>
+          <option value="悲しい">悲しい</option>
+          <option value="憎い">憎い</option>
+          <option value="やさしい">やさしい</option>
+        </select>
+      </div>
+      <span class="sentence-suffix">気持ちの時に聴きたい曲</span>
+    </div>
+
+    <button class="btn-search" id="search-btn" disabled onclick="search()">
+      ★ おすすめを見る ★
+    </button>
+  </div>
+
+  <div class="card result" id="result">
+    <div class="section-label">RECOMMENDATION</div>
+    <div id="song-display"></div>
+  </div>
+
+  <footer>
+    Hello! Project / UP-FRONT WORKS Co., Ltd.<br>
+    This is a fan-made site. All song rights belong to their respective owners.
+  </footer>
+
+</div>
+
+<!-- FAB -->
+<button class="fab" onclick="openModal()" title="Special">👬</button>
+
+<!-- Modal -->
+<div class="modal-bg" id="modal" onclick="bgClose(event)">
+  <div class="modal">
+    <div class="modal-emoji">🏳️‍🌈✨</div>
+    <div class="modal-q">ゲイバーでフロアを<br>盛り上げたい?</div>
+    <div class="modal-btns">
+      <button class="btn-yes" onclick="yesFloor()">YES!!!</button>
+      <button class="btn-no" onclick="noFloor()">NO...</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SONGS = [
+  // ── 恋して ──────────────────────────────
+  {
+    title: "LOVE マシーン",
+    artist: "モーニング娘。",
+    x: ["恋して"],
+    y: ["ハッピーな"],
+    img: "https://placehold.co/300x300/0d3b8e/7ec8ff?text=LOVE+%E3%83%9E%E3%82%B7%E3%83%BC%E3%83%B3",
+    sp: "https://open.spotify.com/search/LOVE%20%E3%83%9E%E3%82%B7%E3%83%BC%E3%83%B3%20%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    am: "https://music.apple.com/jp/search?term=LOVE+%E3%83%9E%E3%82%B7%E3%83%BC%E3%83%B3+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    yt: "https://www.youtube.com/results?search_query=LOVE+%E3%83%9E%E3%82%B7%E3%83%BC%E3%83%B3+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    lm: "https://music.line.me/search?q=LOVE+%E3%83%9E%E3%82%B7%E3%83%BC%E3%83%B3"
+  },
+  {
+    title: "恋愛レボリューション21",
+    artist: "モーニング娘。",
+    x: ["恋して"],
+    y: ["ハッピーな"],
+    img: "https://placehold.co/300x300/0d3b8e/7ec8ff?text=%E6%81%8B%E6%84%9B%E3%83%AC%E3%83%9C21",
+    sp: "https://open.spotify.com/search/%E6%81%8B%E6%84%9B%E3%83%AC%E3%83%9C%E3%83%AA%E3%83%A5%E3%83%BC%E3%82%B7%E3%83%A721",
+    am: "https://music.apple.com/jp/search?term=%E6%81%8B%E6%84%9B%E3%83%AC%E3%83%9C%E3%83%AA%E3%83%A5%E3%83%BC%E3%82%B7%E3%83%A721",
+    yt: "https://www.youtube.com/results?search_query=%E6%81%8B%E6%84%9B%E3%83%AC%E3%83%9C%E3%83%AA%E3%83%A5%E3%83%BC%E3%82%B7%E3%83%A721",
+    lm: "https://music.line.me/search?q=%E6%81%8B%E6%84%9B%E3%83%AC%E3%83%9C%E3%83%AA%E3%83%A5%E3%83%BC%E3%82%B7%E3%83%A721"
+  },
+  {
+    title: "恋のDance Site",
+    artist: "モーニング娘。",
+    x: ["恋して"],
+    y: ["ハッピーな"],
+    img: "https://placehold.co/300x300/0d3b8e/7ec8ff?text=%E6%81%8B%E3%81%AEDance+Site",
+    sp: "https://open.spotify.com/search/%E6%81%8B%E3%81%AEDance+Site+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    am: "https://music.apple.com/jp/search?term=%E6%81%8B%E3%81%AEDance+Site",
+    yt: "https://www.youtube.com/results?search_query=%E6%81%8B%E3%81%AEDance+Site+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    lm: "https://music.line.me/search?q=%E6%81%8B%E3%81%AEDance+Site"
+  },
+  {
+    title: "I WISH",
+    artist: "モーニング娘。",
+    x: ["恋して"],
+    y: ["ハッピーな"],
+    img: "https://placehold.co/300x300/0d3b8e/7ec8ff?text=I+WISH",
+    sp: "https://open.spotify.com/search/I+WISH+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    am: "https://music.apple.com/jp/search?term=I+WISH+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    yt: "https://www.youtube.com/results?search_query=I+WISH+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    lm: "https://music.line.me/search?q=I+WISH+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98"
+  },
+  {
+    title: "ロマンスの途中",
+    artist: "Juice=Juice",
+    x: ["恋して"],
+    y: ["ハッピーな"],
+    img: "https://placehold.co/300x300/1a5276/f0b27a?text=%E3%83%AD%E3%83%9E%E3%83%B3%E3%82%B9%E3%81%AE%E9%80%94%E4%B8%AD",
+    sp: "https://open.spotify.com/search/%E3%83%AD%E3%83%9E%E3%83%B3%E3%82%B9%E3%81%AE%E9%80%94%E4%B8%AD+Juice+Juice",
+    am: "https://music.apple.com/jp/search?term=%E3%83%AD%E3%83%9E%E3%83%B3%E3%82%B9%E3%81%AE%E9%80%94%E4%B8%AD",
+    yt: "https://www.youtube.com/results?search_query=%E3%83%AD%E3%83%9E%E3%83%B3%E3%82%B9%E3%81%AE%E9%80%94%E4%B8%AD+Juice",
+    lm: "https://music.line.me/search?q=%E3%83%AD%E3%83%9E%E3%83%B3%E3%82%B9%E3%81%AE%E9%80%94%E4%B8%AD"
+  },
+  {
+    title: "泡沫サタデーナイト!",
+    artist: "モーニング娘。'16",
+    x: ["恋して"],
+    y: ["ハッピーな"],
+    img: "https://placehold.co/300x300/0d3b8e/7ec8ff?text=%E6%B3%A1%E6%9C%AB%E3%82%B5%E3%82%BF%E3%83%87%E3%83%BC",
+    sp: "https://open.spotify.com/search/%E6%B3%A1%E6%9C%AB%E3%82%B5%E3%82%BF%E3%83%87%E3%83%BC%E3%83%8A%E3%82%A4%E3%83%88",
+    am: "https://music.apple.com/jp/search?term=%E6%B3%A1%E6%9C%AB%E3%82%B5%E3%82%BF%E3%83%87%E3%83%BC%E3%83%8A%E3%82%A4%E3%83%88",
+    yt: "https://www.youtube.com/results?search_query=%E6%B3%A1%E6%9C%AB%E3%82%B5%E3%82%BF%E3%83%87%E3%83%BC%E3%83%8A%E3%82%A4%E3%83%88",
+    lm: "https://music.line.me/search?q=%E6%B3%A1%E6%9C%AB%E3%82%B5%E3%82%BF%E3%83%87%E3%83%BC%E3%83%8A%E3%82%A4%E3%83%88"
+  },
+  {
+    title: "付き合ってるのに片想い",
+    artist: "Berryz工房",
+    x: ["恋して"],
+    y: ["悲しい"],
+    img: "https://placehold.co/300x300/4a0e8f/e8b4ff?text=%E4%BB%98%E3%81%8D%E5%90%88%E3%81%A3%E3%81%A6%E3%82%8B%E3%81%AE%E3%81%AB",
+    sp: "https://open.spotify.com/search/%E4%BB%98%E3%81%8D%E5%90%88%E3%81%A3%E3%81%A6%E3%82%8B%E3%81%AE%E3%81%AB%E7%89%87%E6%83%B3%E3%81%84",
+    am: "https://music.apple.com/jp/search?term=%E4%BB%98%E3%81%8D%E5%90%88%E3%81%A3%E3%81%A6%E3%82%8B%E3%81%AE%E3%81%AB%E7%89%87%E6%83%B3%E3%81%84",
+    yt: "https://www.youtube.com/results?search_query=%E4%BB%98%E3%81%8D%E5%90%88%E3%81%A3%E3%81%A6%E3%82%8B%E3%81%AE%E3%81%AB%E7%89%87%E6%83%B3%E3%81%84",
+    lm: "https://music.line.me/search?q=%E4%BB%98%E3%81%8D%E5%90%88%E3%81%A3%E3%81%A6%E3%82%8B%E3%81%AE%E3%81%AB%E7%89%87%E6%83%B3%E3%81%84"
+  },
+  {
+    title: "女と男のラプソディー",
+    artist: "モーニング娘。",
+    x: ["恋して"],
+    y: ["憎い"],
+    img: "https://placehold.co/300x300/0d3b8e/7ec8ff?text=%E5%A5%B3%E3%81%A8%E7%94%B7%E3%81%AE",
+    sp: "https://open.spotify.com/search/%E5%A5%B3%E3%81%A8%E7%94%B7%E3%81%AE%E3%83%A9%E3%83%97%E3%82%BD%E3%83%87%E3%83%BC",
+    am: "https://music.apple.com/jp/search?term=%E5%A5%B3%E3%81%A8%E7%94%B7%E3%81%AE%E3%83%A9%E3%83%97%E3%82%BD%E3%83%87%E3%83%BC",
+    yt: "https://www.youtube.com/results?search_query=%E5%A5%B3%E3%81%A8%E7%94%B7%E3%81%AE%E3%83%A9%E3%83%97%E3%82%BD%E3%83%87%E3%83%BC",
+    lm: "https://music.line.me/search?q=%E5%A5%B3%E3%81%A8%E7%94%B7%E3%81%AE%E3%83%A9%E3%83%97%E3%82%BD%E3%83%87%E3%83%BC"
+  },
+  {
+    title: "ハートのエース が出てこない",
+    artist: "アンジュルム",
+    x: ["恋して"],
+    y: ["憎い"],
+    img: "https://placehold.co/300x300/8b0000/ffaaaa?text=%E3%83%8F%E3%83%BC%E3%83%88%E3%81%AE%E3%82%A8%E3%83%BC%E3%82%B9",
+    sp: "https://open.spotify.com/search/%E3%83%8F%E3%83%BC%E3%83%88%E3%81%AE%E3%82%A8%E3%83%BC%E3%82%B9+%E3%82%A2%E3%83%B3%E3%82%B8%E3%83%A5%E3%83%AB%E3%83%A0",
+    am: "https://music.apple.com/jp/search?term=%E3%83%8F%E3%83%BC%E3%83%88%E3%81%AE%E3%82%A8%E3%83%BC%E3%82%B9+%E3%82%A2%E3%83%B3%E3%82%B8%E3%83%A5%E3%83%AB%E3%83%A0",
+    yt: "https://www.youtube.com/results?search_query=%E3%83%8F%E3%83%BC%E3%83%88%E3%81%AE%E3%82%A8%E3%83%BC%E3%82%B9+%E3%82%A2%E3%83%B3%E3%82%B8%E3%83%A5%E3%83%AB%E3%83%A0",
+    lm: "https://music.line.me/search?q=%E3%83%8F%E3%83%BC%E3%83%88%E3%81%AE%E3%82%A8%E3%83%BC%E3%82%B9"
+  },
+  {
+    title: "Mr.Moonlight〜愛のビッグバンド〜",
+    artist: "モーニング娘。",
+    x: ["恋して"],
+    y: ["やさしい"],
+    img: "https://placehold.co/300x300/0d3b8e/7ec8ff?text=Mr.Moonlight",
+    sp: "https://open.spotify.com/search/Mr.Moonlight+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    am: "https://music.apple.com/jp/search?term=Mr.Moonlight+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    yt: "https://www.youtube.com/results?search_query=Mr.Moonlight+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    lm: "https://music.line.me/search?q=Mr.Moonlight+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98"
+  },
+  {
+    title: "風に吹かれて",
+    artist: "Juice=Juice",
+    x: ["恋して"],
+    y: ["やさしい"],
+    img: "https://placehold.co/300x300/1a5276/f0b27a?text=%E9%A2%A8%E3%81%AB%E5%90%B9%E3%81%8B%E3%82%8C%E3%81%A6",
+    sp: "https://open.spotify.com/search/%E9%A2%A8%E3%81%AB%E5%90%B9%E3%81%8B%E3%82%8C%E3%81%A6+Juice+Juice",
+    am: "https://music.apple.com/jp/search?term=%E9%A2%A8%E3%81%AB%E5%90%B9%E3%81%8B%E3%82%8C%E3%81%A6+Juice+Juice",
+    yt: "https://www.youtube.com/results?search_query=%E9%A2%A8%E3%81%AB%E5%90%B9%E3%81%8B%E3%82%8C%E3%81%A6+Juice+Juice",
+    lm: "https://music.line.me/search?q=%E9%A2%A8%E3%81%AB%E5%90%B9%E3%81%8B%E3%82%8C%E3%81%A6"
+  },
+  // ── 片思いして ─────────────────────────
+  {
+    title: "Oh my wish!",
+    artist: "モーニング娘。",
+    x: ["片思いして"],
+    y: ["ハッピーな"],
+    img: "https://placehold.co/300x300/0d3b8e/7ec8ff?text=Oh+my+wish!",
+    sp: "https://open.spotify.com/search/Oh+my+wish+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    am: "https://music.apple.com/jp/search?term=Oh+my+wish+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    yt: "https://www.youtube.com/results?search_query=Oh+my+wish+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    lm: "https://music.line.me/search?q=Oh+my+wish"
+  },
+  {
+    title: "気まぐれプリンセス",
+    artist: "モーニング娘。",
+    x: ["片思いして"],
+    y: ["ハッピーな"],
+    img: "https://placehold.co/300x300/0d3b8e/7ec8ff?text=%E6%B0%97%E3%81%BE%E3%81%90%E3%82%8C%E3%83%97%E3%83%AA%E3%83%B3%E3%82%BB%E3%82%B9",
+    sp: "https://open.spotify.com/search/%E6%B0%97%E3%81%BE%E3%81%90%E3%82%8C%E3%83%97%E3%83%AA%E3%83%B3%E3%82%BB%E3%82%B9+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    am: "https://music.apple.com/jp/search?term=%E6%B0%97%E3%81%BE%E3%81%90%E3%82%8C%E3%83%97%E3%83%AA%E3%83%B3%E3%82%BB%E3%82%B9",
+    yt: "https://www.youtube.com/results?search_query=%E6%B0%97%E3%81%BE%E3%81%90%E3%82%8C%E3%83%97%E3%83%AA%E3%83%B3%E3%82%BB%E3%82%B9",
+    lm: "https://music.line.me/search?q=%E6%B0%97%E3%81%BE%E3%81%90%E3%82%8C%E3%83%97%E3%83%AA%E3%83%B3%E3%82%BB%E3%82%B9"
+  },
+  {
+    title: "純情Evidence",
+    artist: "モーニング娘。",
+    x: ["片思いして"],
+    y: ["悲しい"],
+    img: "https://placehold.co/300x300/0d3b8e/7ec8ff?text=%E7%B4%94%E6%83%85Evidence",
+    sp: "https://open.spotify.com/search/%E7%B4%94%E6%83%85Evidence+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    am: "https://music.apple.com/jp/search?term=%E7%B4%94%E6%83%85Evidence",
+    yt: "https://www.youtube.com/results?search_query=%E7%B4%94%E6%83%85Evidence+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    lm: "https://music.line.me/search?q=%E7%B4%94%E6%83%85Evidence"
+  },
+  {
+    title: "イジワルしないで 抱きしめてよ",
+    artist: "Juice=Juice",
+    x: ["片思いして"],
+    y: ["憎い"],
+    img: "https://placehold.co/300x300/1a5276/f0b27a?text=%E3%82%A4%E3%82%B8%E3%83%AF%E3%83%AB",
+    sp: "https://open.spotify.com/search/%E3%82%A4%E3%82%B8%E3%83%AF%E3%83%AB%E3%81%97%E3%81%AA%E3%81%84%E3%81%A7+Juice+Juice",
+    am: "https://music.apple.com/jp/search?term=%E3%82%A4%E3%82%B8%E3%83%AF%E3%83%AB%E3%81%97%E3%81%AA%E3%81%84%E3%81%A7%E6%8A%B1%E3%81%8D%E3%81%97%E3%82%81%E3%81%A6%E3%82%88",
+    yt: "https://www.youtube.com/results?search_query=%E3%82%A4%E3%82%B8%E3%83%AF%E3%83%AB%E3%81%97%E3%81%AA%E3%81%84%E3%81%A7%E6%8A%B1%E3%81%8D%E3%81%97%E3%82%81%E3%81%A6%E3%82%88+Juice",
+    lm: "https://music.line.me/search?q=%E3%82%A4%E3%82%B8%E3%83%AF%E3%83%AB%E3%81%97%E3%81%AA%E3%81%84%E3%81%A7"
+  },
+  {
+    title: "私が言う前に抱きしめなきゃね",
+    artist: "Juice=Juice",
+    x: ["片思いして"],
+    y: ["やさしい"],
+    img: "https://placehold.co/300x300/1a5276/f0b27a?text=%E7%A7%81%E3%81%8C%E8%A8%80%E3%81%86%E5%89%8D%E3%81%AB",
+    sp: "https://open.spotify.com/search/%E7%A7%81%E3%81%8C%E8%A8%80%E3%81%86%E5%89%8D%E3%81%AB%E6%8A%B1%E3%81%8D%E3%81%97%E3%82%81%E3%81%AA%E3%81%8D%E3%82%83%E3%81%AD+Juice",
+    am: "https://music.apple.com/jp/search?term=%E7%A7%81%E3%81%8C%E8%A8%80%E3%81%86%E5%89%8D%E3%81%AB%E6%8A%B1%E3%81%8D%E3%81%97%E3%82%81%E3%81%AA%E3%81%8D%E3%82%83%E3%81%AD",
+    yt: "https://www.youtube.com/results?search_query=%E7%A7%81%E3%81%8C%E8%A8%80%E3%81%86%E5%89%8D%E3%81%AB%E6%8A%B1%E3%81%8D%E3%81%97%E3%82%81%E3%81%AA%E3%81%8D%E3%82%83%E3%81%AD",
+    lm: "https://music.line.me/search?q=%E7%A7%81%E3%81%8C%E8%A8%80%E3%81%86%E5%89%8D%E3%81%AB"
+  },
+  {
+    title: "なんちゃって恋愛",
+    artist: "モーニング娘。",
+    x: ["片思いして"],
+    y: ["やさしい"],
+    img: "https://placehold.co/300x300/0d3b8e/7ec8ff?text=%E3%81%AA%E3%82%93%E3%81%A1%E3%82%83%E3%81%A3%E3%81%A6%E6%81%8B%E6%84%9B",
+    sp: "https://open.spotify.com/search/%E3%81%AA%E3%82%93%E3%81%A1%E3%82%83%E3%81%A3%E3%81%A6%E6%81%8B%E6%84%9B+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    am: "https://music.apple.com/jp/search?term=%E3%81%AA%E3%82%93%E3%81%A1%E3%82%83%E3%81%A3%E3%81%A6%E6%81%8B%E6%84%9B",
+    yt: "https://www.youtube.com/results?search_query=%E3%81%AA%E3%82%93%E3%81%A1%E3%82%83%E3%81%A3%E3%81%A6%E6%81%8B%E6%84%9B+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    lm: "https://music.line.me/search?q=%E3%81%AA%E3%82%93%E3%81%A1%E3%82%83%E3%81%A3%E3%81%A6%E6%81%8B%E6%84%9B"
+  },
+  {
+    title: "Uraha=Lover",
+    artist: "アンジュルム",
+    x: ["片思いして"],
+    y: ["やさしい"],
+    img: "https://placehold.co/300x300/8b0000/ffaaaa?text=Uraha%3DLover",
+    sp: "https://open.spotify.com/search/Uraha+Lover+%E3%82%A2%E3%83%B3%E3%82%B8%E3%83%A5%E3%83%AB%E3%83%A0",
+    am: "https://music.apple.com/jp/search?term=Uraha+Lover+%E3%82%A2%E3%83%B3%E3%82%B8%E3%83%A5%E3%83%AB%E3%83%A0",
+    yt: "https://www.youtube.com/results?search_query=Uraha+Lover+%E3%82%A2%E3%83%B3%E3%82%B8%E3%83%A5%E3%83%AB%E3%83%A0",
+    lm: "https://music.line.me/search?q=Uraha+Lover+%E3%82%A2%E3%83%B3%E3%82%B8%E3%83%A5%E3%83%AB%E3%83%A0"
+  },
+  // ── 失恋して ────────────────────────────
+  {
+    title: "絶対解けないパズルのピース",
+    artist: "モーニング娘。'17",
+    x: ["失恋して"],
+    y: ["ハッピーな"],
+    img: "https://placehold.co/300x300/0d3b8e/7ec8ff?text=%E3%83%91%E3%82%BA%E3%83%AB%E3%81%AE%E3%83%94%E3%83%BC%E3%82%B9",
+    sp: "https://open.spotify.com/search/%E7%B5%B6%E5%AF%BE%E8%A7%A3%E3%81%91%E3%81%AA%E3%81%84%E3%83%91%E3%82%BA%E3%83%AB%E3%81%AE%E3%83%94%E3%83%BC%E3%82%B9",
+    am: "https://music.apple.com/jp/search?term=%E7%B5%B6%E5%AF%BE%E8%A7%A3%E3%81%91%E3%81%AA%E3%81%84%E3%83%91%E3%82%BA%E3%83%AB%E3%81%AE%E3%83%94%E3%83%BC%E3%82%B9",
+    yt: "https://www.youtube.com/results?search_query=%E7%B5%B6%E5%AF%BE%E8%A7%A3%E3%81%91%E3%81%AA%E3%81%84%E3%83%91%E3%82%BA%E3%83%AB%E3%81%AE%E3%83%94%E3%83%BC%E3%82%B9",
+    lm: "https://music.line.me/search?q=%E7%B5%B6%E5%AF%BE%E8%A7%A3%E3%81%91%E3%81%AA%E3%81%84%E3%83%91%E3%82%BA%E3%83%AB"
+  },
+  {
+    title: "Help me!!",
+    artist: "モーニング娘。",
+    x: ["失恋して"],
+    y: ["悲しい"],
+    img: "https://placehold.co/300x300/0d3b8e/7ec8ff?text=Help+me!!",
+    sp: "https://open.spotify.com/search/Help+me+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    am: "https://music.apple.com/jp/search?term=Help+me+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    yt: "https://www.youtube.com/results?search_query=Help+me+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    lm: "https://music.line.me/search?q=Help+me+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98"
+  },
+  {
+    title: "RESONANT BLUE",
+    artist: "モーニング娘。",
+    x: ["失恋して"],
+    y: ["悲しい"],
+    img: "https://placehold.co/300x300/001a4d/00aaff?text=RESONANT+BLUE",
+    sp: "https://open.spotify.com/search/RESONANT+BLUE+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    am: "https://music.apple.com/jp/search?term=RESONANT+BLUE+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    yt: "https://www.youtube.com/results?search_query=RESONANT+BLUE+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    lm: "https://music.line.me/search?q=RESONANT+BLUE"
+  },
+  {
+    title: "Memory 青春の光",
+    artist: "モーニング娘。",
+    x: ["失恋して"],
+    y: ["悲しい"],
+    img: "https://placehold.co/300x300/0d3b8e/7ec8ff?text=Memory+%E9%9D%92%E6%98%A5%E3%81%AE%E5%85%89",
+    sp: "https://open.spotify.com/search/Memory+%E9%9D%92%E6%98%A5%E3%81%AE%E5%85%89+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    am: "https://music.apple.com/jp/search?term=Memory+%E9%9D%92%E6%98%A5%E3%81%AE%E5%85%89",
+    yt: "https://www.youtube.com/results?search_query=Memory+%E9%9D%92%E6%98%A5%E3%81%AE%E5%85%89+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    lm: "https://music.line.me/search?q=Memory+%E9%9D%92%E6%98%A5%E3%81%AE%E5%85%89"
+  },
+  {
+    title: "悲しみトワイライト",
+    artist: "モーニング娘。",
+    x: ["失恋して"],
+    y: ["悲しい"],
+    img: "https://placehold.co/300x300/0d3b8e/7ec8ff?text=%E6%82%B2%E3%81%97%E3%81%BF%E3%83%88%E3%83%AF%E3%82%A4%E3%83%A9%E3%82%A4%E3%83%88",
+    sp: "https://open.spotify.com/search/%E6%82%B2%E3%81%97%E3%81%BF%E3%83%88%E3%83%AF%E3%82%A4%E3%83%A9%E3%82%A4%E3%83%88+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    am: "https://music.apple.com/jp/search?term=%E6%82%B2%E3%81%97%E3%81%BF%E3%83%88%E3%83%AF%E3%82%A4%E3%83%A9%E3%82%A4%E3%83%88",
+    yt: "https://www.youtube.com/results?search_query=%E6%82%B2%E3%81%97%E3%81%BF%E3%83%88%E3%83%AF%E3%82%A4%E3%83%A9%E3%82%A4%E3%83%88+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    lm: "https://music.line.me/search?q=%E6%82%B2%E3%81%97%E3%81%BF%E3%83%88%E3%83%AF%E3%82%A4%E3%83%A9%E3%82%A4%E3%83%88"
+  },
+  {
+    title: "あなたなしでは生きてゆけない",
+    artist: "Berryz工房",
+    x: ["失恋して"],
+    y: ["悲しい"],
+    img: "https://placehold.co/300x300/4a0e8f/e8b4ff?text=%E3%81%82%E3%81%AA%E3%81%9F%E3%81%AA%E3%81%97%E3%81%A7%E3%81%AF",
+    sp: "https://open.spotify.com/search/%E3%81%82%E3%81%AA%E3%81%9F%E3%81%AA%E3%81%97%E3%81%A7%E3%81%AF%E7%94%9F%E3%81%8D%E3%81%A6%E3%82%86%E3%81%91%E3%81%AA%E3%81%84+Berryz",
+    am: "https://music.apple.com/jp/search?term=%E3%81%82%E3%81%AA%E3%81%9F%E3%81%AA%E3%81%97%E3%81%A7%E3%81%AF%E7%94%9F%E3%81%8D%E3%81%A6%E3%82%86%E3%81%91%E3%81%AA%E3%81%84",
+    yt: "https://www.youtube.com/results?search_query=%E3%81%82%E3%81%AA%E3%81%9F%E3%81%AA%E3%81%97%E3%81%A7%E3%81%AF%E7%94%9F%E3%81%8D%E3%81%A6%E3%82%86%E3%81%91%E3%81%AA%E3%81%84+Berryz",
+    lm: "https://music.line.me/search?q=%E3%81%82%E3%81%AA%E3%81%9F%E3%81%AA%E3%81%97%E3%81%A7%E3%81%AF%E7%94%9F%E3%81%8D%E3%81%A6%E3%82%86%E3%81%91%E3%81%AA%E3%81%84"
+  },
+  {
+    title: "嫌い 嫌い 大嫌い",
+    artist: "℃-ute",
+    x: ["失恋して"],
+    y: ["憎い"],
+    img: "https://placehold.co/300x300/5a1e00/ffbb77?text=%E5%AB%8C%E3%81%84+%E5%AB%8C%E3%81%84+%E5%A4%A7%E5%AB%8C%E3%81%84",
+    sp: "https://open.spotify.com/search/%E5%AB%8C%E3%81%84+%E5%AB%8C%E3%81%84+%E5%A4%A7%E5%AB%8C%E3%81%84+%E2%84%83-ute",
+    am: "https://music.apple.com/jp/search?term=%E5%AB%8C%E3%81%84%E5%AB%8C%E3%81%84%E5%A4%A7%E5%AB%8C%E3%81%84",
+    yt: "https://www.youtube.com/results?search_query=%E5%AB%8C%E3%81%84%E5%AB%8C%E3%81%84%E5%A4%A7%E5%AB%8C%E3%81%84+%E2%84%83-ute",
+    lm: "https://music.line.me/search?q=%E5%AB%8C%E3%81%84%E5%AB%8C%E3%81%84%E5%A4%A7%E5%AB%8C%E3%81%84"
+  },
+  {
+    title: "乙女の逆襲",
+    artist: "アンジュルム",
+    x: ["失恋して"],
+    y: ["憎い"],
+    img: "https://placehold.co/300x300/8b0000/ffaaaa?text=%E4%B9%99%E5%A5%B3%E3%81%AE%E9%80%86%E8%A5%B2",
+    sp: "https://open.spotify.com/search/%E4%B9%99%E5%A5%B3%E3%81%AE%E9%80%86%E8%A5%B2+%E3%82%A2%E3%83%B3%E3%82%B8%E3%83%A5%E3%83%AB%E3%83%A0",
+    am: "https://music.apple.com/jp/search?term=%E4%B9%99%E5%A5%B3%E3%81%AE%E9%80%86%E8%A5%B2+%E3%82%A2%E3%83%B3%E3%82%B8%E3%83%A5%E3%83%AB%E3%83%A0",
+    yt: "https://www.youtube.com/results?search_query=%E4%B9%99%E5%A5%B3%E3%81%AE%E9%80%86%E8%A5%B2+%E3%82%A2%E3%83%B3%E3%82%B8%E3%83%A5%E3%83%AB%E3%83%A0",
+    lm: "https://music.line.me/search?q=%E4%B9%99%E5%A5%B3%E3%81%AE%E9%80%86%E8%A5%B2"
+  },
+  {
+    title: "ドンデンガエシ",
+    artist: "アンジュルム",
+    x: ["失恋して"],
+    y: ["憎い"],
+    img: "https://placehold.co/300x300/8b0000/ffaaaa?text=%E3%83%89%E3%83%B3%E3%83%87%E3%83%B3%E3%82%AC%E3%82%A8%E3%82%B7",
+    sp: "https://open.spotify.com/search/%E3%83%89%E3%83%B3%E3%83%87%E3%83%B3%E3%82%AC%E3%82%A8%E3%82%B7+%E3%82%A2%E3%83%B3%E3%82%B8%E3%83%A5%E3%83%AB%E3%83%A0",
+    am: "https://music.apple.com/jp/search?term=%E3%83%89%E3%83%B3%E3%83%87%E3%83%B3%E3%82%AC%E3%82%A8%E3%82%B7+%E3%82%A2%E3%83%B3%E3%82%B8%E3%83%A5%E3%83%AB%E3%83%A0",
+    yt: "https://www.youtube.com/results?search_query=%E3%83%89%E3%83%B3%E3%83%87%E3%83%B3%E3%82%AC%E3%82%A8%E3%82%B7+%E3%82%A2%E3%83%B3%E3%82%B8%E3%83%A5%E3%83%AB%E3%83%A0",
+    lm: "https://music.line.me/search?q=%E3%83%89%E3%83%B3%E3%83%87%E3%83%B3%E3%82%AC%E3%82%A8%E3%82%B7"
+  },
+  {
+    title: "シャイニング 蝶のように",
+    artist: "モーニング娘。",
+    x: ["失恋して"],
+    y: ["やさしい"],
+    img: "https://placehold.co/300x300/0d3b8e/7ec8ff?text=%E3%82%B7%E3%83%A3%E3%82%A4%E3%83%8B%E3%83%B3%E3%82%B0+%E8%9D%B6",
+    sp: "https://open.spotify.com/search/%E3%82%B7%E3%83%A3%E3%82%A4%E3%83%8B%E3%83%B3%E3%82%B0+%E8%9D%B6%E3%81%AE%E3%82%88%E3%81%86%E3%81%AB+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    am: "https://music.apple.com/jp/search?term=%E3%82%B7%E3%83%A3%E3%82%A4%E3%83%8B%E3%83%B3%E3%82%B0+%E8%9D%B6%E3%81%AE%E3%82%88%E3%81%86%E3%81%AB",
+    yt: "https://www.youtube.com/results?search_query=%E3%82%B7%E3%83%A3%E3%82%A4%E3%83%8B%E3%83%B3%E3%82%B0+%E8%9D%B6%E3%81%AE%E3%82%88%E3%81%86%E3%81%AB+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    lm: "https://music.line.me/search?q=%E3%82%B7%E3%83%A3%E3%82%A4%E3%83%8B%E3%83%B3%E3%82%B0+%E8%9D%B6%E3%81%AE%E3%82%88%E3%81%86%E3%81%AB"
+  },
+  // ── 仕事して ────────────────────────────
+  {
+    title: "Ambitious! 野心的でいいじゃん",
+    artist: "モーニング娘。",
+    x: ["仕事して"],
+    y: ["ハッピーな"],
+    img: "https://placehold.co/300x300/0d3b8e/7ec8ff?text=Ambitious!",
+    sp: "https://open.spotify.com/search/Ambitious+%E9%87%8E%E5%BF%83%E7%9A%84%E3%81%A7%E3%81%84%E3%81%84%E3%81%98%E3%82%83%E3%82%93",
+    am: "https://music.apple.com/jp/search?term=Ambitious+%E9%87%8E%E5%BF%83%E7%9A%84%E3%81%A7%E3%81%84%E3%81%84%E3%81%98%E3%82%83%E3%82%93",
+    yt: "https://www.youtube.com/results?search_query=Ambitious+%E9%87%8E%E5%BF%83%E7%9A%84%E3%81%A7%E3%81%84%E3%81%84%E3%81%98%E3%82%83%E3%82%93+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    lm: "https://music.line.me/search?q=Ambitious+%E9%87%8E%E5%BF%83%E7%9A%84"
+  },
+  {
+    title: "One・Two・Three",
+    artist: "モーニング娘。",
+    x: ["仕事して"],
+    y: ["ハッピーな"],
+    img: "https://placehold.co/300x300/0d3b8e/7ec8ff?text=One+Two+Three",
+    sp: "https://open.spotify.com/search/One+Two+Three+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    am: "https://music.apple.com/jp/search?term=One+Two+Three+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    yt: "https://www.youtube.com/results?search_query=One+Two+Three+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    lm: "https://music.line.me/search?q=One+Two+Three+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98"
+  },
+  {
+    title: "大器晩成",
+    artist: "アンジュルム",
+    x: ["仕事して"],
+    y: ["ハッピーな"],
+    img: "https://placehold.co/300x300/8b0000/ffaaaa?text=%E5%A4%A7%E5%99%A8%E6%99%9A%E6%88%90",
+    sp: "https://open.spotify.com/search/%E5%A4%A7%E5%99%A8%E6%99%9A%E6%88%90+%E3%82%A2%E3%83%B3%E3%82%B8%E3%83%A5%E3%83%AB%E3%83%A0",
+    am: "https://music.apple.com/jp/search?term=%E5%A4%A7%E5%99%A8%E6%99%9A%E6%88%90+%E3%82%A2%E3%83%B3%E3%82%B8%E3%83%A5%E3%83%AB%E3%83%A0",
+    yt: "https://www.youtube.com/results?search_query=%E5%A4%A7%E5%99%A8%E6%99%9A%E6%88%90+%E3%82%A2%E3%83%B3%E3%82%B8%E3%83%A5%E3%83%AB%E3%83%A0",
+    lm: "https://music.line.me/search?q=%E5%A4%A7%E5%99%A8%E6%99%9A%E6%88%90+%E3%82%A2%E3%83%B3%E3%82%B8%E3%83%A5%E3%83%AB%E3%83%A0"
+  },
+  {
+    title: "EVERYDAY絶好調!!",
+    artist: "℃-ute",
+    x: ["仕事して"],
+    y: ["ハッピーな"],
+    img: "https://placehold.co/300x300/5a1e00/ffbb77?text=EVERYDAY%E7%B5%B6%E5%A5%BD%E8%AA%BF",
+    sp: "https://open.spotify.com/search/EVERYDAY%E7%B5%B6%E5%A5%BD%E8%AA%BF+%E2%84%83-ute",
+    am: "https://music.apple.com/jp/search?term=EVERYDAY%E7%B5%B6%E5%A5%BD%E8%AA%BF+%E2%84%83-ute",
+    yt: "https://www.youtube.com/results?search_query=EVERYDAY%E7%B5%B6%E5%A5%BD%E8%AA%BF+%E2%84%83-ute",
+    lm: "https://music.line.me/search?q=EVERYDAY%E7%B5%B6%E5%A5%BD%E8%AA%BF"
+  },
+  {
+    title: "KEEP ON 上昇志向!!",
+    artist: "Juice=Juice",
+    x: ["仕事して"],
+    y: ["ハッピーな"],
+    img: "https://placehold.co/300x300/1a5276/f0b27a?text=KEEP+ON+%E4%B8%8A%E6%98%87%E5%BF%97%E5%90%91",
+    sp: "https://open.spotify.com/search/KEEP+ON+%E4%B8%8A%E6%98%87%E5%BF%97%E5%90%91+Juice+Juice",
+    am: "https://music.apple.com/jp/search?term=KEEP+ON+%E4%B8%8A%E6%98%87%E5%BF%97%E5%90%91",
+    yt: "https://www.youtube.com/results?search_query=KEEP+ON+%E4%B8%8A%E6%98%87%E5%BF%97%E5%90%91+Juice",
+    lm: "https://music.line.me/search?q=KEEP+ON+%E4%B8%8A%E6%98%87%E5%BF%97%E5%90%91"
+  },
+  {
+    title: "ワクテカ Take a chance",
+    artist: "モーニング娘。",
+    x: ["仕事して"],
+    y: ["ハッピーな"],
+    img: "https://placehold.co/300x300/0d3b8e/7ec8ff?text=%E3%83%AF%E3%82%AF%E3%83%86%E3%82%AB",
+    sp: "https://open.spotify.com/search/%E3%83%AF%E3%82%AF%E3%83%86%E3%82%AB+Take+a+chance+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    am: "https://music.apple.com/jp/search?term=%E3%83%AF%E3%82%AF%E3%83%86%E3%82%AB+Take+a+chance",
+    yt: "https://www.youtube.com/results?search_query=%E3%83%AF%E3%82%AF%E3%83%86%E3%82%AB+Take+a+chance+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    lm: "https://music.line.me/search?q=%E3%83%AF%E3%82%AF%E3%83%86%E3%82%AB"
+  },
+  {
+    title: "笑顔に涙〜Thank you! Dear my friends〜",
+    artist: "モーニング娘。",
+    x: ["仕事して"],
+    y: ["悲しい"],
+    img: "https://placehold.co/300x300/0d3b8e/7ec8ff?text=%E7%AC%91%E9%A1%94%E3%81%AB%E6%B6%99",
+    sp: "https://open.spotify.com/search/%E7%AC%91%E9%A1%94%E3%81%AB%E6%B6%99+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    am: "https://music.apple.com/jp/search?term=%E7%AC%91%E9%A1%94%E3%81%AB%E6%B6%99+Thank+you+Dear+my+friends",
+    yt: "https://www.youtube.com/results?search_query=%E7%AC%91%E9%A1%94%E3%81%AB%E6%B6%99+Thank+you+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    lm: "https://music.line.me/search?q=%E7%AC%91%E9%A1%94%E3%81%AB%E6%B6%99"
+  },
+  {
+    title: "愛の弾丸",
+    artist: "Berryz工房",
+    x: ["仕事して"],
+    y: ["憎い"],
+    img: "https://placehold.co/300x300/4a0e8f/e8b4ff?text=%E6%84%9B%E3%81%AE%E5%BC%BE%E4%B8%B8",
+    sp: "https://open.spotify.com/search/%E6%84%9B%E3%81%AE%E5%BC%BE%E4%B8%B8+Berryz%E5%B7%A5%E6%88%BF",
+    am: "https://music.apple.com/jp/search?term=%E6%84%9B%E3%81%AE%E5%BC%BE%E4%B8%B8+Berryz%E5%B7%A5%E6%88%BF",
+    yt: "https://www.youtube.com/results?search_query=%E6%84%9B%E3%81%AE%E5%BC%BE%E4%B8%B8+Berryz%E5%B7%A5%E6%88%BF",
+    lm: "https://music.line.me/search?q=%E6%84%9B%E3%81%AE%E5%BC%BE%E4%B8%B8+Berryz"
+  },
+  {
+    title: "The Middle Management〜女性中間管理職〜",
+    artist: "℃-ute",
+    x: ["仕事して"],
+    y: ["やさしい"],
+    img: "https://placehold.co/300x300/5a1e00/ffbb77?text=The+Middle+Management",
+    sp: "https://open.spotify.com/search/The+Middle+Management+%E2%84%83-ute",
+    am: "https://music.apple.com/jp/search?term=The+Middle+Management+%E2%84%83-ute",
+    yt: "https://www.youtube.com/results?search_query=The+Middle+Management+%E2%84%83-ute",
+    lm: "https://music.line.me/search?q=The+Middle+Management"
+  },
+  {
+    title: "しょうがない 夢追い人",
+    artist: "Berryz工房",
+    x: ["仕事して"],
+    y: ["やさしい"],
+    img: "https://placehold.co/300x300/4a0e8f/e8b4ff?text=%E3%81%97%E3%82%87%E3%81%86%E3%81%8C%E3%81%AA%E3%81%84+%E5%A4%A2%E8%BF%BD%E3%81%84%E4%BA%BA",
+    sp: "https://open.spotify.com/search/%E3%81%97%E3%82%87%E3%81%86%E3%81%8C%E3%81%AA%E3%81%84+%E5%A4%A2%E8%BF%BD%E3%81%84%E4%BA%BA+Berryz",
+    am: "https://music.apple.com/jp/search?term=%E3%81%97%E3%82%87%E3%81%86%E3%81%8C%E3%81%AA%E3%81%84+%E5%A4%A2%E8%BF%BD%E3%81%84%E4%BA%BA",
+    yt: "https://www.youtube.com/results?search_query=%E3%81%97%E3%82%87%E3%81%86%E3%81%8C%E3%81%AA%E3%81%84+%E5%A4%A2%E8%BF%BD%E3%81%84%E4%BA%BA+Berryz",
+    lm: "https://music.line.me/search?q=%E3%81%97%E3%82%87%E3%81%86%E3%81%8C%E3%81%AA%E3%81%84+%E5%A4%A2%E8%BF%BD%E3%81%84%E4%BA%BA"
+  },
+  // ── 世界を救って ──────────────────────
+  {
+    title: "46億年LOVE",
+    artist: "アンジュルム",
+    x: ["世界を救って"],
+    y: ["ハッピーな"],
+    img: "https://placehold.co/300x300/8b0000/ffaaaa?text=46%E5%84%84%E5%B9%B4LOVE",
+    sp: "https://open.spotify.com/search/46%E5%84%84%E5%B9%B4LOVE+%E3%82%A2%E3%83%B3%E3%82%B8%E3%83%A5%E3%83%AB%E3%83%A0",
+    am: "https://music.apple.com/jp/search?term=46%E5%84%84%E5%B9%B4LOVE+%E3%82%A2%E3%83%B3%E3%82%B8%E3%83%A5%E3%83%AB%E3%83%A0",
+    yt: "https://www.youtube.com/results?search_query=46%E5%84%84%E5%B9%B4LOVE+%E3%82%A2%E3%83%B3%E3%82%B8%E3%83%A5%E3%83%AB%E3%83%A0",
+    lm: "https://music.line.me/search?q=46%E5%84%84%E5%B9%B4LOVE+%E3%82%A2%E3%83%B3%E3%82%B8%E3%83%A5%E3%83%AB%E3%83%A0"
+  },
+  {
+    title: "ジンギスカン",
+    artist: "Berryz工房",
+    x: ["世界を救って"],
+    y: ["ハッピーな"],
+    img: "https://placehold.co/300x300/4a0e8f/e8b4ff?text=%E3%82%B8%E3%83%B3%E3%82%AE%E3%82%B9%E3%82%AB%E3%83%B3",
+    sp: "https://open.spotify.com/search/%E3%82%B8%E3%83%B3%E3%82%AE%E3%82%B9%E3%82%AB%E3%83%B3+Berryz%E5%B7%A5%E6%88%BF",
+    am: "https://music.apple.com/jp/search?term=%E3%82%B8%E3%83%B3%E3%82%AE%E3%82%B9%E3%82%AB%E3%83%B3+Berryz%E5%B7%A5%E6%88%BF",
+    yt: "https://www.youtube.com/results?search_query=%E3%82%B8%E3%83%B3%E3%82%AE%E3%82%B9%E3%82%AB%E3%83%B3+Berryz%E5%B7%A5%E6%88%BF",
+    lm: "https://music.line.me/search?q=%E3%82%B8%E3%83%B3%E3%82%AE%E3%82%B9%E3%82%AB%E3%83%B3+Berryz"
+  },
+  {
+    title: "熱烈ウェルカム!",
+    artist: "Berryz工房",
+    x: ["世界を救って"],
+    y: ["ハッピーな"],
+    img: "https://placehold.co/300x300/4a0e8f/e8b4ff?text=%E7%86%B1%E7%83%88%E3%82%A6%E3%82%A7%E3%83%AB%E3%82%AB%E3%83%A0",
+    sp: "https://open.spotify.com/search/%E7%86%B1%E7%83%88%E3%82%A6%E3%82%A7%E3%83%AB%E3%82%AB%E3%83%A0+Berryz%E5%B7%A5%E6%88%BF",
+    am: "https://music.apple.com/jp/search?term=%E7%86%B1%E7%83%88%E3%82%A6%E3%82%A7%E3%83%AB%E3%82%AB%E3%83%A0+Berryz",
+    yt: "https://www.youtube.com/results?search_query=%E7%86%B1%E7%83%88%E3%82%A6%E3%82%A7%E3%83%AB%E3%82%AB%E3%83%A0+Berryz%E5%B7%A5%E6%88%BF",
+    lm: "https://music.line.me/search?q=%E7%86%B1%E7%83%88%E3%82%A6%E3%82%A7%E3%83%AB%E3%82%AB%E3%83%A0+Berryz"
+  },
+  {
+    title: "そうだ! We're ALIVE",
+    artist: "モーニング娘。",
+    x: ["世界を救って"],
+    y: ["ハッピーな"],
+    img: "https://placehold.co/300x300/0d3b8e/7ec8ff?text=%E3%81%9D%E3%81%86%E3%81%A0!+We're+ALIVE",
+    sp: "https://open.spotify.com/search/%E3%81%9D%E3%81%86%E3%81%A0+We%27re+ALIVE+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    am: "https://music.apple.com/jp/search?term=%E3%81%9D%E3%81%86%E3%81%A0+We%27re+ALIVE",
+    yt: "https://www.youtube.com/results?search_query=%E3%81%9D%E3%81%86%E3%81%A0+We%27re+ALIVE+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    lm: "https://music.line.me/search?q=%E3%81%9D%E3%81%86%E3%81%A0+We%27re+ALIVE"
+  },
+  {
+    title: "黄色いお空でBOOM BOOM BOOM",
+    artist: "℃-ute",
+    x: ["世界を救って"],
+    y: ["ハッピーな"],
+    img: "https://placehold.co/300x300/5a1e00/ffbb77?text=%E9%BB%84%E8%89%B2%E3%81%84%E3%81%8A%E7%A9%BA%E3%81%A7BOOM",
+    sp: "https://open.spotify.com/search/%E9%BB%84%E8%89%B2%E3%81%84%E3%81%8A%E7%A9%BA%E3%81%A7BOOM+BOOM+BOOM+%E2%84%83-ute",
+    am: "https://music.apple.com/jp/search?term=%E9%BB%84%E8%89%B2%E3%81%84%E3%81%8A%E7%A9%BA%E3%81%A7BOOM+BOOM+BOOM",
+    yt: "https://www.youtube.com/results?search_query=%E9%BB%84%E8%89%B2%E3%81%84%E3%81%8A%E7%A9%BA%E3%81%A7BOOM+BOOM+BOOM",
+    lm: "https://music.line.me/search?q=%E9%BB%84%E8%89%B2%E3%81%84%E3%81%8A%E7%A9%BA%E3%81%A7BOOM"
+  },
+  {
+    title: "青春小僧が泣いている",
+    artist: "モーニング娘。",
+    x: ["世界を救って", "失恋して"],
+    y: ["悲しい"],
+    img: "https://placehold.co/300x300/0d3b8e/7ec8ff?text=%E9%9D%92%E6%98%A5%E5%B0%8F%E5%83%A7",
+    sp: "https://open.spotify.com/search/%E9%9D%92%E6%98%A5%E5%B0%8F%E5%83%A7%E3%81%8C%E6%B3%A3%E3%81%84%E3%81%A6%E3%81%84%E3%82%8B+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    am: "https://music.apple.com/jp/search?term=%E9%9D%92%E6%98%A5%E5%B0%8F%E5%83%A7%E3%81%8C%E6%B3%A3%E3%81%84%E3%81%A6%E3%81%84%E3%82%8B",
+    yt: "https://www.youtube.com/results?search_query=%E9%9D%92%E6%98%A5%E5%B0%8F%E5%83%A7%E3%81%8C%E6%B3%A3%E3%81%84%E3%81%A6%E3%81%84%E3%82%8B+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    lm: "https://music.line.me/search?q=%E9%9D%92%E6%98%A5%E5%B0%8F%E5%83%A7"
+  },
+  {
+    title: "愛の軍団",
+    artist: "モーニング娘。",
+    x: ["世界を救って"],
+    y: ["憎い"],
+    img: "https://placehold.co/300x300/0d3b8e/7ec8ff?text=%E6%84%9B%E3%81%AE%E8%BB%8D%E5%9B%A3",
+    sp: "https://open.spotify.com/search/%E6%84%9B%E3%81%AE%E8%BB%8D%E5%9B%A3+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    am: "https://music.apple.com/jp/search?term=%E6%84%9B%E3%81%AE%E8%BB%8D%E5%9B%A3+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    yt: "https://www.youtube.com/results?search_query=%E6%84%9B%E3%81%AE%E8%BB%8D%E5%9B%A3+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    lm: "https://music.line.me/search?q=%E6%84%9B%E3%81%AE%E8%BB%8D%E5%9B%A3"
+  },
+  {
+    title: "大きな瞳",
+    artist: "モーニング娘。",
+    x: ["世界を救って", "片思いして"],
+    y: ["やさしい"],
+    img: "https://placehold.co/300x300/0d3b8e/7ec8ff?text=%E5%A4%A7%E3%81%8D%E3%81%AA%E7%9E%B3",
+    sp: "https://open.spotify.com/search/%E5%A4%A7%E3%81%8D%E3%81%AA%E7%9E%B3+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    am: "https://music.apple.com/jp/search?term=%E5%A4%A7%E3%81%8D%E3%81%AA%E7%9E%B3+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    yt: "https://www.youtube.com/results?search_query=%E5%A4%A7%E3%81%8D%E3%81%AA%E7%9E%B3+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+    lm: "https://music.line.me/search?q=%E5%A4%A7%E3%81%8D%E3%81%AA%E7%9E%B3"
+  }
+];
+
+const SEXY_BOY = {
+  title: "SEXY BOY〜そよ風に寄り添って〜",
+  artist: "モーニング娘。",
+  img: "https://placehold.co/300x300/ff69b4/ffffff?text=SEXY+BOY",
+  sp: "https://open.spotify.com/search/SEXY+BOY+%E3%81%9D%E3%82%88%E9%A2%A8%E3%81%AB%E5%AF%84%E3%82%8A%E6%B7%BB%E3%81%A3%E3%81%A6+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+  am: "https://music.apple.com/jp/search?term=SEXY+BOY+%E3%81%9D%E3%82%88%E9%A2%A8%E3%81%AB%E5%AF%84%E3%82%8A%E6%B7%BB%E3%81%A3%E3%81%A6",
+  yt: "https://www.youtube.com/results?search_query=SEXY+BOY+%E3%81%9D%E3%82%88%E9%A2%A8%E3%81%AB%E5%AF%84%E3%82%8A%E6%B7%BB%E3%81%A3%E3%81%A6+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
+  lm: "https://music.line.me/search?q=SEXY+BOY+%E3%81%9D%E3%82%88%E9%A2%A8%E3%81%AB%E5%AF%84%E3%82%8A%E6%B7%BB%E3%81%A3%E3%81%A6"
+};
+
+function onSelChange() {
+  const x = document.getElementById('sel-x').value;
+  const y = document.getElementById('sel-y').value;
+  document.getElementById('search-btn').disabled = !(x && y);
+}
+
+function search() {
+  const selX = document.getElementById('sel-x').value;
+  const selY = document.getElementById('sel-y').value;
+  const pool = SONGS.filter(s => s.x.includes(selX) && s.y.includes(selY));
+  const resultEl = document.getElementById('result');
+  const display = document.getElementById('song-display');
+
+  if (!pool.length) {
+    display.innerHTML = `<div class="no-result">✦ この組み合わせの曲は見つかりませんでした ✦<br><small>別のタグを試してみてください</small></div>`;
+  } else {
+    const song = pool[Math.floor(Math.random() * pool.length)];
+    display.innerHTML = renderSong(song);
+  }
+
+  resultEl.classList.remove('show');
+  void resultEl.offsetWidth;
+  resultEl.classList.add('show');
+  setTimeout(() => resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+}
+
+function renderSong(song, rainbow = false) {
+  return `
+    ${rainbow ? '<div class="rainbow-label">🏳️‍🌈 GAY BAR SPECIAL PICK 🏳️‍🌈</div>' : ''}
+    <div class="song-card">
+      <div class="album-wrap">
+        <img class="album-art" src="${song.img}" alt="${song.title}"
+             onerror="this.src='https://placehold.co/300x300/001a4d/00aaff?text=%E2%99%AA'">
+        <div class="album-glow"></div>
+      </div>
+      <div class="song-info">
+        <div class="song-artist">${song.artist}</div>
+        <div class="song-title">「${song.title}」</div>
+        <div class="streaming">
+          <a href="${song.sp}" target="_blank" rel="noopener" class="s-btn s-spotify">▶ Spotify</a>
+          <a href="${song.am}" target="_blank" rel="noopener" class="s-btn s-apple">♪ Apple Music</a>
+          <a href="${song.yt}" target="_blank" rel="noopener" class="s-btn s-youtube">▶ YouTube</a>
+          <a href="${song.lm}" target="_blank" rel="noopener" class="s-btn s-line">♪ LINE MUSIC</a>
+        </div>
+      </div>
+    </div>`;
+}
+
+function openModal() {
+  document.getElementById('modal').classList.add('show');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+}
+
+function bgClose(e) {
+  if (e.target === document.getElementById('modal')) closeModal();
+}
+
+function yesFloor() {
+  closeModal();
+  const resultEl = document.getElementById('result');
+  document.getElementById('song-display').innerHTML = renderSong(SEXY_BOY, true);
+  resultEl.classList.remove('show');
+  void resultEl.offsetWidth;
+  resultEl.classList.add('show');
+  setTimeout(() => resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+}
+
+function noFloor() {
+  closeModal();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>

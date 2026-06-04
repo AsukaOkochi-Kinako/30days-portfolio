@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>ストーリー作成</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Noto Sans JP', 'Hiragino Sans', sans-serif;
+      background: #EFEFEF;
+      min-height: 100svh;
+    }
+
+    .app {
+      max-width: 430px;
+      margin: 0 auto;
+      background: #fff;
+      min-height: 100svh;
+    }
+
+    /* ─── Header ─── */
+    .app-header {
+      padding: 14px 18px 12px;
+      font-size: 0.9rem;
+      font-weight: 900;
+      color: #111;
+      border-bottom: 1px solid #f0f0f0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ─── Preview ─── */
+    .preview-section {
+      background: #111;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 18px 0;
+    }
+
+    .story-shell {
+      width: 240px;
+      height: 426px;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06);
+    }
+
+    /* Story canvas — 240×426, dl at ×4.5 ≒ 1080×1917 */
+    #storyCanvas {
+      width: 240px;
+      height: 426px;
+      position: relative;
+      overflow: hidden;
+      font-family: 'Noto Sans JP', sans-serif;
+    }
+
+    /* ─── Template backgrounds ─── */
+    #storyCanvas.t-party {
+      background-color: #FF0080;
+      background-image:
+        radial-gradient(circle, #FFE600 2.5px, transparent 2.5px),
+        radial-gradient(circle, #00FFB2 2px,   transparent 2px),
+        radial-gradient(circle, #CC44FF 2px,   transparent 2px),
+        radial-gradient(circle, rgba(255,255,255,0.5) 1.5px, transparent 1.5px);
+      background-size: 52px 52px, 78px 78px, 62px 62px, 41px 41px;
+      background-position: 11px 11px, 28px 36px, 48px 22px, 7px 52px;
+    }
+    #storyCanvas.t-manga { background: #FFFBF0; }
+    #storyCanvas.t-neon {
+      background: #06060F;
+      background-image:
+        linear-gradient(rgba(0,255,255,0.055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,255,0.055) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+    #storyCanvas.t-retro {
+      background-color: #FF4F00;
+      background-image:
+        radial-gradient(circle, rgba(255,255,255,0.18) 5px, transparent 5px),
+        linear-gradient(45deg, rgba(255,210,0,0.12) 25%, transparent 25%,
+          transparent 75%, rgba(255,210,0,0.12) 75%);
+      background-size: 36px 36px, 18px 18px;
+    }
+
+    /* ─── Story inner layout — everything centered ─── */
+    .s-inner {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;   /* ← 横方向中央 */
+      text-align: center;    /* ← テキスト中央 */
+      padding: 24px 16px 20px;
+    }
+
+    .s-badge {
+      font-size: 0.52rem;
+      font-weight: 900;
+      letter-spacing: 0.14em;
+      padding: 3px 12px;
+      border-radius: 100px;
+      margin-bottom: 12px;
+      flex-shrink: 0;
+    }
+
+    .s-main {
+      font-size: 2rem;
+      font-weight: 900;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      word-break: break-all;
+      flex-shrink: 0;
+    }
+
+    .s-details {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      border-radius: 10px;
+      padding: 7px 16px;
+      margin-top: 10px;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+
+    .s-drow {
+      font-size: 0.6rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .s-spacer { flex: 1; min-height: 8px; }
+
+    /* ─── Stamp area ─── */
+    .s-stamp-area {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .s-stamp-instruction {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .s-stamp-label1 {
+      font-size: 0.62rem;
+      font-weight: 700;
+      opacity: 0.8;
+    }
+
+    .s-stamp-label2 {
+      font-size: 0.95rem;
+      font-weight: 900;
+      letter-spacing: -0.01em;
+    }
+
+    /* Speech bubble placeholder */
+    .s-stamp-ph {
+      position: relative;
+      width: 128px;
+      height: 108px;
+      flex-shrink: 0;
+    }
+
+    .s-stamp-ph svg.ph-outline {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .s-stamp-emoji {
+      position: absolute;
+      left: 50%;
+      top: 28px;
+      transform: translateX(-50%);
+      font-size: 1.55rem;
+      line-height: 1;
+      opacity: 0.9;
+    }
+
+    .s-stamp-set-hint {
+      position: absolute;
+      left: 50%;
+      top: 60px;
+      transform: translateX(-50%);
+      font-size: 0.44rem;
+      font-weight: 700;
+      white-space: nowrap;
+      letter-spacing: 0.06em;
+      opacity: 0.7;
+    }
+
+    /* ─── Theme tokens ─── */
+    /* Party */
+    #storyCanvas.t-party .s-badge          { background: rgba(0,0,0,0.22); color: #FFE600; }
+    #storyCanvas.t-party .s-main           { color: #fff; text-shadow: 3px 3px 0 rgba(0,0,0,0.2); }
+    #storyCanvas.t-party .s-details        { background: rgba(0,0,0,0.18); }
+    #storyCanvas.t-party .s-drow           { color: rgba(255,255,255,0.9); }
+    #storyCanvas.t-party .s-stamp-instruction { color: #fff; }
+    #storyCanvas.t-party .s-stamp-ph       { color: rgba(255,255,255,0.75); }
+    #storyCanvas.t-party .s-stamp-set-hint { color: #fff; }
+
+    /* Manga */
+    #storyCanvas.t-manga .s-badge          { background: #FF2020; color: #fff; }
+    #storyCanvas.t-manga .s-main           { color: #111; text-shadow: 4px 4px 0 #FF2020; -webkit-text-stroke: 1px #111; }
+    #storyCanvas.t-manga .s-details        { background: rgba(0,0,0,0.05); border: 1.5px solid rgba(0,0,0,0.08); }
+    #storyCanvas.t-manga .s-drow           { color: #333; }
+    #storyCanvas.t-manga .s-stamp-instruction { color: #111; }
+    #storyCanvas.t-manga .s-stamp-ph       { color: #FF2020; }
+    #storyCanvas.t-manga .s-stamp-set-hint { color: #333; }
+
+    /* Neon */
+    #storyCanvas.t-neon .s-badge           { background: rgba(0,255,255,0.08); color: #0FF; border: 1px solid rgba(0,255,255,0.35); }
+    #storyCanvas.t-neon .s-main            { color: #0FF; text-shadow: 0 0 10px #0FF, 0 0 22px #0FF, 0 0 44px rgba(0,255,255,0.5); }
+    #storyCanvas.t-neon .s-details         { background: rgba(0,255,255,0.05); border: 1px solid rgba(0,255,255,0.12); }
+    #storyCanvas.t-neon .s-drow            { color: rgba(255,255,255,0.72); }
+    #storyCanvas.t-neon .s-stamp-label1    { color: rgba(255,255,255,0.65); }
+    #storyCanvas.t-neon .s-stamp-label2    { color: #FF00FF; text-shadow: 0 0 8px #FF00FF, 0 0 16px #FF00FF; }
+    #storyCanvas.t-neon .s-stamp-ph        { color: #FF00FF; }
+    #storyCanvas.t-neon .s-stamp-set-hint  { color: rgba(255,0,255,0.7); }
+
+    /* Retro */
+    #storyCanvas.t-retro .s-badge          { background: #FFD200; color: #111; }
+    #storyCanvas.t-retro .s-main           { color: #fff; text-shadow: 3px 3px 0 rgba(0,0,0,0.28); }
+    #storyCanvas.t-retro .s-details        { background: rgba(0,0,0,0.18); }
+    #storyCanvas.t-retro .s-drow           { color: rgba(255,255,255,0.9); }
+    #storyCanvas.t-retro .s-stamp-instruction { color: #fff; }
+    #storyCanvas.t-retro .s-stamp-ph       { color: #FFD200; }
+    #storyCanvas.t-retro .s-stamp-set-hint { color: rgba(255,210,0,0.85); }
+
+    /* ─── Controls ─── */
+    .controls { padding: 18px 16px 36px; }
+
+    .ctrl-label {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #bbb;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    /* Template picker */
+    .tmpl-row {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+      margin-bottom: 22px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .tmpl-row::-webkit-scrollbar { display: none; }
+
+    .tc {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+
+    .tc-thumb {
+      width: 48px;
+      height: 85px;
+      border-radius: 10px;
+      border: 3px solid transparent;
+      overflow: hidden;
+      transition: transform 0.12s, border-color 0.12s;
+      position: relative;
+    }
+
+    .tc.active .tc-thumb { border-color: #111; }
+    .tc:hover .tc-thumb  { transform: scale(1.06); }
+
+    .tc-name { font-size: 0.62rem; font-weight: 700; color: #555; }
+    .tc.active .tc-name { color: #111; }
+
+    .th-party { background-color:#FF0080; background-image:radial-gradient(circle,#FFE600 2px,transparent 2px),radial-gradient(circle,#00FFB2 1.5px,transparent 1.5px); background-size:12px 12px,18px 18px; background-position:2px 2px,7px 9px; }
+    .th-manga  { background:#FFFBF0; }
+    .th-neon   { background:#06060F; background-image:linear-gradient(rgba(0,255,255,0.1) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,255,0.1) 1px,transparent 1px); background-size:6px 6px; }
+    .th-retro  { background-color:#FF4F00; background-image:radial-gradient(circle,rgba(255,255,255,0.22) 2px,transparent 2px); background-size:8px 8px; }
+
+    .th-inner {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      z-index: 2;
+    }
+
+    /* Inputs */
+    .main-wrap { margin-bottom: 16px; }
+
+    .main-input {
+      width: 100%;
+      font-size: 1.5rem;
+      font-weight: 900;
+      font-family: inherit;
+      border: none;
+      border-bottom: 3px solid #111;
+      padding: 6px 0 8px;
+      background: transparent;
+      outline: none;
+      color: #111;
+      letter-spacing: -0.02em;
+    }
+    .main-input::placeholder { color: #ccc; font-weight: 900; }
+
+    .sub-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 20px; }
+
+    .sub-input {
+      width: 100%;
+      font-family: inherit;
+      font-size: 0.82rem;
+      border: 1.5px solid #eee;
+      border-radius: 10px;
+      padding: 9px 11px;
+      outline: none;
+      color: #111;
+      background: #fafafa;
+      transition: border-color 0.15s;
+    }
+    .sub-input:focus { border-color: #aaa; background: #fff; }
+
+    .save-btn {
+      width: 100%;
+      background: #111;
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      padding: 16px;
+      font-size: 1rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .save-btn:hover  { background: #333; }
+    .save-btn:active { transform: scale(0.98); }
+    .save-btn:disabled { background: #bbb; cursor: not-allowed; transform: none; }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <div class="app-header">📸 ストーリー募集作成</div>
+
+  <div class="preview-section">
+    <div class="story-shell">
+      <div id="storyCanvas"></div>
+    </div>
+  </div>
+
+  <div class="controls">
+
+    <div class="ctrl-label">テンプレート</div>
+    <div class="tmpl-row">
+
+      <div class="tc active" data-t="party" onclick="selectTmpl('party')">
+        <div class="tc-thumb th-party">
+          <div class="th-inner">
+            <div style="width:60%;height:5px;border-radius:2px;background:rgba(255,255,255,0.85)"></div>
+            <div style="width:44%;height:3px;border-radius:2px;background:rgba(255,255,255,0.5)"></div>
+            <div style="width:55%;height:16px;border-radius:5px;background:#FFE600;margin-top:4px;opacity:0.9"></div>
+          </div>
+        </div>
+        <div class="tc-name">パーティー</div>
+      </div>
+
+      <div class="tc" data-t="manga" onclick="selectTmpl('manga')">
+        <div class="tc-thumb th-manga">
+          <div class="th-inner">
+            <div style="width:60%;height:5px;border-radius:2px;background:#FF2020"></div>
+            <div style="width:44%;height:3px;border-radius:2px;background:rgba(0,0,0,0.2)"></div>
+            <div style="width:55%;height:16px;border-radius:5px;background:#FF2020;border:1.5px solid #111;box-shadow:2px 2px 0 #111;margin-top:4px;opacity:0.9"></div>
+          </div>
+        </div>
+        <div class="tc-name">マンガ</div>
+      </div>
+
+      <div class="tc" data-t="neon" onclick="selectTmpl('neon')">
+        <div class="tc-thumb th-neon">
+          <div class="th-inner">
+            <div style="width:60%;height:5px;border-radius:2px;background:#0FF;box-shadow:0 0 5px #0FF"></div>
+            <div style="width:44%;height:3px;border-radius:2px;background:rgba(255,255,255,0.25)"></div>
+            <div style="width:55%;height:16px;border-radius:5px;background:transparent;border:1.5px solid #F0F;box-shadow:0 0 5px #F0F;margin-top:4px"></div>
+          </div>
+        </div>
+        <div class="tc-name">ネオン</div>
+      </div>
+
+      <div class="tc" data-t="retro" onclick="selectTmpl('retro')">
+        <div class="tc-thumb th-retro">
+          <div class="th-inner">
+            <div style="width:60%;height:5px;border-radius:2px;background:#FFD200"></div>
+            <div style="width:44%;height:3px;border-radius:2px;background:rgba(255,255,255,0.55)"></div>
+            <div style="width:55%;height:16px;border-radius:5px;background:#FFD200;margin-top:4px;opacity:0.9"></div>
+          </div>
+        </div>
+        <div class="tc-name">レトロ</div>
+      </div>
+
+    </div>
+
+    <div class="ctrl-label">何する？</div>
+    <div class="main-wrap">
+      <input class="main-input" id="fMain" placeholder="酒飲もう！" maxlength="16" oninput="render()">
+    </div>
+
+    <div class="ctrl-label">詳細（任意）</div>
+    <div class="sub-grid">
+      <input class="sub-input" id="fDate"  placeholder="📅 日時"  oninput="render()">
+      <input class="sub-input" id="fPlace" placeholder="📍 場所"  oninput="render()">
+      <input class="sub-input" id="fCount" placeholder="👥 人数"  oninput="render()">
+    </div>
+
+    <button class="save-btn" id="saveBtn" onclick="download()">画像を保存する</button>
+  </div>
+
+</div>
+
+<script>
+  let tmpl = 'party';
+  const DECOS = { party: buildParty(), manga: buildManga() };
+
+  function selectTmpl(t) {
+    tmpl = t;
+    document.querySelectorAll('.tc').forEach(el =>
+      el.classList.toggle('active', el.dataset.t === t)
+    );
+    render();
+  }
+
+  function g(id) { return document.getElementById(id).value.trim(); }
+  function esc(s) {
+    return String(s)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function buildParty() {
+    const items = [
+      {x:6, y:7,  s:'★',c:'#FFE600',sz:1.1,r:-12},
+      {x:82,y:5,  s:'♦',c:'#00FFB2',sz:0.85,r:20},
+      {x:14,y:84, s:'●',c:'#CC44FF',sz:0.95,r:0},
+      {x:87,y:80, s:'★',c:'rgba(255,255,255,0.75)',sz:1.2,r:15},
+      {x:2, y:47, s:'✦',c:'#FFE600',sz:0.75,r:-5},
+      {x:90,y:50, s:'♦',c:'#00FFB2',sz:1.0,r:30},
+      {x:26,y:15, s:'●',c:'rgba(255,255,255,0.65)',sz:0.8,r:-20},
+      {x:72,y:77, s:'★',c:'#CC44FF',sz:1.0,r:10},
+      {x:10,y:63, s:'✦',c:'#00FFB2',sz:0.9,r:-8},
+      {x:78,y:27, s:'●',c:'#FFE600',sz:0.75,r:25},
+      {x:43,y:4,  s:'♦',c:'rgba(255,255,255,0.7)',sz:0.85,r:-15},
+      {x:57,y:92, s:'★',c:'#CC44FF',sz:1.1,r:5},
+      {x:94,y:20, s:'✦',c:'#FFE600',sz:0.7,r:18},
+      {x:2, y:28, s:'★',c:'#00FFB2',sz:0.9,r:-22},
+      {x:64,y:11, s:'●',c:'rgba(255,255,255,0.65)',sz:1.0,r:8},
+      {x:33,y:93, s:'♦',c:'#FFE600',sz:0.8,r:-10},
+    ];
+    return items.map(({x,y,s,c,sz,r}) =>
+      `<div style="position:absolute;left:${x}%;top:${y}%;font-size:${sz}rem;color:${c};transform:rotate(${r}deg);pointer-events:none;user-select:none;z-index:1;line-height:1">${s}</div>`
+    ).join('');
+  }
+
+  function buildManga() {
+    const cx = 120, cy = 180, n = 52;
+    let seed = 0xdeadbeef;
+    function rnd() { seed = Math.imul(seed, 1664525) + 1013904223 | 0; return (seed >>> 0) / 0xFFFFFFFF; }
+    let polys = '';
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2;
+      const r1 = 44 + rnd() * 28, r2 = 440 + rnd() * 130;
+      const sp = 0.028 + rnd() * 0.028;
+      const x1a = cx + Math.cos(a-sp)*r1, y1a = cy + Math.sin(a-sp)*r1;
+      const x1b = cx + Math.cos(a+sp)*r1, y1b = cy + Math.sin(a+sp)*r1;
+      const x2  = cx + Math.cos(a)*r2,    y2  = cy + Math.sin(a)*r2;
+      polys += `<polygon points="${x1a.toFixed(1)},${y1a.toFixed(1)} ${x1b.toFixed(1)},${y1b.toFixed(1)} ${x2.toFixed(1)},${y2.toFixed(1)}" fill="#111" opacity="0.065"/>`;
+    }
+    return `<svg style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;" viewBox="0 0 240 426" xmlns="http://www.w3.org/2000/svg">${polys}</svg>`;
+  }
+
+  /* Speech bubble placeholder SVG — dashed outline, centered tail pointing down */
+  function stampPH() {
+    return `
+      <div class="s-stamp-ph">
+        <svg class="ph-outline" viewBox="0 0 128 108" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 3 H116 Q125 3 125 12 V68 Q125 77 116 77 H72 L64 105 L56 77 H12 Q3 77 3 68 V12 Q3 3 12 3 Z"
+            stroke="currentColor" stroke-width="3" stroke-dasharray="7 4" stroke-linejoin="round"/>
+        </svg>
+        <div class="s-stamp-emoji">😊</div>
+        <div class="s-stamp-set-hint">ここにスタンプを設置</div>
+      </div>`;
+  }
+
+  function render() {
+    const main  = g('fMain')  || '何する？';
+    const date  = g('fDate');
+    const place = g('fPlace');
+    const count = g('fCount');
+
+    const hasDetails = date || place || count;
+    const detailsHtml = hasDetails ? `
+      <div class="s-details">
+        ${date  ? `<div class="s-drow">📅 ${esc(date)}</div>` : ''}
+        ${place ? `<div class="s-drow">📍 ${esc(place)}</div>` : ''}
+        ${count ? `<div class="s-drow">👥 ${esc(count)}</div>` : ''}
+      </div>` : '';
+
+    const deco = tmpl === 'party' ? DECOS.party : (tmpl === 'manga' ? DECOS.manga : '');
+
+    const el = document.getElementById('storyCanvas');
+    el.className = `t-${tmpl}`;
+    el.innerHTML = `
+      ${deco}
+      <div class="s-inner">
+        <div class="s-badge">✦ 募集中 ✦</div>
+        <div class="s-main">${esc(main)}</div>
+        ${detailsHtml}
+        <div class="s-spacer"></div>
+        <div class="s-stamp-area">
+          <div class="s-stamp-instruction">
+            <div class="s-stamp-label1">参加したい人は</div>
+            <div class="s-stamp-label2">吹き出しをタップ！</div>
+          </div>
+          ${stampPH()}
+        </div>
+      </div>`;
+  }
+
+  async function download() {
+    const btn = document.getElementById('saveBtn');
+    btn.disabled = true;
+    btn.textContent = '⏳ 生成中...';
+    try {
+      const el = document.getElementById('storyCanvas');
+      const cvs = await html2canvas(el, {
+        scale: 4.5,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: null,
+        logging: false,
+      });
+      const a = document.createElement('a');
+      a.download = `story_${tmpl}_${Date.now()}.png`;
+      a.href = cvs.toDataURL('image/png');
+      a.click();
+    } catch(e) {
+      alert('ダウンロードに失敗しました。\n' + e.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '画像を保存する';
+    }
+  }
+
+  render();
+</script>
+</body>
+</html>

@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Books That Appear — 一節から本と出会おう</title>
+  <meta name="description" content="本のタイトルを隠した「一節」だけが表示される。気になれば「読みたい」を押すと本が明かされる。ブラインドブックのWeb体験。">
+
+  <!-- ★ サイトURL — 公開ドメインに合わせて変更してください ★ -->
+  <!-- OGP / SNS シェア -->
+  <meta property="og:type"        content="website">
+  <meta property="og:url"         content="https://appearingbooks.workers.dev/">
+  <meta property="og:title"       content="Books That Appear — 一節から本と出会おう">
+  <meta property="og:description" content="本のタイトルを隠した「一節」だけが表示される。気になれば「読みたい」を押すと本が明かされる。ブラインドブックのWeb体験。">
+  <meta property="og:image"       content="https://appearingbooks.workers.dev/assets/ogp.png">
+  <meta property="og:image:width"  content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale"      content="ja_JP">
+  <meta property="og:site_name"   content="Books That Appear">
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card"        content="summary_large_image">
+  <meta name="twitter:title"       content="Books That Appear — 一節から本と出会おう">
+  <meta name="twitter:description" content="本のタイトルを隠した「一節」だけが表示される。気になれば「読みたい」を押すと本が明かされる。">
+  <meta name="twitter:image"       content="https://appearingbooks.workers.dev/assets/ogp.png">
+
+  <!-- Favicon / スマホブックマークアイコン -->
+  <link rel="icon"             type="image/png" sizes="32x32" href="assets/favicon-32.png">
+  <link rel="icon"             type="image/png" sizes="16x16" href="assets/favicon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180"                href="assets/apple-touch-icon.png">
+  <link rel="manifest"         href="https://appearingbooks.workers.dev/assets/manifest.json">
+  <meta name="theme-color"     content="#8b1a1a">
+
+  <!-- ★ Google Analytics — 測定IDをここ1箇所だけ書き換えてください ★ -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RL9SB698PK"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-RL9SB698PK');
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="progress-bar" id="progressBar"></div>
+
+<header class="header">
+  <a class="logo" href="#">Books That <span>Appear</span></a>
+  <div class="header-actions">
+    <button class="btn-icon" id="listBtn" title="読みたいリスト">📚</button>
+  </div>
+</header>
+
+<div id="app">
+  <div class="card-stage" id="cardStage">
+    <!-- cards injected here -->
+  </div>
+
+  <div class="action-area" id="actionArea">
+    <button class="btn-action btn-skip" id="skipBtn">スキップ</button>
+    <button class="btn-action btn-want" id="wantBtn">読みたい ✦</button>
+  </div>
+  <div class="action-area" id="nextArea" style="display:none;">
+    <button class="btn-action btn-next" id="nextBtn" style="max-width:320px;">次の一節へ →</button>
+  </div>
+
+  <div class="counter" id="counter"></div>
+</div>
+
+<!-- Reading list drawer -->
+<div class="overlay" id="overlay">
+  <div class="drawer">
+    <div class="drawer-handle"></div>
+    <div class="drawer-title">読みたいリスト</div>
+    <div class="genre-filter" id="genreFilter">
+      <button class="genre-filter-btn active" data-cat="すべて">すべて</button>
+      <button class="genre-filter-btn" data-cat="文学・小説">文学・小説</button>
+      <button class="genre-filter-btn" data-cat="古典・随筆">古典・随筆</button>
+      <button class="genre-filter-btn" data-cat="ファンタジー・童話">ファンタジー・童話</button>
+      <button class="genre-filter-btn" data-cat="詩歌">詩歌</button>
+    </div>
+    <div id="listContent"></div>
+  </div>
+</div>
+
+<!-- Book detail overlay (reading list → detail) -->
+<div class="overlay" id="detailOverlay">
+  <div class="drawer detail-drawer">
+    <div class="drawer-handle"></div>
+    <div class="detail-header-wrap">
+      <button class="detail-close" id="detailClose">×</button>
+      <div id="detailContent"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- 本データ（books.js を編集して本を追加・変更できます） -->
+<script src="books.js"></script>
+<script>
+// ─── Shuffle ────────────────────────────────────────────────────────
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// ─── State ──────────────────────────────────────────────────────────
+let queue = shuffle(books);
+let readingList = JSON.parse(localStorage.getItem('readingList') || '[]');
+let currentBook = null;
+let activeCategory  = 'すべて'; // ジャンルフィルター
+let isRevealed = false;
+let passageEl = null;
+let revealEl = null;
+
+// ─── DOM refs ───────────────────────────────────────────────────────
+const stage       = document.getElementById('cardStage');
+const actionArea  = document.getElementById('actionArea');
+const nextArea    = document.getElementById('nextArea');
+const skipBtn     = document.getElementById('skipBtn');
+const wantBtn     = document.getElementById('wantBtn');
+const nextBtn     = document.getElementById('nextBtn');
+const counter     = document.getElementById('counter');
+const progressBar = document.getElementById('progressBar');
+const listBtn     = document.getElementById('listBtn');
+const overlay     = document.getElementById('overlay');
+const detailOverlay = document.getElementById('detailOverlay');
+const toast       = document.getElementById('toast');
+
+// ─── Helpers ────────────────────────────────────────────────────────
+function showToast(msg) {
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2200);
+}
+
+function updateProgress() {
+  const done = books.length - queue.length;
+  const pct = books.length ? (done / books.length) * 100 : 100;
+  progressBar.style.width = pct + '%';
+  if (queue.length > 0) {
+    counter.textContent = `${done} / ${books.length} 冊`;
+  } else {
+    counter.textContent = '';
+  }
+}
+
+// ─── Cover image (Google Books API) ─────────────────────────────────
+const covers = {}; // book.id → URL | null
+
+async function fetchCover(book) {
+  try {
+    const q = encodeURIComponent(`intitle:${book.title} inauthor:${book.author}`);
+    const res = await fetch(
+      `https://www.googleapis.com/books/v1/volumes?q=${q}&maxResults=1&fields=items/volumeInfo/imageLinks`
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    const links = data.items?.[0]?.volumeInfo?.imageLinks;
+    const url = links?.thumbnail || links?.smallThumbnail || null;
+    // HTTPSに統一 & zoom=1→zoom=2で少し高解像度に
+    return url ? url.replace('http://', 'https://').replace('zoom=1', 'zoom=2') : null;
+  } catch {
+    return null;
+  }
+}
+
+// ページ読み込み時にバックグラウンドで全冊並列取得
+function preloadCovers() {
+  Promise.allSettled(
+    books.map(async book => {
+      covers[book.id] = await fetchCover(book);
+    })
+  );
+}
+
+// ─── Card rendering ─────────────────────────────────────────────────
+function renderPassageCard(book) {
+  const el = document.createElement('div');
+  el.className = 'passage-card enter';
+  el.innerHTML = `
+    <div class="genre-tag">${book.genre}</div>
+    <p class="passage-text">${book.passage}</p>
+    <p class="passage-hint">この一節はどの本から？</p>
+  `;
+  return el;
+}
+
+function renderRevealCard(book) {
+  const el = document.createElement('div');
+  el.className = 'reveal-card hidden';
+  const coverUrl = covers[book.id];
+  const coverInner = coverUrl
+    ? `<img src="${coverUrl}" alt="${book.title}" onerror="this.parentElement.innerHTML='${book.emoji}';this.parentElement.classList.remove('loading')">`
+    : book.emoji;
+  el.innerHTML = `
+    <div class="reveal-header">
+      <div class="book-cover">${coverInner}</div>
+      <div class="book-meta">
+        <div class="book-title">${book.title}</div>
+        <div class="book-author">${book.author}</div>
+        <div class="book-year">${book.year}</div>
+      </div>
+    </div>
+    <div class="reveal-body">
+      <div class="reveal-passage-label">この一節より</div>
+      <div class="reveal-passage-text">${book.passage}</div>
+      <p class="book-desc">${book.desc}</p>
+      <div class="reveal-links">
+        <a class="btn-link btn-link-primary" href="${book.shopLink}" target="_blank" rel="noopener">📖 この本を探す</a>
+        ${book.link && book.link.includes('aozora') ? `<a class="btn-link btn-link-secondary" href="${book.link}" target="_blank" rel="noopener">🌐 青空文庫で読む</a>` : ''}
+        <button class="btn-link btn-link-secondary" id="shareBtn-${book.id}">𝕏 シェア</button>
+      </div>
+    </div>
+  `;
+  el.querySelector(`#shareBtn-${book.id}`)?.addEventListener('click', () => shareBook(book));
+  return el;
+}
+
+function shareBook(book) {
+  const text = `📖「${book.title}」/ ${book.author}\n\n${book.passage.slice(0, 60).replace(/\n/g, ' ')}…\n\n#appearingbooks #本との出会い`;
+  const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`;
+  window.open(url, '_blank', 'width=550,height=420');
+}
+
+// ─── Main flow ──────────────────────────────────────────────────────
+function loadNext() {
+  if (queue.length === 0) {
+    showEmptyState();
+    return;
+  }
+  currentBook = queue.shift();
+  isRevealed = false;
+
+  // Clear stage (including revealed state)
+  stage.classList.remove('is-revealed');
+  document.body.classList.remove('is-revealed');
+  stage.innerHTML = '';
+
+  passageEl = renderPassageCard(currentBook);
+  revealEl  = renderRevealCard(currentBook);
+  stage.appendChild(revealEl);
+  stage.appendChild(passageEl);
+
+  // Animate in
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      passageEl.classList.remove('enter');
+    });
+  });
+
+  actionArea.style.display = 'flex';
+  nextArea.style.display   = 'none';
+  updateProgress();
+}
+
+function revealBook() {
+  if (isRevealed) return;
+  isRevealed = true;
+
+  // Save to reading list
+  if (!readingList.find(b => b.id === currentBook.id)) {
+    readingList.push({ id: currentBook.id, title: currentBook.title, author: currentBook.author, emoji: currentBook.emoji });
+    localStorage.setItem('readingList', JSON.stringify(readingList));
+  }
+
+  // Animate passage out, reveal in
+  passageEl.classList.add('exit-right');
+  setTimeout(() => {
+    passageEl.style.display = 'none';
+    revealEl.classList.remove('hidden');
+    // 通常フローに戻してコンテナ高さを自動調整（ボタン被り防止）
+    revealEl.classList.add('active');
+    stage.classList.add('is-revealed');
+  document.body.classList.add('is-revealed');
+  }, 300);
+
+  actionArea.style.display = 'none';
+  nextArea.style.display   = 'flex';
+  showToast('📚 読みたいリストに追加しました');
+}
+
+function skipBook() {
+  if (isRevealed) return;
+  passageEl.classList.add('exit-left');
+  setTimeout(() => { loadNext(); }, 350);
+}
+
+function showEmptyState() {
+  stage.innerHTML = `
+    <div class="empty-state">
+      <div class="emoji">📖</div>
+      <h2>すべての本と出会いました</h2>
+      <p>読みたいリストを確認して、<br>次の一冊を見つけてみてください。</p>
+    </div>`;
+  actionArea.style.display = 'none';
+  nextArea.style.display   = 'none';
+  progressBar.style.width  = '100%';
+  counter.textContent = '';
+}
+
+// ─── Genre category map ─────────────────────────────────────────────
+const GENRE_CATEGORY = {
+  '近代文学': '文学・小説',   '短編小説': '文学・小説',
+  '自伝的小説': '文学・小説', '純文学': '文学・小説',
+  '長編小説': '文学・小説',   '長編小説・諷刺': '文学・小説',
+  '近代小説': '文学・小説',   '浪漫主義小説': '文学・小説',
+  '自然主義小説': '文学・小説','純文学・詩的小説': '文学・小説',
+  '耽美小説': '文学・小説',   '歴史小説': '文学・小説',
+  '幻想文学': '文学・小説',   '怪談': '文学・小説',
+  '民俗・怪異': '文学・小説', '推理小説': '文学・小説',
+  '幻想・探偵小説': '文学・小説',
+  '随筆・古典': '古典・随筆', 'エッセイ': '古典・随筆',
+  'エッセイ・評論': '古典・随筆','自然文学': '古典・随筆',
+  'ファンタジー文学': 'ファンタジー・童話',
+  '童話': 'ファンタジー・童話',
+  '詩歌': '短歌集', 
+};
+
+function getCategory(listItem) {
+  const book = books.find(b => b.id === listItem.id);
+  return book ? (GENRE_CATEGORY[book.genre] || '文学・小説') : '文学・小説';
+}
+
+// ─── Reading list ────────────────────────────────────────────────────
+function renderList() {
+  // ── フィルターボタンの状態を同期
+  document.querySelectorAll('.genre-filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.cat === activeCategory);
+  });
+
+  const lc = document.getElementById('listContent');
+
+  // フィルタリング
+  const filtered = activeCategory === 'すべて'
+    ? readingList
+    : readingList.filter(b => getCategory(b) === activeCategory);
+
+  if (readingList.length === 0) {
+    lc.innerHTML = `<div class="list-empty">まだリストは空です。<br>気になる一節に「読みたい」を押してみましょう。</div>`;
+    return;
+  }
+  if (filtered.length === 0) {
+    lc.innerHTML = `<div class="list-empty">このジャンルの本はまだありません。</div>`;
+    return;
+  }
+
+  lc.innerHTML = filtered.map(b => {
+    const coverUrl = covers[b.id];
+    const coverInner = coverUrl
+      ? `<img src="${coverUrl}" alt="${b.title}" onerror="this.parentElement.innerHTML='${b.emoji}'">`
+      : b.emoji;
+    const cat = getCategory(b);
+    return `
+      <div class="list-item" data-id="${b.id}">
+        <div class="list-item-cover">${coverInner}</div>
+        <div class="list-item-meta">
+          <div class="list-item-title">${b.title}</div>
+          <div class="list-item-author">${b.author}</div>
+          <div class="list-item-cat">${cat}</div>
+        </div>
+        <button class="list-item-delete" data-id="${b.id}" title="リストから削除">×</button>
+      </div>
+    `;
+  }).join('');
+
+  // 本タップ → 詳細表示
+  lc.querySelectorAll('.list-item').forEach(el => {
+    el.addEventListener('click', () => showBookDetail(Number(el.dataset.id)));
+  });
+  // × ボタン → 削除（タップが詳細に伝播しないよう stopPropagation）
+  lc.querySelectorAll('.list-item-delete').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      deleteFromList(Number(btn.dataset.id));
+    });
+  });
+}
+
+function deleteFromList(id) {
+  readingList = readingList.filter(b => b.id !== id);
+  localStorage.setItem('readingList', JSON.stringify(readingList));
+  renderList();
+}
+
+function showBookDetail(bookId) {
+  const book = books.find(b => b.id === bookId);
+  if (!book) return;
+
+  // リストドロワーを閉じて詳細を開く
+  overlay.classList.remove('open');
+
+  const coverUrl = covers[book.id];
+  const coverInner = coverUrl
+    ? `<img src="${coverUrl}" alt="${book.title}" onerror="this.parentElement.innerHTML='${book.emoji}'">`
+    : book.emoji;
+
+  document.getElementById('detailContent').innerHTML = `
+    <div class="reveal-header">
+      <div class="book-cover">${coverInner}</div>
+      <div class="book-meta">
+        <div class="book-title">${book.title}</div>
+        <div class="book-author">${book.author}</div>
+        <div class="book-year">${book.year}</div>
+      </div>
+    </div>
+    <div class="reveal-body">
+      <div class="reveal-passage-label">この一節より</div>
+      <div class="reveal-passage-text">${book.passage}</div>
+      <p class="book-desc">${book.desc}</p>
+      <div class="reveal-links">
+        <a class="btn-link btn-link-primary" href="${book.shopLink}" target="_blank" rel="noopener">📖 この本を探す</a>
+        ${book.link && book.link.includes('aozora') ? `<a class="btn-link btn-link-secondary" href="${book.link}" target="_blank" rel="noopener">🌐 青空文庫で読む</a>` : ''}
+        <button class="btn-link btn-link-secondary" id="detailShareBtn">𝕏 シェア</button>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('detailShareBtn')
+    ?.addEventListener('click', () => shareBook(book));
+
+  detailOverlay.classList.add('open');
+}
+
+// ─── Events ─────────────────────────────────────────────────────────
+wantBtn.addEventListener('click', revealBook);
+skipBtn.addEventListener('click', skipBook);
+nextBtn.addEventListener('click', loadNext);
+
+listBtn.addEventListener('click', () => {
+  renderList();
+  overlay.classList.add('open');
+});
+
+// カテゴリフィルター
+document.getElementById('genreFilter').addEventListener('click', e => {
+  const btn = e.target.closest('.genre-filter-btn');
+  if (!btn) return;
+  activeCategory = btn.dataset.cat;
+  renderList();
+});
+overlay.addEventListener('click', e => {
+  if (e.target === overlay) overlay.classList.remove('open');
+});
+
+// 詳細オーバーレイを閉じる
+detailOverlay.addEventListener('click', e => {
+  if (e.target === detailOverlay) detailOverlay.classList.remove('open');
+});
+document.getElementById('detailClose').addEventListener('click', () => {
+  detailOverlay.classList.remove('open');
+});
+
+// ─── Swipe support ───────────────────────────────────────────────────
+let touchStartX = 0;
+stage.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+stage.addEventListener('touchend', e => {
+  if (isRevealed) return;
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if (dx > 60) revealBook();
+  else if (dx < -60) skipBook();
+});
+
+// ─── Init ────────────────────────────────────────────────────────────
+preloadCovers(); // バックグラウンドで全冊の表紙を並列取得開始
+loadNext();      // 表紙取得を待たずに即座にカード表示
+</script>
+</body>
+</html>

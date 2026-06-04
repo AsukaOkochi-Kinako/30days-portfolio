@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📚 Kindle おすすめ本ナビ</title>
+  <style>
+    :root {
+      --primary: #6C3FC5;
+      --primary-light: #9B6EF0;
+      --primary-dark: #4A2A8A;
+      --accent: #FF6B6B;
+      --accent2: #FFB347;
+      --bg: #F4F1FA;
+      --surface: #FFFFFF;
+      --text: #2D2D3A;
+      --text-secondary: #6B6B8A;
+      --border: #E0DAF5;
+      --shadow: 0 4px 20px rgba(108,63,197,0.10);
+      --shadow-hover: 0 8px 32px rgba(108,63,197,0.18);
+      --radius: 16px;
+      --radius-sm: 8px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    .hero {
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 50%, var(--primary-light) 100%);
+      color: white;
+      padding: 48px 24px 64px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .hero-emoji { font-size: 56px; margin-bottom: 16px; display: block; }
+    .hero h1 { font-size: 32px; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.5px; }
+    .hero p { font-size: 16px; opacity: 0.85; max-width: 500px; margin: 0 auto; line-height: 1.6; }
+
+    /* MAIN CONTAINER */
+    .container { max-width: 900px; margin: 0 auto; padding: 0 16px; }
+
+    /* STEPS OVERVIEW */
+    .steps-overview {
+      display: flex; gap: 12px; justify-content: center;
+      padding: 32px 0 24px;
+      flex-wrap: wrap;
+    }
+    .step-chip {
+      display: flex; align-items: center; gap: 8px;
+      background: white;
+      border: 2px solid var(--border);
+      border-radius: 100px;
+      padding: 8px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+    }
+    .step-chip.active { border-color: var(--primary); color: var(--primary); background: #F0EAFF; }
+    .step-chip .num {
+      width: 24px; height: 24px;
+      background: var(--border);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700;
+    }
+    .step-chip.active .num { background: var(--primary); color: white; }
+
+    /* CARD */
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 28px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+      border: 1px solid var(--border);
+    }
+    .card-title {
+      font-size: 18px; font-weight: 700;
+      margin-bottom: 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .card-title .icon { font-size: 22px; }
+
+    /* BOOKMARKLET SECTION */
+    .bookmarklet-box {
+      background: linear-gradient(135deg, #F0EAFF, #E8F4FF);
+      border: 2px dashed var(--primary-light);
+      border-radius: var(--radius);
+      padding: 24px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .bookmarklet-title { font-size: 15px; font-weight: 700; margin-bottom: 8px; color: var(--primary); }
+    .bookmarklet-desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 16px; line-height: 1.6; }
+    .bookmarklet-btn {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      padding: 12px 24px;
+      border-radius: 100px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: move;
+      text-decoration: none;
+      box-shadow: 0 4px 12px rgba(108,63,197,0.3);
+      transition: all 0.2s;
+      user-select: none;
+    }
+    .bookmarklet-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(108,63,197,0.4); }
+    .step-label {
+      display: inline-flex; align-items: center;
+      background: var(--primary);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 100px;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+    .how-to-steps {
+      text-align: left;
+      background: white;
+      border-radius: var(--radius-sm);
+      padding: 16px 20px;
+      margin-top: 16px;
+    }
+    .how-to-steps li {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      padding-left: 4px;
+      line-height: 1.6;
+    }
+    .how-to-steps li::marker { color: var(--primary); }
+    .divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 20px 0;
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* TEXTAREA */
+    textarea {
+      width: 100%;
+      min-height: 160px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--text);
+      resize: vertical;
+      transition: border-color 0.2s;
+      line-height: 1.6;
+    }
+    textarea:focus { outline: none; border-color: var(--primary); }
+    textarea::placeholder { color: #B0AACC; }
+
+    /* BUTTONS */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 28px;
+      border-radius: 100px;
+      font-size: 15px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      box-shadow: 0 4px 16px rgba(108,63,197,0.3);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(108,63,197,0.4); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-outline {
+      background: white;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+    }
+    .btn-outline:hover { background: #F0EAFF; }
+    .btn-sm { padding: 8px 16px; font-size: 13px; }
+
+    .btn-group { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+
+    /* PARSED BOOKS */
+    .parsed-books {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px;
+    }
+    .book-chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: #F0EAFF;
+      border: 1px solid var(--primary-light);
+      border-radius: 100px;
+      padding: 5px 12px;
+      font-size: 12px;
+      color: var(--primary-dark);
+      font-weight: 500;
+    }
+    .book-chip .remove {
+      cursor: pointer; color: var(--primary-light);
+      font-size: 14px; line-height: 1;
+      transition: color 0.2s;
+    }
+    .book-chip .remove:hover { color: var(--accent); }
+
+    /* CATEGORY FILTER */
+    .filter-bar {
+      display: flex; gap: 8px; flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+    .filter-btn {
+      padding: 7px 16px;
+      border-radius: 100px;
+      border: 2px solid var(--border);
+      background: white;
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .filter-btn:hover { border-color: var(--primary-light); color: var(--primary); }
+    .filter-btn.active { background: var(--primary); border-color: var(--primary); color: white; }
+
+    /* BOOK CARDS GRID */
+    .books-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+    }
+    .book-card {
+      background: white;
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      transition: all 0.25s;
+      display: flex; flex-direction: column;
+    }
+    .book-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
+
+    .book-cover {
+      height: 120px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 40px;
+      position: relative;
+    }
+    .book-category-badge {
+      position: absolute; top: 10px; right: 10px;
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(8px);
+      border-radius: 100px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .trending-badge {
+      position: absolute; top: 10px; left: 10px;
+      background: var(--accent);
+      color: white;
+      border-radius: 100px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .book-body { padding: 16px; flex: 1; display: flex; flex-direction: column; }
+    .book-title {
+      font-size: 14px; font-weight: 700;
+      line-height: 1.4;
+      margin-bottom: 4px;
+      color: var(--text);
+    }
+    .book-author {
+      font-size: 12px; color: var(--text-secondary);
+      margin-bottom: 10px;
+    }
+    .book-reason {
+      font-size: 12px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      flex: 1;
+      margin-bottom: 14px;
+    }
+    .match-score {
+      display: flex; align-items: center; gap: 6px;
+      margin-bottom: 12px;
+    }
+    .match-bar {
+      flex: 1; height: 4px;
+      background: var(--border);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+    .match-fill { height: 100%; border-radius: 100px; transition: width 0.6s ease; }
+    .match-label { font-size: 11px; font-weight: 700; }
+
+    .book-tags {
+      display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 12px;
+    }
+    .tag {
+      background: var(--bg);
+      border-radius: 4px;
+      padding: 2px 8px;
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+    .book-link {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      background: #FF9900;
+      color: white;
+      border-radius: var(--radius-sm);
+      padding: 9px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .book-link:hover { background: #E88800; transform: none; }
+
+    /* EMPTY STATE */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-secondary);
+    }
+    .empty-state .emoji { font-size: 64px; margin-bottom: 16px; display: block; }
+    .empty-state p { font-size: 15px; line-height: 1.7; }
+
+    /* RESULTS HEADER */
+    .results-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px;
+      flex-wrap: wrap; gap: 12px;
+    }
+    .results-count {
+      font-size: 15px; font-weight: 700; color: var(--primary);
+    }
+    .results-count span { font-size: 28px; }
+
+    /* LOADING */
+    .loading {
+      display: none; text-align: center; padding: 40px;
+    }
+    .loading.show { display: block; }
+    .spinner {
+      width: 48px; height: 48px;
+      border: 4px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* SECTION HEADING */
+    .section-heading {
+      font-size: 22px; font-weight: 800;
+      margin-bottom: 4px;
+      color: var(--text);
+    }
+    .section-sub { font-size: 14px; color: var(--text-secondary); margin-bottom: 20px; }
+
+    /* NOTICE */
+    .notice {
+      background: #FFF8E6;
+      border: 1px solid #FFD66B;
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #7A5A00;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 24px; }
+      .books-grid { grid-template-columns: 1fr 1fr; }
+      .steps-overview { gap: 8px; }
+      .step-chip { font-size: 12px; padding: 6px 12px; }
+    }
+    @media (max-width: 400px) {
+      .books-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <span class="hero-emoji">📚</span>
+  <h1>Kindle おすすめ本ナビ</h1>
+  <p>あなたのKindle蔵書を分析して、次に読むべき本をご提案。ジャンル・テーマ・トレンドから厳選します。</p>
+</div>
+
+<div class="container">
+
+  <!-- STEPS OVERVIEW -->
+  <div class="steps-overview">
+    <div class="step-chip active" id="chip-1"><span class="num">1</span> 書籍リスト取得</div>
+    <div class="step-chip" id="chip-2"><span class="num">2</span> リスト確認</div>
+    <div class="step-chip" id="chip-3"><span class="num">3</span> おすすめ表示</div>
+  </div>
+
+  <!-- STEP 1: GET BOOKS -->
+  <div id="step1" class="card">
+    <div class="card-title">
+      <span class="icon">🔖</span>
+      <span>Step 1：Kindleの書籍リストを取得</span>
+    </div>
+
+    <div class="bookmarklet-box">
+      <div class="bookmarklet-title">📌 ブックマークレットで一発取得</div>
+      <div class="bookmarklet-desc">
+        下のボタンをブラウザのブックマークバーにドラッグ＆ドロップしてください。<br>
+        Amazonのライブラリページで使うと書籍リストが自動で取得できます。
+      </div>
+      <a class="bookmarklet-btn" id="bookmarklet-link" href="#" title="Kindle書籍取得ツール">
+        📚 Kindle書籍リストを取得
+      </a>
+      <div class="how-to-steps">
+        <ol>
+          <li>上のボタンをブラウザのブックマークバーに<strong>ドラッグ</strong>して追加</li>
+          <li><a href="https://www.amazon.co.jp/kindle-dbs/library" target="_blank" style="color:var(--primary);font-weight:600;">Amazon Kindleライブラリページ</a>を開く</li>
+          <li>追加したブックマークをクリック</li>
+          <li>表示されたテキストをコピーして、下の入力欄に貼り付け</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="divider">または手動で入力</div>
+
+    <textarea id="book-input" placeholder="書籍タイトルを1行に1冊ずつ入力してください。
+
+例：
+嫌われる勇気
+FACTFULNESS
+サピエンス全史
+アトミック・ハビッツ
+君の膵臓をたべたい"></textarea>
+
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="parseBooks()">
+        🔍 書籍を分析する
+      </button>
+      <button class="btn btn-outline btn-sm" onclick="loadDemo()">
+        📋 サンプルで試す
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 2: CONFIRM BOOKS -->
+  <div id="step2" class="card" style="display:none;">
+    <div class="card-title">
+      <span class="icon">✅</span>
+      <span>Step 2：取得した書籍を確認</span>
+    </div>
+    <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">
+      認識できた書籍の一覧です。不要なものは × で削除できます。
+    </p>
+    <div class="parsed-books" id="parsed-books-container"></div>
+    <div id="genre-summary" style="margin-top:16px; padding:14px; background:#F8F5FF; border-radius:8px; font-size:13px;"></div>
+    <div class="btn-group">
+      <button class="btn btn-primary" onclick="generateRecommendations()">
+        ✨ おすすめを生成する
+      </button>
+      <button class="btn btn-outline btn-sm" onclick="backToStep1()">
+        ← 書籍リストを修正
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 3: RECOMMENDATIONS -->
+  <div id="step3" style="display:none;">
+    <div class="loading" id="loading-state">
+      <div class="spinner"></div>
+      <p style="color:var(--text-secondary);font-size:15px;">おすすめ書籍を選定中...</p>
+    </div>
+
+    <div id="results-area" style="display:none;">
+      <div class="results-header">
+        <div>
+          <div class="section-heading">おすすめの書籍</div>
+          <div class="section-sub" id="results-desc"></div>
+        </div>
+        <div class="results-count">
+          <span id="result-count">0</span> 冊のおすすめ
+        </div>
+      </div>
+
+      <div class="filter-bar" id="filter-bar">
+        <button class="filter-btn active" data-filter="all" onclick="filterBooks(this, 'all')">
+          すべて
+        </button>
+      </div>
+
+      <div class="books-grid" id="books-grid"></div>
+
+      <div style="text-align:center; margin-top:32px;">
+        <button class="btn btn-outline" onclick="backToStep1()">
+          🔄 書籍リストを変えて再実行
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  📚 Kindle おすすめ本ナビ &nbsp;|&nbsp; 書籍データは公開情報をもとにしています
+</footer>
+
+<script>
+// ===========================
+// BOOKMARKLET
+// ===========================
+const bookmarkletCode = `javascript:(function(){
+  var books = [];
+  var seen = new Set();
+
+  function clean(t){ return t.replace(/\\s+/g,' ').trim(); }
+
+  // セレクタ群
+  var selectors = [
+    '[data-asin]',
+    '.kp-notebook-flat-book-row',
+    'li[id*="eBooks"]',
+    '.a-row.a-spacing-small .a-link-normal',
+  ];
+
+  // data-asin方式
+  document.querySelectorAll('[data-asin]').forEach(function(el){
+    var t = el.querySelector('h2,h3,[class*="title"],[class*="Title"],.a-text-bold');
+    if(t){ var s = clean(t.innerText); if(s && !seen.has(s) && s.length>2){ seen.add(s); books.push(s); } }
+  });
+
+  // リスト行方式
+  if(books.length === 0){
+    document.querySelectorAll('li').forEach(function(li){
+      var t = li.querySelector('h2,h3,[class*="title"],.a-text-bold');
+      if(t){ var s = clean(t.innerText); if(s && !seen.has(s) && s.length>2 && s.length<80){ seen.add(s); books.push(s); } }
+    });
+  }
+
+  // span テキスト方式
+  if(books.length === 0){
+    document.querySelectorAll('a[href*="/dp/"]').forEach(function(a){
+      var s = clean(a.innerText);
+      if(s && s.length>3 && s.length<80 && !seen.has(s)){ seen.add(s); books.push(s); }
+    });
+  }
+
+  if(books.length === 0){
+    alert('書籍が見つかりませんでした。\\nAmazon Kindleライブラリページ\\n(amazon.co.jp/kindle-dbs/library)\\nで実行してください。');
+    return;
+  }
+
+  var text = books.join('\\n');
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);width:500px;max-width:90vw;height:300px;z-index:99999;background:white;border:3px solid #6C3FC5;border-radius:12px;padding:16px;font-size:13px;box-shadow:0 8px 40px rgba(0,0,0,0.3);';
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:99998;';
+  var btn = document.createElement('button');
+  btn.textContent = '✕ 閉じる';
+  btn.style.cssText = 'position:fixed;top:340px;left:50%;transform:translateX(-50%);background:#6C3FC5;color:white;border:none;border-radius:100px;padding:10px 28px;font-size:14px;font-weight:700;cursor:pointer;z-index:99999;';
+  var msg = document.createElement('div');
+  msg.style.cssText = 'position:fixed;top:-2px;left:50%;transform:translateX(-50%);background:#6C3FC5;color:white;border-radius:100px;padding:4px 16px;font-size:12px;font-weight:700;z-index:100000;white-space:nowrap;';
+  msg.textContent = '📚 ' + books.length + '冊取得！全選択→コピーして「おすすめナビ」に貼り付け';
+  overlay.onclick = function(){ document.body.removeChild(overlay); document.body.removeChild(ta); document.body.removeChild(btn); document.body.removeChild(msg); };
+  btn.onclick = overlay.onclick;
+  document.body.appendChild(overlay);
+  document.body.appendChild(ta);
+  document.body.appendChild(msg);
+  document.body.appendChild(btn);
+  ta.select(); ta.focus();
+})();`;
+
+document.getElementById('bookmarklet-link').href = bookmarkletCode;
+
+// ===========================
+// BOOK DATABASE
+// ===========================
+const BOOK_DB = [
+  // ビジネス・思考法
+  {
+    title: "エッセンシャル思考",
+    author: "グレッグ・マキューン",
+    category: "ビジネス",
+    tags: ["生産性", "思考法", "仕事術"],
+    description: "「より少なく、しかしより良く」本当に重要なことだけに集中するための思考法。余分なものを削ぎ落とし、本質的な行動だけに絞り込むビジネス必読書。",
+    keywords: ["仕事", "ビジネス", "思考", "習慣", "生産性", "マネジメント"],
+    amazon: "エッセンシャル思考 グレッグ・マキューン",
+    emoji: "🎯",
+    color: "#667EEA, #764BA2",
+    trending: false
+  },
+  {
+    title: "FACTFULNESS",
+    author: "ハンス・ロスリング",
+    category: "教養",
+    tags: ["データ", "世界", "思考法"],
+    description: "思い込みを排除し、データで世界を正しく見る方法。世界の本当の姿を理解するための10の本能を解説。ビル・ゲイツが絶賛。",
+    keywords: ["データ", "世界", "教養", "思考", "社会"],
+    amazon: "FACTFULNESS ハンス・ロスリング",
+    emoji: "🌍",
+    color: "#43C6AC, #191654",
+    trending: false
+  },
+  {
+    title: "ゼロ秒思考",
+    author: "赤羽雄二",
+    category: "ビジネス",
+    tags: ["思考法", "メモ", "仕事術"],
+    description: "A4用紙1枚・1分間で頭の中を書き出す「メモ書き」で思考力を鍛える実践的メソッド。マッキンゼーで磨かれたビジネス思考術。",
+    keywords: ["思考", "仕事", "ビジネス", "メモ", "効率"],
+    amazon: "ゼロ秒思考 赤羽雄二",
+    emoji: "⚡",
+    color: "#F7971E, #FFD200",
+    trending: false
+  },
+  {
+    title: "すごい習慣大百科",
+    author: "堀田秀吾",
+    category: "自己啓発",
+    tags: ["習慣", "科学", "生産性"],
+    description: "ハーバード・スタンフォードなど名門大学で科学的に証明された112の習慣テクニック。心理学・神経科学のエビデンスに基づく実践書。",
+    keywords: ["習慣", "自己啓発", "科学", "心理", "生産性"],
+    amazon: "すごい習慣大百科 堀田秀吾",
+    emoji: "🧠",
+    color: "#11998E, #38EF7D",
+    trending: true
+  },
+  {
+    title: "アトミック・ハビッツ",
+    author: "ジェームズ・クリアー",
+    category: "自己啓発",
+    tags: ["習慣", "行動変容", "成長"],
+    description: "1%の小さな改善を積み重ねて劇的な変化を生む習慣形成の科学。世界で1500万部超のベストセラー。習慣の仕組みを徹底解剖。",
+    keywords: ["習慣", "自己啓発", "成長", "行動", "生産性"],
+    amazon: "アトミック・ハビッツ ジェームズ・クリアー",
+    emoji: "⚗️",
+    color: "#8360C3, #2EBF91",
+    trending: false
+  },
+  {
+    title: "嫌われる勇気",
+    author: "岸見一郎・古賀史健",
+    category: "自己啓発",
+    tags: ["心理学", "アドラー", "人間関係"],
+    description: "アドラー心理学をベースに「承認欲求」を手放し自由に生きる方法を対話形式で解説。累計300万部超の日本発世界的ベストセラー。",
+    keywords: ["心理", "人間関係", "自己啓発", "哲学", "生き方"],
+    amazon: "嫌われる勇気 岸見一郎",
+    emoji: "🔥",
+    color: "#F953C6, #B91D73",
+    trending: false
+  },
+  // テクノロジー・AI
+  {
+    title: "ChatGPT仕事術 完全ガイド",
+    author: "大越章司",
+    category: "テクノロジー",
+    tags: ["AI", "ChatGPT", "仕事術"],
+    description: "生成AIを仕事にフル活用するための実践ガイド。プロンプト設計から業務自動化まで、すぐに使えるテクニックを体系的に解説。",
+    keywords: ["AI", "テクノロジー", "仕事", "ChatGPT", "自動化"],
+    amazon: "ChatGPT 仕事術",
+    emoji: "🤖",
+    color: "#00B4DB, #0083B0",
+    trending: true
+  },
+  {
+    title: "2040年「仕事とキャリア」年表",
+    author: "野口悠紀雄",
+    category: "テクノロジー",
+    tags: ["AI", "キャリア", "未来予測"],
+    description: "AIと技術革新が仕事に与える影響を2040年まで予測。今後のキャリア形成戦略と必要なスキルを具体的に示す未来設計書。",
+    keywords: ["AI", "キャリア", "未来", "テクノロジー", "仕事"],
+    amazon: "2040年 仕事とキャリア",
+    emoji: "🔮",
+    color: "#4776E6, #8E54E9",
+    trending: true
+  },
+  {
+    title: "サピエンス全史",
+    author: "ユヴァル・ノア・ハラリ",
+    category: "教養",
+    tags: ["歴史", "人類", "文明"],
+    description: "人類の誕生から現代文明まで、ホモ・サピエンスの歴史を壮大なスケールで描く。認知革命・農業革命・科学革命を通じた人類の変容。",
+    keywords: ["歴史", "教養", "文明", "哲学", "社会"],
+    amazon: "サピエンス全史 ハラリ",
+    emoji: "🦴",
+    color: "#373B44, #4286F4",
+    trending: false
+  },
+  // お金・投資
+  {
+    title: "お金の大学",
+    author: "両@リベ大学長",
+    category: "お金・投資",
+    tags: ["投資", "節約", "FIRE"],
+    description: "「貯める・稼ぐ・増やす・守る・使う」の5力でお金の自由を手に入れる。累計130万部超、日本最大の金融教育チャンネル発の入門書。",
+    keywords: ["お金", "投資", "節約", "FIRE", "資産形成"],
+    amazon: "お金の大学 両@リベ大",
+    emoji: "💰",
+    color: "#F7971E, #FFD200",
+    trending: false
+  },
+  {
+    title: "敗者のゲーム",
+    author: "チャールズ・エリス",
+    category: "お金・投資",
+    tags: ["投資", "インデックス", "長期投資"],
+    description: "プロでも市場に勝てない理由を解説し、長期インデックス投資の優位性を示す投資の名著。40年以上読み継がれる投資哲学の古典。",
+    keywords: ["投資", "お金", "株式", "資産運用"],
+    amazon: "敗者のゲーム チャールズ・エリス",
+    emoji: "📈",
+    color: "#134E5E, #71B280",
+    trending: false
+  },
+  {
+    title: "バビロン大富豪の教え",
+    author: "ジョージ・S・クレイソン",
+    category: "お金・投資",
+    tags: ["お金", "哲学", "資産形成"],
+    description: "古代バビロンを舞台に、富を築くための普遍的な原則を物語形式で伝える自己啓発の名著。「収入の10分の1を貯蓄せよ」など実践的な教え。",
+    keywords: ["お金", "投資", "自己啓発", "哲学", "資産"],
+    amazon: "バビロン大富豪の教え",
+    emoji: "🏛️",
+    color: "#B79891, #94716B",
+    trending: false
+  },
+  // 小説
+  {
+    title: "変な家",
+    author: "雨穴",
+    category: "小説",
+    tags: ["ミステリー", "ホラー", "謎解き"],
+    description: "Youtuberが見つけた奇妙な間取りの家の謎を追う考察ミステリー。Web発のバズ作品が書籍化。一気読み必至の怖すぎる真実。",
+    keywords: ["小説", "ミステリー", "ホラー", "謎解き"],
+    amazon: "変な家 雨穴",
+    emoji: "🏚️",
+    color: "#2C3E50, #BDC3C7",
+    trending: true
+  },
+  {
+    title: "かがみの孤城",
+    author: "辻村深月",
+    category: "小説",
+    tags: ["青春", "ファンタジー", "感動"],
+    description: "学校に居場所を失った7人の子どもたちが辿り着く鏡の城。本屋大賞受賞作。すべての「生きづらさ」を抱える人への渾身のメッセージ。",
+    keywords: ["小説", "青春", "ファンタジー", "感動", "学校"],
+    amazon: "かがみの孤城 辻村深月",
+    emoji: "🪞",
+    color: "#6A11CB, #2575FC",
+    trending: false
+  },
+  {
+    title: "流浪の月",
+    author: "凪良ゆう",
+    category: "小説",
+    tags: ["感動", "社会派", "恋愛"],
+    description: "本屋大賞受賞。誘拐と報道された少女と青年の「真実」を描く社会派恋愛小説。世間の価値観と個人の真実の狭間で揺れる2人の物語。",
+    keywords: ["小説", "感動", "社会", "恋愛"],
+    amazon: "流浪の月 凪良ゆう",
+    emoji: "🌙",
+    color: "#C94B4B, #4B134F",
+    trending: false
+  },
+  {
+    title: "手記と真実",
+    author: "湊かなえ",
+    category: "小説",
+    tags: ["ミステリー", "サスペンス", "社会派"],
+    description: "「イヤミスの女王」湊かなえの2026年本屋大賞ノミネート作。現役文部科学大臣の刺殺から始まる衝撃のミステリー。",
+    keywords: ["小説", "ミステリー", "サスペンス"],
+    amazon: "手記と真実 湊かなえ",
+    emoji: "📓",
+    color: "#1A1A2E, #16213E",
+    trending: true
+  },
+  {
+    title: "赤と青のエスキース",
+    author: "青山美智子",
+    category: "小説",
+    tags: ["恋愛", "感動", "連作"],
+    description: "メルボルンを舞台にした恋人たちの物語が10年の時を経て繋がる奇跡の連作短編。本屋大賞第2位。温かく切ない読後感。",
+    keywords: ["小説", "恋愛", "感動", "青春"],
+    amazon: "赤と青のエスキース 青山美智子",
+    emoji: "🎨",
+    color: "#E52D27, #B31217",
+    trending: false
+  },
+  // 歴史・教養
+  {
+    title: "教養としての 三菱・三井・住友",
+    author: "山川清弘",
+    category: "教養",
+    tags: ["日本史", "財閥", "ビジネス"],
+    description: "日本経済を動かす三大財閥の歴史と現在を解説。2026年売れ筋ランキング上位。日本のビジネス構造を理解する必須教養。",
+    keywords: ["歴史", "ビジネス", "日本", "教養", "経済"],
+    amazon: "教養としての 三菱 三井 住友",
+    emoji: "🏢",
+    color: "#093028, #237A57",
+    trending: true
+  },
+  {
+    title: "Think clearly",
+    author: "ロルフ・ドベリ",
+    category: "自己啓発",
+    tags: ["思考法", "哲学", "生き方"],
+    description: "最新の心理学・哲学・行動経済学から導き出した、より良い人生のための52の思考ツール。「思考の罠」を避けて賢く生きる指南書。",
+    keywords: ["思考", "哲学", "自己啓発", "心理", "生き方"],
+    amazon: "Think clearly ロルフ・ドベリ",
+    emoji: "💡",
+    color: "#0F2027, #2C5364",
+    trending: false
+  },
+  {
+    title: "科学的な適職",
+    author: "鈴木祐",
+    category: "ビジネス",
+    tags: ["キャリア", "仕事術", "科学"],
+    description: "「好きなことを仕事に」は嘘？世界2000本以上の科学的研究から導く本当の「適職」の見つけ方。心理学・経済学のデータで職選びを科学する。",
+    keywords: ["キャリア", "仕事", "ビジネス", "科学", "転職"],
+    amazon: "科学的な適職 鈴木祐",
+    emoji: "🔬",
+    color: "#2980B9, #6DD5FA",
+    trending: false
+  }
+];
+
+// ===========================
+// GENRE DETECTION
+// ===========================
+const GENRE_KEYWORDS = {
+  "ビジネス": ["ビジネス", "仕事", "マネジメント", "マーケティング", "経営", "起業", "会社", "仕事術", "プレゼン", "転職", "キャリア", "MBA"],
+  "自己啓発": ["習慣", "自己啓発", "成長", "成功", "目標", "モチベーション", "やる気", "メンタル", "心理", "人生", "幸福", "生き方", "嫌われ"],
+  "テクノロジー": ["AI", "テクノロジー", "プログラミング", "IT", "DX", "ChatGPT", "Python", "データ", "科学技術", "ロボット", "デジタル"],
+  "お金・投資": ["お金", "投資", "株", "FIRE", "節約", "資産", "富", "財テク", "FX", "不動産", "金融", "経済"],
+  "小説": ["小説", "ミステリー", "恋愛", "SF", "ファンタジー", "ホラー", "青春", "感動", "本屋大賞", "直木賞", "芥川"],
+  "教養": ["歴史", "教養", "哲学", "文化", "社会", "世界", "サピエンス", "宗教", "科学", "知識"]
+};
+
+function detectGenres(books) {
+  const counts = {};
+  Object.keys(GENRE_KEYWORDS).forEach(g => counts[g] = 0);
+  books.forEach(book => {
+    const text = book.toLowerCase();
+    Object.entries(GENRE_KEYWORDS).forEach(([genre, keywords]) => {
+      keywords.forEach(kw => {
+        if (text.includes(kw.toLowerCase())) counts[genre]++;
+      });
+    });
+  });
+  return counts;
+}
+
+function getTopGenres(counts) {
+  return Object.entries(counts)
+    .sort((a, b) => b[1] - a[1])
+    .filter(([, v]) => v > 0)
+    .slice(0, 3)
+    .map(([g]) => g);
+}
+
+// ===========================
+// RECOMMENDATION SCORING
+// ===========================
+function scoreBook(book, userBooks, genreCounts, topGenres) {
+  let score = 0;
+  const userText = userBooks.join(' ').toLowerCase();
+
+  // ジャンルマッチ
+  if (topGenres.includes(book.category)) {
+    score += topGenres[0] === book.category ? 40 : topGenres[1] === book.category ? 30 : 20;
+  }
+  // キーワードマッチ
+  book.keywords.forEach(kw => {
+    if (userText.includes(kw.toLowerCase())) score += 8;
+  });
+  // タグマッチ
+  book.tags.forEach(tag => {
+    if (userText.includes(tag.toLowerCase())) score += 5;
+  });
+  // トレンドボーナス
+  if (book.trending) score += 10;
+  // 既読を除外（タイトルが似ている場合）
+  const alreadyRead = userBooks.some(b =>
+    b.toLowerCase().includes(book.title.toLowerCase()) ||
+    book.title.toLowerCase().includes(b.toLowerCase().split(' ')[0])
+  );
+  if (alreadyRead) score = -1;
+
+  // ランダム微調整（多様性のため）
+  score += Math.random() * 5;
+  return score;
+}
+
+// ===========================
+// PARSED BOOKS STATE
+// ===========================
+let parsedBooks = [];
+
+function parseBooks() {
+  const input = document.getElementById('book-input').value;
+  const lines = input.split('\n')
+    .map(l => l.trim())
+    .filter(l => l.length > 1 && l.length < 100);
+
+  if (lines.length === 0) {
+    alert('書籍タイトルを入力してください。');
+    return;
+  }
+
+  parsedBooks = lines;
+  showStep2();
+}
+
+function loadDemo() {
+  const demo = `嫌われる勇気\nFACTFULNESS\nアトミック・ハビッツ\nサピエンス全史\nお金の大学\n変な家`;
+  document.getElementById('book-input').value = demo;
+  parseBooks();
+}
+
+function showStep2() {
+  document.getElementById('step1').style.display = 'none';
+  document.getElementById('step2').style.display = 'block';
+  document.getElementById('step3').style.display = 'none';
+
+  updateChips();
+
+  // ジャンル分析表示
+  const counts = detectGenres(parsedBooks);
+  const top = getTopGenres(counts);
+  const summary = document.getElementById('genre-summary');
+  if (top.length > 0) {
+    summary.innerHTML = `<strong>📊 分析結果：</strong>あなたのKindle蔵書は主に <strong>${top.join('・')}</strong> 系の書籍が多いですね。これらのジャンルを中心におすすめを提案します。`;
+  }
+
+  setActiveChip(2);
+}
+
+function updateChips() {
+  const container = document.getElementById('parsed-books-container');
+  container.innerHTML = '';
+  parsedBooks.forEach((book, i) => {
+    const chip = document.createElement('div');
+    chip.className = 'book-chip';
+    chip.innerHTML = `📖 ${book} <span class="remove" onclick="removeBook(${i})">×</span>`;
+    container.appendChild(chip);
+  });
+}
+
+function removeBook(index) {
+  parsedBooks.splice(index, 1);
+  updateChips();
+}
+
+function backToStep1() {
+  document.getElementById('step1').style.display = 'block';
+  document.getElementById('step2').style.display = 'none';
+  document.getElementById('step3').style.display = 'none';
+  setActiveChip(1);
+}
+
+function generateRecommendations() {
+  document.getElementById('step2').style.display = 'none';
+  document.getElementById('step3').style.display = 'block';
+  document.getElementById('loading-state').classList.add('show');
+  document.getElementById('results-area').style.display = 'none';
+  setActiveChip(3);
+
+  setTimeout(() => {
+    buildResults();
+  }, 1200);
+}
+
+function buildResults() {
+  const genreCounts = detectGenres(parsedBooks);
+  const topGenres = getTopGenres(genreCounts);
+
+  // スコアリング
+  const scored = BOOK_DB.map(book => ({
+    ...book,
+    score: scoreBook(book, parsedBooks, genreCounts, topGenres)
+  })).filter(b => b.score >= 0)
+    .sort((a, b) => b.score - a.score);
+
+  const top = scored.slice(0, 12);
+
+  // 結果説明文
+  const desc = topGenres.length > 0
+    ? `${parsedBooks.length}冊の蔵書を分析。${topGenres.join('・')}を中心にピックアップしました`
+    : `${parsedBooks.length}冊の蔵書をもとにおすすめを選定しました`;
+  document.getElementById('results-desc').textContent = desc;
+  document.getElementById('result-count').textContent = top.length;
+
+  // カテゴリフィルター生成
+  const categories = [...new Set(top.map(b => b.category))];
+  const filterBar = document.getElementById('filter-bar');
+  filterBar.innerHTML = '<button class="filter-btn active" data-filter="all" onclick="filterBooks(this, \'all\')">すべて</button>';
+  categories.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn';
+    btn.dataset.filter = cat;
+    btn.textContent = cat;
+    btn.onclick = function() { filterBooks(this, cat); };
+    filterBar.appendChild(btn);
+  });
+
+  // カード描画
+  renderCards(top);
+
+  document.getElementById('loading-state').classList.remove('show');
+  document.getElementById('results-area').style.display = 'block';
+
+  // アニメーション
+  document.querySelectorAll('.book-card').forEach((card, i) => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(20px)';
+    setTimeout(() => {
+      card.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0)';
+    }, i * 60);
+  });
+}
+
+let allRendered = [];
+
+function renderCards(books) {
+  allRendered = books;
+  const grid = document.getElementById('books-grid');
+  grid.innerHTML = '';
+  books.forEach(book => {
+    const maxScore = 100;
+    const pct = Math.min(95, Math.round((book.score / maxScore) * 100));
+    const matchColor = pct > 70 ? '#11998E' : pct > 50 ? '#F7971E' : '#667EEA';
+
+    const card = document.createElement('div');
+    card.className = 'book-card';
+    card.dataset.category = book.category;
+    card.innerHTML = `
+      <div class="book-cover" style="background: linear-gradient(135deg, ${book.color})">
+        <span>${book.emoji}</span>
+        ${book.trending ? '<span class="trending-badge">🔥 話題</span>' : ''}
+        <span class="book-category-badge">${book.category}</span>
+      </div>
+      <div class="book-body">
+        <div class="book-title">${book.title}</div>
+        <div class="book-author">${book.author}</div>
+        <div class="match-score">
+          <div class="match-bar">
+            <div class="match-fill" style="width:${pct}%;background:linear-gradient(90deg,${matchColor},${matchColor}88)"></div>
+          </div>
+          <span class="match-label" style="color:${matchColor}">${pct}%</span>
+        </div>
+        <div class="book-reason">${book.description}</div>
+        <div class="book-tags">${book.tags.map(t => `<span class="tag">#${t}</span>`).join('')}</div>
+        <a class="book-link" href="https://www.amazon.co.jp/s?k=${encodeURIComponent(book.amazon)}&i=digital-text" target="_blank">
+          🛒 Amazonで見る
+        </a>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function filterBooks(btn, category) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const filtered = category === 'all' ? allRendered : allRendered.filter(b => b.category === category);
+  renderCards(filtered);
+}
+
+function setActiveChip(step) {
+  [1,2,3].forEach(i => {
+    const chip = document.getElementById(`chip-${i}`);
+    chip.classList.toggle('active', i === step);
+  });
+}
+</script>
+</body>
+</html>

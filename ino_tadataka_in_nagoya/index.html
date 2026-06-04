@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>トークネタカード</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💬</text></svg>">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'Hiragino Kaku Gothic ProN', 'ヒラギノ角ゴ ProN W3', 'Noto Sans JP', 'Yu Gothic UI', sans-serif;
+  min-height: 100vh;
+  background-color: #EEF3FF;
+  background-image:
+    linear-gradient(rgba(90, 105, 255, 0.10) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(90, 105, 255, 0.10) 1px, transparent 1px);
+  background-size: 28px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 36px 20px 52px;
+}
+
+/* ===== DECORATIONS ===== */
+.deco {
+  position: fixed;
+  pointer-events: none;
+  z-index: 0;
+}
+.deco-lt { top: 20px; left: 20px; }
+.deco-rb { bottom: 30px; right: 24px; }
+.deco-rt { top: 60px; right: 30px; }
+.deco-lb { bottom: 80px; left: 16px; }
+
+/* ===== HEADER ===== */
+.header {
+  text-align: center;
+  margin-bottom: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.title-wrap {
+  display: inline-block;
+  position: relative;
+}
+
+.title {
+  font-size: 34px;
+  font-weight: 900;
+  color: #1A1A2E;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  -webkit-text-stroke: 1.5px #1A1A2E;
+  paint-order: stroke fill;
+}
+
+.title span {
+  background: #FFE566;
+  padding: 0 4px;
+  border-radius: 4px;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: #5A60A0;
+  margin-top: 8px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+/* ===== MODE SELECTOR ===== */
+.mode-selector {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+  position: relative;
+  z-index: 1;
+}
+
+.mode-btn {
+  padding: 9px 18px;
+  border-radius: 10px 14px 10px 14px;
+  border: 2.5px solid #1A1A2E;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 900;
+  font-family: inherit;
+  transition: all 0.18s ease;
+  background: white;
+  color: #1A1A2E;
+  box-shadow: 3px 3px 0 #1A1A2E;
+  letter-spacing: 0.02em;
+}
+
+.mode-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 #1A1A2E;
+}
+
+.mode-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 #1A1A2E;
+}
+
+.mode-btn.active {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0 #1A1A2E;
+}
+
+.mode-btn.ml.active { background: #FFE566; }
+.mode-btn.mv.active { background: #FFB3D1; }
+.mode-btn.mf.active { background: #7DECA1; }
+
+/* ===== CARD ===== */
+.card-wrapper {
+  width: 100%;
+  max-width: 360px;
+  margin-bottom: 18px;
+  position: relative;
+  z-index: 1;
+}
+
+.card {
+  width: 100%;
+  min-height: 300px;
+  border-radius: 14px 22px 18px 16px / 18px 16px 22px 14px;
+  border: 3px solid #1A1A2E;
+  padding: 40px 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  overflow: visible;
+  box-shadow: 5px 5px 0 #1A1A2E;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.card.cl { background: #FFE566; }
+.card.cv { background: #FFB3D1; }
+.card.cf { background: #7DECA1; }
+.card.init { background: white; }
+
+/* Card corner accent */
+.card-dot {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid #1A1A2E;
+  background: white;
+}
+.card-dot.tl { top: 12px; left: 14px; }
+.card-dot.tr { top: 12px; right: 14px; }
+.card-dot.bl { bottom: 12px; left: 14px; }
+.card-dot.br { bottom: 12px; right: 14px; }
+
+.card-num {
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  color: rgba(26, 26, 46, 0.45);
+  margin-bottom: 18px;
+}
+
+.card-icon {
+  font-size: 48px;
+  line-height: 1;
+  margin-bottom: 18px;
+}
+
+.card-q {
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1.65;
+  color: #1A1A2E;
+  word-break: break-all;
+  overflow-wrap: anywhere;
+  max-width: 100%;
+  letter-spacing: 0.01em;
+}
+
+/* ===== PROGRESS ===== */
+.progress-wrap {
+  width: 100%;
+  max-width: 360px;
+  margin-bottom: 14px;
+  position: relative;
+  z-index: 1;
+}
+
+.prog-track {
+  height: 6px;
+  background: rgba(26, 26, 46, 0.12);
+  border-radius: 100px;
+  border: 1.5px solid rgba(26, 26, 46, 0.2);
+  overflow: hidden;
+}
+
+.prog-bar {
+  height: 100%;
+  border-radius: 100px;
+  width: 0%;
+  transition: width 0.5s cubic-bezier(.34,1.56,.64,1);
+}
+
+.prog-bar.bl { background: #D97706; }
+.prog-bar.bv { background: #DB2777; }
+.prog-bar.bf { background: #059669; }
+
+.prog-txt {
+  font-size: 11px;
+  color: rgba(26, 26, 46, 0.45);
+  text-align: right;
+  margin-top: 6px;
+  font-weight: 700;
+}
+
+/* ===== SHUFFLE BUTTON ===== */
+.next-btn {
+  width: 100%;
+  max-width: 360px;
+  padding: 17px;
+  border-radius: 12px 16px 12px 16px;
+  border: 3px solid #1A1A2E;
+  font-size: 15px;
+  font-weight: 900;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  letter-spacing: 0.08em;
+  color: #1A1A2E;
+  box-shadow: 4px 4px 0 #1A1A2E;
+  position: relative;
+  z-index: 1;
+}
+
+.next-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0 #1A1A2E;
+}
+
+.next-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 #1A1A2E;
+}
+
+.next-btn.bl { background: #FFE566; }
+.next-btn.bv { background: #FFB3D1; }
+.next-btn.bf { background: #7DECA1; }
+
+/* ===== RESET ===== */
+.reset-btn {
+  margin-top: 14px;
+  font-size: 11px;
+  color: rgba(26, 26, 46, 0.4);
+  cursor: pointer;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: none;
+  border: none;
+  font-family: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s;
+  position: relative;
+  z-index: 1;
+}
+.reset-btn:hover { color: #1A1A2E; }
+
+/* ===== ANIMATION ===== */
+@keyframes cardPop {
+  0%   { opacity: 0; transform: scale(0.85) rotate(-3deg); }
+  60%  { opacity: 1; transform: scale(1.04) rotate(1deg); }
+  80%  { transform: scale(0.98) rotate(-0.5deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.card.pop { animation: cardPop 0.42s cubic-bezier(.34,1.56,.64,1) forwards; }
+</style>
+</head>
+<body>
+
+<!-- 手書き風装飾 SVG -->
+<svg class="deco deco-lt" width="60" height="60" viewBox="0 0 60 60" fill="none">
+  <path d="M30 5 L34 22 L52 22 L38 33 L43 50 L30 40 L17 50 L22 33 L8 22 L26 22 Z" stroke="#1A1A2E" stroke-width="2.5" fill="#FFE566" stroke-linejoin="round"/>
+</svg>
+<svg class="deco deco-rt" width="36" height="60" viewBox="0 0 36 60" fill="none">
+  <path d="M22 2 L10 30 L18 30 L4 58 L28 24 L18 24 Z" stroke="#1A1A2E" stroke-width="2.5" fill="#FFB3D1" stroke-linejoin="round" stroke-linecap="round"/>
+</svg>
+<svg class="deco deco-rb" width="50" height="50" viewBox="0 0 50 50" fill="none">
+  <circle cx="25" cy="25" r="20" stroke="#1A1A2E" stroke-width="2.5" fill="#7DECA1"/>
+  <circle cx="25" cy="25" r="12" stroke="#1A1A2E" stroke-width="2" fill="none"/>
+  <circle cx="25" cy="25" r="4" fill="#1A1A2E"/>
+</svg>
+<svg class="deco deco-lb" width="44" height="44" viewBox="0 0 44 44" fill="none">
+  <rect x="4" y="4" width="36" height="36" rx="6" stroke="#1A1A2E" stroke-width="2.5" fill="#EEF3FF" transform="rotate(15 22 22)"/>
+  <rect x="10" y="10" width="24" height="24" rx="4" stroke="#1A1A2E" stroke-width="2" fill="#FFE566" transform="rotate(15 22 22)"/>
+</svg>
+
+<!-- ヘッダー -->
+<div class="header">
+  <div class="title-wrap">
+    <div class="title">トーク<span>ネタ</span>カード</div>
+  </div>
+  <div class="subtitle">会話がはずむ話題を、ランダムにお届け</div>
+</div>
+
+<!-- モード選択 -->
+<div class="mode-selector">
+  <button class="mode-btn ml active" onclick="setMode('l','ml','bl')">🌟 わいわい</button>
+  <button class="mode-btn mv"        onclick="setMode('v','mv','bv')">💕 ときめき</button>
+  <button class="mode-btn mf"        onclick="setMode('f','mf','bf')">🤝 ガチ友</button>
+</div>
+
+<!-- カード -->
+<div class="card-wrapper">
+  <div class="card init" id="card">
+    <div class="card-dot tl"></div>
+    <div class="card-dot tr"></div>
+    <div class="card-dot bl"></div>
+    <div class="card-dot br"></div>
+    <div class="card-num" id="cnum">QUESTION</div>
+    <div class="card-icon" id="cicon">🎴</div>
+    <div class="card-q" id="cq">シャッフルして<br>話題をゲット！</div>
+  </div>
+</div>
+
+<!-- プログレス -->
+<div class="progress-wrap">
+  <div class="prog-track">
+    <div class="prog-bar bl" id="pbar"></div>
+  </div>
+  <div class="prog-txt" id="ptxt">&nbsp;</div>
+</div>
+
+<!-- シャッフルボタン -->
+<button class="next-btn bl" id="nbtn" onclick="next()">シャッフル ✨</button>
+<button class="reset-btn" onclick="reset()">最初からやり直す</button>
+
+<script>
+const DATA = {
+  l: {
+    icons: ['🎂','🐾','🍜','🎮','✈️','🍳','☕','🌸','🛋️','⭐','🎬','🎤','🥦','🏖️','🎁','🎯','🏡','📸','🎥','🌈'],
+    qs: [
+      '誕生日はいつ？',
+      'ペットを飼ったことある？',
+      '好きな食べ物は何？',
+      '最近ハマってることは？',
+      '行ってみたい国はどこ？',
+      '得意料理ってある？',
+      '朝型？夜型？どっち？',
+      '好きな季節は？',
+      '休日はどんな\n過ごし方してる？',
+      '子供の頃の夢は\n何だった？',
+      '好きな映画のジャンルは？',
+      'カラオケで必ず\n入れる曲は？',
+      '苦手な食べ物はある？',
+      '旅行するなら\n海派？山派？',
+      '今一番\n欲しいものは何？',
+      '特技や趣味を教えて！',
+      'コーヒー派？お茶派？',
+      '出身はどこ？',
+      '最近笑ったこと、\n何かある？',
+      '自分をひとことで\n表すとしたら？'
+    ]
+  },
+  v: {
+    icons: ['💘','🦋','🌹','🎡','💌','✨','💍','📱','🫶','💬','🗓️','🍽️','🤔','⚡','👀','😊','🌍','💭','😍','🌙'],
+    qs: [
+      'どんな人がタイプ？',
+      '異性のどんな行動に\nドキッとする？',
+      '告白するなら\nどんな場所がいい？',
+      '付き合ったら\n最初のデートはどこ？',
+      '好きな人への\nアプローチ方法は？',
+      '「いいな」と思う瞬間は\nどんな時？',
+      '理想のプロポーズって？',
+      '連絡はこまめにしてほしい派？',
+      '嫉妬深い方？\n全然しない方？',
+      'LINEの返信、\nどのくらいの頻度がいい？',
+      '記念日は大切にする派？',
+      '初デートの食事は\n和食・洋食・その他どれ？',
+      '付き合う前に\n確認したいことってある？',
+      '恋愛と仕事、\n正直どっちを優先する？',
+      '一目惚れって信じる？',
+      '好きな人ができたら\nすぐバレる？隠せる？',
+      '別れた後、\n友達に戻れる？',
+      '遠距離恋愛は\nアリ？ナシ？',
+      '相手に求める条件を\n3つあげるとしたら？',
+      '今まで一番\nドキッとした瞬間は？'
+    ]
+  },
+  f: {
+    icons: ['🤝','💬','🏕️','🗺️','🎂','😂','🌟','⏳','🤫','🏆','🫂','🪞','🏝️','🌱','🎯','📞','💝','🎉','🔥','🌻'],
+    qs: [
+      '友達に「信頼できる！」と\n思う瞬間は？',
+      '友達とケンカしたとき\nどうやって仲直りする？',
+      '一緒にいて一番落ち着く人は\nどんな人？',
+      'グループ旅行で\n担当したい役割は？',
+      '友達の誕生日、\nどんなお祝いをしたい？',
+      '一番笑った\n思い出のエピソードは？',
+      '友達の「ここ尊敬するな」と\n思う部分は？',
+      '長い付き合いになる人の\n共通点って何だと思う？',
+      '連絡不精だと思う？\nわりとマメ？',
+      '友達に絶対言えない秘密\nってある？（言わなくていいよ！）',
+      'この中で一番〇〇そうな人は？\n（テーマ決めてみんなで投票！）',
+      '友達に支えてもらった\n一番の思い出は？',
+      'グループの中で\n自分はどんなキャラだと思う？',
+      '無人島に一人だけ連れていくなら\n誰を選ぶ？',
+      '友達の「ここは見習いたい」\nと思うところは？',
+      '一緒にやってみたいことは何？',
+      '友達に言われて\n一番嬉しかった言葉は？',
+      '今の自分をひとことで\n表すとしたら？',
+      '10年後、このメンバーで\n何してると思う？',
+      '今日の集まりで\n一番面白かったことは？'
+    ]
+  }
+};
+
+let mode = 'l', btnClass = 'ml', barClass = 'bl', used = [];
+
+function setMode(m, bc, bar) {
+  mode = m; btnClass = bc; barClass = bar; used = [];
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.mode-btn.' + bc).classList.add('active');
+  const card = document.getElementById('card');
+  card.className = 'card init';
+  document.getElementById('nbtn').className = 'next-btn ' + bar;
+  const pb = document.getElementById('pbar');
+  pb.className = 'prog-bar ' + bar;
+  pb.style.width = '0%';
+  document.getElementById('cnum').textContent = 'QUESTION';
+  document.getElementById('cicon').textContent = m === 'l' ? '🎴' : m === 'v' ? '💕' : '🤝';
+  document.getElementById('cq').innerHTML = 'シャッフルして<br>話題をゲット！';
+  document.getElementById('ptxt').innerHTML = '&nbsp;';
+}
+
+function reset() {
+  used = [];
+  document.getElementById('pbar').style.width = '0%';
+  document.getElementById('ptxt').textContent = 'リセットしました！';
+  setTimeout(() => { document.getElementById('ptxt').innerHTML = '&nbsp;'; }, 1500);
+}
+
+function next() {
+  const d = DATA[mode];
+  if (used.length >= d.qs.length) used = [];
+  const avail = d.qs.map((_, i) => i).filter(i => !used.includes(i));
+  const idx = avail[Math.floor(Math.random() * avail.length)];
+  used.push(idx);
+
+  const card = document.getElementById('card');
+  const modeClass = mode === 'l' ? 'cl' : mode === 'v' ? 'cv' : 'cf';
+  card.className = 'card ' + modeClass;
+  card.classList.remove('pop');
+  void card.offsetWidth;
+  card.classList.add('pop');
+
+  document.getElementById('cnum').textContent = 'QUESTION ' + String(used.length).padStart(2, '0');
+  document.getElementById('cicon').textContent = d.icons[idx];
+  document.getElementById('cq').innerHTML = d.qs[idx].replace(/\n/g, '<br>');
+
+  const pct = Math.round(used.length / d.qs.length * 100);
+  document.getElementById('pbar').style.width = pct + '%';
+  document.getElementById('ptxt').textContent = used.length + ' / ' + d.qs.length + ' 問';
+}
+</script>
+</body>
+</html>
