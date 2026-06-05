@@ -342,111 +342,6 @@
     }
 
     /* ── FAB ── */
-    .fab {
-      position: fixed;
-      bottom: 28px;
-      right: 24px;
-      z-index: 50;
-      width: 58px;
-      height: 58px;
-      border-radius: 50%;
-      border: none;
-      font-size: 1.5rem;
-      cursor: pointer;
-      background: linear-gradient(135deg, #ff4fa3, #c120ff, #4f8fff);
-      box-shadow: 0 4px 22px rgba(200,50,200,.5);
-      animation: fabPulse 2.5s ease-in-out infinite;
-      transition: transform .2s;
-    }
-    .fab:hover { transform: scale(1.12) rotate(8deg); }
-
-    @keyframes fabPulse {
-      0%, 100% { box-shadow: 0 4px 22px rgba(200,50,200,.5); }
-      50%       { box-shadow: 0 4px 36px rgba(220,80,255,.75), 0 0 50px rgba(200,50,200,.25); }
-    }
-
-    /* ── MODAL ── */
-    .modal-bg {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.78);
-      backdrop-filter: blur(6px);
-      z-index: 100;
-      justify-content: center;
-      align-items: center;
-    }
-    .modal-bg.show { display: flex; }
-
-    .modal {
-      background: linear-gradient(160deg, #18003a, #3a006e, #18003a);
-      border: 1px solid rgba(255,100,200,.35);
-      border-radius: 22px;
-      padding: 40px 32px;
-      max-width: 380px;
-      width: 90%;
-      text-align: center;
-      box-shadow: 0 0 60px rgba(200,50,255,.25), inset 0 1px 0 rgba(255,255,255,.08);
-      animation: modalIn .3s cubic-bezier(.34,1.56,.64,1);
-    }
-
-    @keyframes modalIn {
-      from { opacity: 0; transform: scale(.75); }
-      to   { opacity: 1; transform: scale(1); }
-    }
-
-    .modal-emoji { font-size: 2.8rem; margin-bottom: 14px; }
-
-    .modal-q {
-      font-size: 1.15rem;
-      font-weight: 700;
-      line-height: 1.6;
-      margin-bottom: 28px;
-    }
-
-    .modal-btns { display: flex; gap: 14px; justify-content: center; }
-
-    .btn-yes {
-      padding: 12px 28px;
-      background: linear-gradient(135deg, #ff4fa3, #ff1493);
-      border: none;
-      border-radius: 100px;
-      color: #fff;
-      font-size: .95rem;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 4px 18px rgba(255,60,160,.4);
-      transition: transform .2s, box-shadow .2s;
-    }
-    .btn-yes:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(255,60,160,.6); }
-
-    .btn-no {
-      padding: 12px 28px;
-      background: rgba(255,255,255,.1);
-      border: 1px solid rgba(255,255,255,.25);
-      border-radius: 100px;
-      color: #fff;
-      font-size: .95rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background .2s, transform .2s;
-    }
-    .btn-no:hover { background: rgba(255,255,255,.18); transform: translateY(-2px); }
-
-    /* rainbow label for gay bar result */
-    .rainbow-label {
-      font-family: 'Orbitron', monospace;
-      font-size: .65rem;
-      letter-spacing: 3px;
-      text-align: center;
-      margin-bottom: 16px;
-      background: linear-gradient(90deg, #ff0080, #ff8800, #ffee00, #00cc44, #0088ff, #cc00ff);
-      background-size: 200%;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      animation: shimmer 2s linear infinite;
-    }
 
     footer {
       text-align: center;
@@ -511,20 +406,6 @@
 
 </div>
 
-<!-- FAB -->
-<button class="fab" onclick="openModal()" title="Special">👬</button>
-
-<!-- Modal -->
-<div class="modal-bg" id="modal" onclick="bgClose(event)">
-  <div class="modal">
-    <div class="modal-emoji">🏳️‍🌈✨</div>
-    <div class="modal-q">ゲイバーでフロアを<br>盛り上げたい?</div>
-    <div class="modal-btns">
-      <button class="btn-yes" onclick="yesFloor()">YES!!!</button>
-      <button class="btn-no" onclick="noFloor()">NO...</button>
-    </div>
-  </div>
-</div>
 
 <script>
 const SONGS = [
@@ -1041,15 +922,6 @@ const SONGS = [
   }
 ];
 
-const SEXY_BOY = {
-  title: "SEXY BOY〜そよ風に寄り添って〜",
-  artist: "モーニング娘。",
-  img: "https://placehold.co/300x300/ff69b4/ffffff?text=SEXY+BOY",
-  sp: "https://open.spotify.com/search/SEXY+BOY+%E3%81%9D%E3%82%88%E9%A2%A8%E3%81%AB%E5%AF%84%E3%82%8A%E6%B7%BB%E3%81%A3%E3%81%A6+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
-  am: "https://music.apple.com/jp/search?term=SEXY+BOY+%E3%81%9D%E3%82%88%E9%A2%A8%E3%81%AB%E5%AF%84%E3%82%8A%E6%B7%BB%E3%81%A3%E3%81%A6",
-  yt: "https://www.youtube.com/results?search_query=SEXY+BOY+%E3%81%9D%E3%82%88%E9%A2%A8%E3%81%AB%E5%AF%84%E3%82%8A%E6%B7%BB%E3%81%A3%E3%81%A6+%E3%83%A2%E3%83%BC%E3%83%8B%E3%83%B3%E3%82%B0%E5%A8%98",
-  lm: "https://music.line.me/search?q=SEXY+BOY+%E3%81%9D%E3%82%88%E9%A2%A8%E3%81%AB%E5%AF%84%E3%82%8A%E6%B7%BB%E3%81%A3%E3%81%A6"
-};
 
 function onSelChange() {
   const x = document.getElementById('sel-x').value;
@@ -1099,32 +971,6 @@ function renderSong(song, rainbow = false) {
     </div>`;
 }
 
-function openModal() {
-  document.getElementById('modal').classList.add('show');
-}
-
-function closeModal() {
-  document.getElementById('modal').classList.remove('show');
-}
-
-function bgClose(e) {
-  if (e.target === document.getElementById('modal')) closeModal();
-}
-
-function yesFloor() {
-  closeModal();
-  const resultEl = document.getElementById('result');
-  document.getElementById('song-display').innerHTML = renderSong(SEXY_BOY, true);
-  resultEl.classList.remove('show');
-  void resultEl.offsetWidth;
-  resultEl.classList.add('show');
-  setTimeout(() => resultEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
-}
-
-function noFloor() {
-  closeModal();
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
 </script>
 </body>
 </html>
