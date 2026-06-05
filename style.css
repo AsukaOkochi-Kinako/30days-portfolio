@@ -45,6 +45,7 @@ body {
 }
 
 .hidden { display: none !important; }
+.sp-only { display: none; }
 
 /* ===== STAR / DOT BACKGROUND PATTERN ===== */
 body::before {
@@ -604,6 +605,7 @@ body::before {
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
+  .sp-only { display: inline; }
   .hero-stats { gap: 10px; }
   .stat { padding: 12px 20px; }
   .stat-divider { display: none; }
