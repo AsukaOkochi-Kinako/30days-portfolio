@@ -47,6 +47,10 @@ body {
 .hidden { display: none !important; }
 .sp-only { display: none; }
 
+@media (max-width: 960px) {
+  .sp-only { display: inline; }
+}
+
 /* ===== STAR / DOT BACKGROUND PATTERN ===== */
 body::before {
   content: '';
