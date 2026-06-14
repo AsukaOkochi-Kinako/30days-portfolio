@@ -16,6 +16,7 @@ const PROJECTS = [
     desc: "一節から本と出会う本の探索サービス。気になるフレーズを入力すると関連する本を提案してくれる。",
     category: "books",     emoji: "📖", date: "2026-05-04",
     htmlFile: "index.html", tech: "html",
+    deployUrl: "https://appearingbooks.x17018xx.workers.dev/",
   },
   {
     day: 2,  name: "H!P MUSIC SELECTOR",         dir: "hello_project_recommend",
@@ -58,6 +59,7 @@ const PROJECTS = [
     desc: "麻辣湯（マーラータン）に入れる具材をAIが提案。好みの辛さや食材から最適な組み合わせを。",
     category: "food",      emoji: "🍲", date: "2026-05-10",
     htmlFile: "index.html", tech: "html",
+    deployUrl: "https://malatang-prediction.pages.dev/",
   },
   {
     day: 9,  name: "名古屋 徒歩探索ルーレット", dir: "ino_tadataka_in_nagoya",
@@ -70,12 +72,14 @@ const PROJECTS = [
     desc: "ランダムにトークネタが出てくるカードアプリ。会話のきっかけに。",
     category: "tools",     emoji: "💬", date: "2026-05-11",
     htmlFile: "index.html", tech: "html",
+    deployUrl: "https://random-conversation.x17018xx.workers.dev/",
   },
   {
     day: 11, name: "どうぶつインディアンポーカー", dir: "indian_poker_animal",
     desc: "動物キャラで遊ぶインディアンポーカー。かわいいビジュアルでカードゲームを楽しむ。",
     category: "game",      emoji: "🃏", date: "2026-05-12",
     htmlFile: "index.html", tech: "html",
+    deployUrl: "https://indian-poker-animal.x17018xx.workers.dev/",
   },
   {
     day: 12, name: "東海道新幹線 遅延通知",        dir: "line_shinkansen_delay",
@@ -94,6 +98,7 @@ const PROJECTS = [
     desc: "アートを泡のように楽しむビジュアル体験。インタラクティブなアートアプリ。",
     category: "creative",  emoji: "🫧", date: "2026-05-16",
     htmlFile: "index.html", tech: "html",
+    deployUrl: "https://art-bubble.x17018xx.workers.dev/",
   },
   {
     day: 15, name: "RAP BATTLE DOJO",              dir: "rap_practice",

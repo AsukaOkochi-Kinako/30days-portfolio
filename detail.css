@@ -180,6 +180,28 @@ body.detail-page {
   max-width: 700px;
 }
 
+.detail-deploy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 20px;
+  padding: 12px 24px;
+  background: var(--pink);
+  color: white;
+  font-family: var(--font-head);
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 40px;
+  border: 2px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  text-decoration: none;
+  transition: transform 0.1s, box-shadow 0.1s;
+}
+.detail-deploy-btn:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
 /* Section label */
 .detail-section-label {
   font-family: var(--font-head);

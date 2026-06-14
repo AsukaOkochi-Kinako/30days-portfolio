@@ -97,6 +97,17 @@ function render(project) {
   descEl.textContent = project.desc;
 
   hero.append(badgeRow, titleRow, descEl);
+
+  if (project.deployUrl) {
+    const deployBtn = document.createElement("a");
+    deployBtn.className = "detail-deploy-btn";
+    deployBtn.textContent = "🌐 公開サイトを開く";
+    deployBtn.href = project.deployUrl;
+    deployBtn.target = "_blank";
+    deployBtn.rel = "noopener noreferrer";
+    hero.appendChild(deployBtn);
+  }
+
   main.appendChild(hero);
 
   // Media section — video first (.mp4 / .mov), fallback to image (.png)
